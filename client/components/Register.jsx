@@ -38,11 +38,12 @@ const Register = () => {
         </div>
         <div className="form-group">
           <label htmlFor="phone">연락처</label>
-          <input type="text" id="phone" name="phone" placeholder="연락쳐를 입력해주세요" 
-          maxLength={11}
-          onInput={(e) => {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-          }}/>
+          <input
+            type="text"
+            id="phone"
+            name="phone"
+            placeholder="연락쳐를 입력해주세요"
+          />
         </div>
         <div className="form-group">
           <label htmlFor="birthdate">생년월일</label>
