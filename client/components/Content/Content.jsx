@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Content.css';
-import ImageCompareSlider from './ImageCompareSlider';
+import ImageCompareSlider from '../ImageCompareSlider/ImageCompareSlider';
 
 const Content = ({children}) => {
   const images = [
