@@ -1,6 +1,6 @@
 import React from "react";
 import "./Register.css";
-import ImageUploader from "./ImageUploader";
+import ImageUploader from "../ImageUploader/ImageUploader";
 
 const Register = () => {
   return (
@@ -38,20 +38,12 @@ const Register = () => {
         </div>
         <div className="form-group">
           <label htmlFor="phone">연락처</label>
-<<<<<<< HEAD
           <input
             type="text"
             id="phone"
             name="phone"
             placeholder="연락쳐를 입력해주세요"
           />
-=======
-          <input type="text" id="phone" name="phone" placeholder="연락쳐를 입력해주세요" 
-          maxLength={11}
-          onInput={(e) => {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-          }}/>
->>>>>>> dc6486efeca6cbbd8f40912f680c33956cce08a7
         </div>
         <div className="form-group">
           <label htmlFor="birthdate">생년월일</label>

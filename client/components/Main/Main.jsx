@@ -1,7 +1,7 @@
 import React from 'react'
-import Content from './Content'
+import Content from '../Content/Content'
 import './Main.css'
-import ImageCompareSlider from './ImageCompareSlider'
+import ImageCompareSlider from '../ImageCompareSlider/ImageCompareSlider'
 // import './Main.css'
 const Main = () => {
   return (
