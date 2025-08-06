@@ -1,0 +1,66 @@
+.upload-section {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+  height: 30vh;
+  margin: auto 0;
+  flex-grow: 16;
+}
+
+.upload-box {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  height: 100%;
+  position: relative; /* Added for positioning the clear button */
+}
+
+.clear-image-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: rgba(255, 0, 0, 0.7); /* Red background */
+  color: white;
+  border: none;
+  border-radius: 50%; /* Make it round */
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 10; /* Ensure it's above the image */
+  transition: background-color 0.3s ease;
+}
+
+.clear-image-button:hover {
+  background-color: rgba(255, 0, 0, 1);
+}
+
+.upload-file-box button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.upload-file-box button:hover {
+  background-color: #0056b3;
+}
+
+.upload-box img {
+  margin-top: 10px;
+  width: 30px;
+}
