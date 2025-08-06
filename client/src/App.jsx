@@ -6,7 +6,7 @@ import {Route, Routes} from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Main from '../components/Main'
-import Register from '../components/Register'
+import Register from '../components/Register.jsx'
 import Login from '../components/Login'
 import ForgotId from '../components/ForgotId'
 import ForgotPassword from '../components/ForgotPassword'
@@ -19,7 +19,7 @@ function App() {
       <div className="main-content">
         <Routes>
           {/* 첫 화면 */}
-          <Route path='/' element={<Login />} />
+          <Route path='/' element={<Main />} />
           <Route path='/register' element={<Register />} />
           <Route path='/login' element={<Login />} />
           <Route path='/forgot-id' element={<ForgotId />} />
