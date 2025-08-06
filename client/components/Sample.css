@@ -1,0 +1,113 @@
+/* 전체 컨테이너 중앙 정렬 및 padding */
+.container {
+  max-width: 900px; /* 최대너비 */
+  margin: 0 auto; /* 가로 중앙배치 */
+  padding: 20px;
+  box-sizing: border-box;
+  font-family: 'Noto Sans KR', sans-serif;
+  background-color: #fff;
+}
+
+/* 이미지 컨테이너 스타일 강화 */
+.image-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 30px;
+
+  background-color: #f8f9fa; /* 연한 회색 배경 */
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 이미지 기본 스타일 수정 */
+.image-container img {
+  width: 48%;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+
+  border: 3px solid #007bff; /* 파란색 테두리 */
+  box-shadow: 0 8px 15px rgba(0, 123, 255, 0.4);
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  display: block;
+}
+
+/* 호버 시 이미지 약간 확대 및 그림자 강화 */
+.image-container img:hover {
+  transform: scale(1.07);
+  box-shadow: 0 12px 25px rgba(0, 123, 255, 0.6);
+}
+
+/* 버튼 컨테이너는 flex로 가로배치 및 중앙정렬 */
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px; /* 버튼 사이 거리 */
+  flex-wrap: wrap; /* 화면 작아지면 줄 바꿈 */
+}
+
+/* 버튼 공통 기본 스타일 */
+.btn {
+  padding: 12px 25px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  min-width: 120px;
+  transition: background-color 0.3s ease;
+  user-select: none;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* 각 버튼 색상 구분 */
+.login-btn {
+  background-color: #007bff; /* 파란색 */
+}
+.login-btn:hover {
+  background-color: #0056b3;
+}
+
+.signup-btn {
+  background-color: #28a745; /* 초록색 */
+}
+.signup-btn:hover {
+  background-color: #1e7e34;
+}
+
+.add-photo-btn {
+  background-color: #ffc107; /* 노란색 */
+  color: #212529;
+}
+.add-photo-btn:hover {
+  background-color: #d39e00;
+}
+
+/* 반응형: 모바일에서는 이미지 세로 배치로 변경 */
+@media (max-width: 600px) {
+  .image-container {
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px;
+  }
+
+  .image-container img {
+    width: 100%;
+  }
+
+  .button-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn {
+    width: 100%;
+    min-width: unset;
+  }
+}
