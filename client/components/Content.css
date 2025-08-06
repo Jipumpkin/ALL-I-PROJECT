@@ -4,60 +4,11 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 1200px; /* Adjust as needed for desktop */
+  max-width: 800px; /* Adjust as needed for desktop */
   height: 100%; /* 부모 요소(main-content)의 전체 높이 */
   margin: 0 auto; /* 가운데 정렬 */
   box-sizing: border-box;
   overflow-y: auto;
-}
-
-.title-section {
-  /* border: 1px solid black; */
-  margin-bottom: 10px;
-  text-align: center;
-  width: 100%;
-  height: 20vh; /* Fixed height for the title section */
-  position: relative; /* For positioning buttons */
-  overflow: hidden; /* Ensure image doesn't overflow */
-}
-
-@media (min-width: 768px) {
-  .title-section {
-    height: 45vh; /* Slightly taller height for desktop */
-  }
-}
-
-.carousel-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.carousel-dots {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  z-index: 1;
-}
-
-.carousel-dot {
-  width: 12px;
-  height: 12px;
-  background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white */
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.carousel-dot.active {
-  background-color: #fff; /* Solid white for active dot */
-}
-
-.carousel-dot:hover {
-  background-color: rgba(255, 255, 255, 0.9); /* Slightly less transparent on hover */
 }
 
 .info-list-section {
