@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useNavigate } from "react-router-dom";
 import api from "../axios.js";
 import ImageUploader from "./ImageUploader.jsx";
@@ -44,13 +43,6 @@ const sendData = async (event) => {
         }
     }
 
-=======
-import React from "react";
-import "./Register.css";
-import ImageUploader from "./ImageUploader";
-
-const Register = () => {
->>>>>>> 7d4d4f94c24e711c364a7ae1ee91fab7629456d4
   return (
     <div className="register-container">
       <h2>회원가입</h2>
@@ -58,11 +50,7 @@ const Register = () => {
         우리가족이 되어주세요!
       </h4>
 
-<<<<<<< HEAD
       <form onSubmit={registerHandler}>
-=======
-      <form>
->>>>>>> 7d4d4f94c24e711c364a7ae1ee91fab7629456d4
         <div className="form-group">
           <label htmlFor="username">아이디</label>
           <input type="text" id="username" name="username" />
