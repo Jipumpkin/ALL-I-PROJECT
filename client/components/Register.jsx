@@ -1,8 +1,48 @@
-import React from "react";
-import "./Register.css";
+import { useNavigate } from "react-router-dom";
+import api from "../axios.js";
 import ImageUploader from "./ImageUploader.jsx";
+import "./Register.css";
+import { useState } from "react";
 
 const Register = () => {
+  const nav = useNavigate();
+  // Front -> Back
+
+const registerHandler = (e) => {
+    e.preventDefault();
+    
+    
+    console.log(e.target);
+
+    e.target.map();
+    // nav("/");
+  }
+
+const [id, setId] = useState("");
+const [pw, setPw] = useState("");
+const [contact, setContact] = useState("");
+const [birth, setBirth] = useState("");
+const [name, setName] = useState("");
+
+const sendData = async (event) => {
+        event.preventDefault();
+        try {
+            const res = await api.post("/login", {
+                id : id,
+                pw : pw
+            });
+            console.log(res);
+            if(res.data.result === "success") {
+                setName(res.data.name);
+                window.alert(name+ "님 환영합니다");
+            } else {
+                window.alert("잘못된 아이디 혹은 비밀번호입니다.");
+            }
+        } catch (err) {
+            console.error("/getData axios error", err);
+        }
+    }
+
   return (
     <div className="register-container">
       <h2>회원가입</h2>
@@ -10,7 +50,7 @@ const Register = () => {
         우리가족이 되어주세요!
       </h4>
 
-      <form>
+      <form onSubmit={registerHandler}>
         <div className="form-group">
           <label htmlFor="username">아이디</label>
           <input type="text" id="username" name="username" />
