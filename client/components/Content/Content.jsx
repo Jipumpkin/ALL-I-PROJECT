@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Content.css';
+<<<<<<< HEAD:client/components/Content.jsx
 import Title from './Title';
 import TopSix from './TopSix';
+=======
+import ImageCompareSlider from '../ImageCompareSlider/ImageCompareSlider';
+
+>>>>>>> 7d4d4f94c24e711c364a7ae1ee91fab7629456d4:client/components/Content/Content.jsx
 const Content = ({children}) => {
 
   const fileInputRef1 = useRef(null);

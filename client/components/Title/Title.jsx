@@ -2,7 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Title.css'
-import '../public/font/font.css'
+import '../../public/font/font.css'
 const Title = () => {
     const images = [
         '/images/poster1.jpg',

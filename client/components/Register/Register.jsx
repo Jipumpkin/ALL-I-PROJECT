@@ -1,56 +1,8 @@
-<<<<<<< HEAD
-import { useNavigate } from "react-router-dom";
-import api from "../axios.js";
-import ImageUploader from "./ImageUploader.jsx";
-import "./Register.css";
-import { useState } from "react";
-
-const Register = () => {
-  const nav = useNavigate();
-  // Front -> Back
-
-const registerHandler = (e) => {
-    e.preventDefault();
-    
-    
-    console.log(e.target);
-
-    e.target.map();
-    // nav("/");
-  }
-
-const [id, setId] = useState("");
-const [pw, setPw] = useState("");
-const [contact, setContact] = useState("");
-const [birth, setBirth] = useState("");
-const [name, setName] = useState("");
-
-const sendData = async (event) => {
-        event.preventDefault();
-        try {
-            const res = await api.post("/login", {
-                id : id,
-                pw : pw
-            });
-            console.log(res);
-            if(res.data.result === "success") {
-                setName(res.data.name);
-                window.alert(name+ "님 환영합니다");
-            } else {
-                window.alert("잘못된 아이디 혹은 비밀번호입니다.");
-            }
-        } catch (err) {
-            console.error("/getData axios error", err);
-        }
-    }
-
-=======
 import React from "react";
 import "./Register.css";
-import ImageUploader from "./ImageUploader";
+import ImageUploader from "../ImageUploader/ImageUploader";
 
 const Register = () => {
->>>>>>> 7d4d4f94c24e711c364a7ae1ee91fab7629456d4
   return (
     <div className="register-container">
       <h2>회원가입</h2>
@@ -58,11 +10,7 @@ const Register = () => {
         우리가족이 되어주세요!
       </h4>
 
-<<<<<<< HEAD
-      <form onSubmit={registerHandler}>
-=======
       <form>
->>>>>>> 7d4d4f94c24e711c364a7ae1ee91fab7629456d4
         <div className="form-group">
           <label htmlFor="username">아이디</label>
           <input type="text" id="username" name="username" />
@@ -90,11 +38,12 @@ const Register = () => {
         </div>
         <div className="form-group">
           <label htmlFor="phone">연락처</label>
-          <input type="text" id="phone" name="phone" placeholder="연락쳐를 입력해주세요" 
-          maxLength={11}
-          onInput={(e) => {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-          }}/>
+          <input
+            type="text"
+            id="phone"
+            name="phone"
+            placeholder="연락쳐를 입력해주세요"
+          />
         </div>
         <div className="form-group">
           <label htmlFor="birthdate">생년월일</label>
