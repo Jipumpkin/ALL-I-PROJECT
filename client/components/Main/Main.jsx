@@ -7,6 +7,7 @@ const Main = () => {
     <div className='main-Container'>
         <Content>
         </Content>
+      
 
         
     </div>

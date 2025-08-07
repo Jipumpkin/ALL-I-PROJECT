@@ -50,7 +50,7 @@ const Content = ({children}) => {
   return (
     <div className="content-container">
       <Title></Title>
-    </div>
+      </div>
   );
 };
 
