@@ -1,8 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Register.css";
 import ImageUploader from "../ImageUploader/ImageUploader";
+import { useNavigate } from "react-router-dom";
+import api from '../../axios.js'
 
 const Register = () => {
+  const nav = useNavigate();
+  // Front -> Back
+
+const registerHandler = (e) => {
+    e.preventDefault();
+    
+    
+    console.log(e.target);
+
+    e.target.map();
+    // nav("/");
+  }
+
+const [id, setId] = useState("");
+const [pw, setPw] = useState("");
+const [contact, setContact] = useState("");
+const [birth, setBirth] = useState("");
+const [name, setName] = useState("");
+
+const sendData = async (event) => {
+        event.preventDefault();
+        try {
+            const res = await api.post("/login", {
+                id : id,
+                pw : pw
+            });
+            console.log(res);
+            if(res.data.result === "success") {
+                setName(res.data.name);
+                window.alert(name+ "님 환영합니다");
+            } else {
+                window.alert("잘못된 아이디 혹은 비밀번호입니다.");
+            }
+        } catch (err) {
+            console.error("/getData axios error", err);
+        }
+    }
   return (
     <div className="register-container">
       <h2>회원가입</h2>
