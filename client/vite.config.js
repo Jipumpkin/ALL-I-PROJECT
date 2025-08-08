@@ -12,7 +12,7 @@ export default defineConfig({
         rewrite: path => path.replace(/^\/api/, ''),
         // secure: false,  // HTTPS 무시할 때만
       },
-    },
-    host : '0.0.0.0'
+    }
+    
   }
 })
