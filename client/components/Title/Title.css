@@ -1,9 +1,8 @@
 .headline {
-  /* border: 1px solid black; */
   margin-bottom: 10px;
   text-align: center;
   width: 100%;
-  height: fit-content; 
+  height: 65vh; 
   position: relative;
 }
 nav ol {
@@ -28,20 +27,16 @@ li img {
 }
 
 .title-section {
-  /* border: 1px solid black; */
   margin-bottom: 10px;
   text-align: center;
   width: 100%;
-  height: 20vh; 
+  height: 50vh;
+  max-width: 800px;
   position: relative;
   overflow: hidden; 
 }
 
-@media (min-width: 768px) {
-  .title-section {
-    height: 45vh; /* Slightly taller height for desktop */
-  }
-}
+
 
 .carousel-image {
   width: 100%;

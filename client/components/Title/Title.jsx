@@ -32,12 +32,8 @@ const Title = () => {
         setCurrentImageIndex(index);
     };
     return (
-    <div className="headline">
-        <div
-            className="title-section"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-        >
+    <div className='headline'>
+        <div className="title-section" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
             <img src={images[currentImageIndex]} alt="Carousel" className="carousel-image" />
             <div className="carousel-dots">
                 {images.map((_, index) => (
@@ -51,13 +47,14 @@ const Title = () => {
         </div>
         <nav>
             <ol>
-                <li><img src="../public/images/nav_icon_info.png" alt="info"/>
+                <li>
+                    <img src="../images/nav_icon_info.png" alt="info"/>
                 </li>
-                <li><Link to="https://www.animals.or.kr/support/intro"><img src="../public/images/nav_icon_donate.png" alt="info"/>
+                <li><Link to="https://www.animals.or.kr/support/intro"><img src="../images/nav_icon_donate.png" alt="info"/>
                     </Link></li>
-                <li><Link to="https://kipfri.com/index.php/campaign"><img src="../public/images/nav_icon_campaign.png" alt="info"/>
+                <li><Link to="https://kipfri.com/index.php/campaign"><img src="../images/nav_icon_campaign.png" alt="info"/>
                     </Link></li>
-                <li><Link to="https://likalika.com/"><img src="../public/images/nav_icon_store.png" alt="info"/>
+                <li><Link to="https://likalika.com/"><img src="../images/nav_icon_store.png" alt="info"/>
                     </Link></li>
                 
             </ol>
