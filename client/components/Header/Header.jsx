@@ -32,8 +32,8 @@ const Header = () => {
             <div className="imgFoot">
             <img src="/images/foot.png" alt="로고" width="40" />
             </div>
-            <span style={{color:'#EEDC52'}} className="logo-text">PAW </span>
-            <span style={{color:'#30CDB0'}} className="logo-text">PAW </span>
+            <span className="logo-text">PAW </span>
+            <span className="logo-text">PAW </span>
 
           </a>
         </div>

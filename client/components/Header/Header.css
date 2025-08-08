@@ -1,10 +1,10 @@
 
 
 .imgFoot {
-  border : 1px solid none;
-  border-radius: 90%;
+  border: none;
+  /* border-radius: 90%; */
   border-collapse: initial;
-  background: #F5D6A3;
+  /* background: #000000; */
 }
 /* .header-background{
   width: 100%;
@@ -18,7 +18,7 @@
   width: 100%;
   max-width: 800px; /* Adjust as needed for desktop */
   margin: 0 auto 10px auto; /* Center and add bottom margin */
-  background: #F2EDAE15;
+  background: #ffffff;
   padding: 0 10px; /* Add some horizontal padding */
   box-sizing: border-box;
   border-bottom: 1px solid black;
@@ -59,7 +59,6 @@
   display: flex;
   align-items: center;
   text-decoration: none;
-  color: #222;
 }
 
 .logo-text {
@@ -67,6 +66,7 @@
   font-weight: 900; /* Extra bold */
   margin-left: 10px;
   font-family: 'Arial Black', sans-serif;
+  color: #F89C1E;
 }
 
 .hamburger-menu {
