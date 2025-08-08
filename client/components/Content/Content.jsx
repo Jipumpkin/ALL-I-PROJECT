@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Content.css';
 import Title from '../Title/Title.jsx';
+import TopSix from '../TopSix/TopSix.jsx'
 const Content = ({children}) => {
 
   const fileInputRef1 = useRef(null);
@@ -50,6 +51,7 @@ const Content = ({children}) => {
   return (
     <div className="content-container">
       <Title></Title>
+      <TopSix></TopSix>
       </div>
   );
 };

@@ -48,14 +48,21 @@ const Title = () => {
         <nav>
             <ol>
                 <li>
-                    <img src="../images/nav_icon_info.png" alt="info"/>
+                    <Link to="https://www.animals.or.kr/support/intro"><img src="../images/nav_icon_info.png" alt="info"/></Link>
+                    소개
                 </li>
                 <li><Link to="https://www.animals.or.kr/support/intro"><img src="../images/nav_icon_donate.png" alt="info"/>
-                    </Link></li>
+                    </Link>
+                    소식
+                </li>
                 <li><Link to="https://kipfri.com/index.php/campaign"><img src="../images/nav_icon_campaign.png" alt="info"/>
-                    </Link></li>
+                    </Link>
+                    캠페인
+                </li>
                 <li><Link to="https://likalika.com/"><img src="../images/nav_icon_store.png" alt="info"/>
-                    </Link></li>
+                    </Link>
+                    애견샵
+                </li>
                 
             </ol>
         </nav>

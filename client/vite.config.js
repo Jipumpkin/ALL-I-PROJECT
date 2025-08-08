@@ -19,13 +19,7 @@ export default defineConfig({
         secure: true,  // https 검증 여부
         // 필요시 ws: true 추가 (웹소켓)
       },
-      // 클라이언트에서 "/xeicon"으로 시작하는 요청을 XEIcon CDN으로 전달
-      '/xeicon': {
-        target: 'https://cdn.jsdelivr.net/npm/xeicon@2.3.3',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/xeicon/, ''),
-        secure: true,  // https 인증서 검증 필요에 따라 변경
-    },
+      
   }
     
   }
