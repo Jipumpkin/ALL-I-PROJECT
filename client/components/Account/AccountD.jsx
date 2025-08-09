@@ -97,6 +97,7 @@ const AccountD = () => {
         <button type="submit" className={styles["confirm-btn"]}>본인확인</button>
       </form>
     </div>
+  )
 };
 
 export default AccountD;

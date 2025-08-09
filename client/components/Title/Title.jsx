@@ -23,7 +23,7 @@ const Title = () => {
         }, 3000); // Change image every 3 seconds
     
         return () => clearInterval(interval);
-      }, [images.length, isPaused]);
+      }, [isPaused]);
     const nextImage = () => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
      };
@@ -45,7 +45,7 @@ const Title = () => {
                 ))}
             </div>
         </div>
-        <nav>
+        <nav className={styles["nav"]}>
             <ol>
                 <li>
                     <Link to="https://www.animals.or.kr/support/intro"><img src="../images/nav_icon_info.png" alt="info"/></Link>
