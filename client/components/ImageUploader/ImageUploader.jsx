@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import './ImageUploader.css'; // 아래 CSS 파일을 import
+import styles from './ImageUploader.module.css'; // 아래 CSS 파일을 import
 
 const ImageUploader = () => {
   const [images, setImages] = useState([]); // { id, src }
@@ -47,12 +47,12 @@ const ImageUploader = () => {
   };
 
   return (
-    <div className="image-uploader">
+    <div className={styles["image-uploader"]}>
       <h4>맞춤형 배경 이미지 등록하기</h4>
 
       <div
         ref={dropRef}
-        className="drop-zone"
+        className={styles["drop-zone"]}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -62,16 +62,16 @@ const ImageUploader = () => {
           클릭하여 업로드하세요.</p>
       </div>
 
-      <div className="preview-container">
+      <div className={styles["preview-container"]}>
         {images.map((img) => (
-          <div key={img.id} className="preview-item">
+          <div key={img.id} className={styles["preview-item"]}>
             <img src={img.src} alt="업로드 이미지" />
-            <button className="remove-btn" onClick={() => handleRemove(img.id)}>×</button>
+            <button className={styles["remove-btn"]} onClick={() => handleRemove(img.id)}>×</button>
           </div>
         ))}
       </div>
     </div>
-  );
+  )
 };
 
 export default ImageUploader;

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './Title.css'
+import styles from './Title.module.css'
 import '../../public/font/font.css'
 const Title = () => {
     const images = [
@@ -32,30 +32,37 @@ const Title = () => {
         setCurrentImageIndex(index);
     };
     return (
-    <div className='headline'>
-        <div className="title-section" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
-            <img src={images[currentImageIndex]} alt="Carousel" className="carousel-image" />
-            <div className="carousel-dots">
+    <div className={styles['headline']}>
+        <div className={styles["title-section"]} onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
+            <img src={images[currentImageIndex]} alt="Carousel" className={styles["carousel-image"]} />
+            <div className={styles["carousel-dots"]}>
                 {images.map((_, index) => (
                     <div
                         key={index}
-                        className={`carousel-dot ${index === currentImageIndex ? 'active' : ''}`}
+                        className={`${styles["carousel-dot"]} ${index === currentImageIndex ? styles['active'] : ''}`}
                         onClick={() => goToImage(index)}
                     ></div>
                 ))}
             </div>
         </div>
-        <nav>
+        <nav className={styles["nav"]}>
             <ol>
                 <li>
-                    <img src="../images/nav_icon_info.png" alt="info"/>
+                    <Link to="https://www.animals.or.kr/support/intro"><img src="../images/nav_icon_info.png" alt="info"/></Link>
+                    소개
                 </li>
                 <li><Link to="https://www.animals.or.kr/support/intro"><img src="../images/nav_icon_donate.png" alt="info"/>
-                    </Link></li>
+                    </Link>
+                    소식
+                </li>
                 <li><Link to="https://kipfri.com/index.php/campaign"><img src="../images/nav_icon_campaign.png" alt="info"/>
-                    </Link></li>
+                    </Link>
+                    캠페인
+                </li>
                 <li><Link to="https://likalika.com/"><img src="../images/nav_icon_store.png" alt="info"/>
-                    </Link></li>
+                    </Link>
+                    애견샵
+                </li>
                 
             </ol>
         </nav>
