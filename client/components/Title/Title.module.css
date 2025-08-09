@@ -1,11 +1,15 @@
 .headline {
   margin-top: 15px; /* 헤더와의 간격 추가 */
-  margin-bottom: 10px;
+  margin-bottom: 40px;
   text-align: center;
   width: 100%;
-  height: 65vh; 
   position: relative;
 }
+
+.nav {
+  margin-top: 20px;
+}
+
 nav ol {
     display: flex;
     justify-content: space-evenly;
@@ -29,21 +33,22 @@ li img {
 }
 
 .title-section {
-  margin-bottom: 10px;
+  margin-bottom: 30px;
   text-align: center;
   width: 100%;
-  height: 50vh;
   max-width: 800px;
   position: relative;
-  overflow: hidden; 
+  overflow: hidden;
+  margin-left: auto;
+  margin-right: auto;
+  aspect-ratio: 16 / 9;
 }
-
-
 
 .carousel-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .carousel-dots {
