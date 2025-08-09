@@ -121,5 +121,6 @@ const sendData = async (event) => {
         <button type="submit">가입하기</button>
       </form>
     </div>
-
+  );
+}
 export default Register;
