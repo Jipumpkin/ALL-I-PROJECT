@@ -12,15 +12,14 @@ const Header = () => {
   return (
     <>
       <header className={styles["header"]}>
-        <div className={styles["logo"]}>
-          <a href="/">
-            <div className={styles["imgFoot"]}>
-              <img src="/images/foot.png" alt="로고" width="40" />
-            </div>
-            <span className={styles["logo-text"]}>PAW </span>
-            <span className={styles["logo-text"]}>PAW </span>
-          </a>
+        <div>
+          <span className={styles["imgFoot"]}>
+            <img src="/images/foot.png" alt="로고" width="40" />
+          </span>
         </div>
+        <a href="/">
+          <span className={styles["logo-text"]}>PAWPAW </span>
+        </a>
         {/* 햄버거 메뉴 클릭 시 모달 토글 */}
         <div
           className={`${styles["hamburger-menu"]} ${

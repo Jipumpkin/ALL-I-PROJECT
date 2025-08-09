@@ -12,23 +12,11 @@
   border-bottom: 2px solid rgb(212, 212, 212);
 }
 
-.imgFoot {
-  border: none;
-  /* border-radius: 90%; */
-  border-collapse: initial;
-  /* background: #000000; */
-}
-/* .header-background{
-  width: 100%;
-  height: 84px;
-} */
-.logo a {
-  display: flex;
-  align-items: center;
+.header a {
   text-decoration: none;
 }
 
-.center-title {
+.logo-text {
   font-size: 28px;
   font-weight: 900; /* Extra bold */
   margin-left: 10px;
