@@ -14,7 +14,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   width: 350px;
-  padding: 40px 30px;
+  padding: 10px 5px;
   background-color: white;
   border-radius: 15px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -35,7 +35,7 @@
 }
 
 .modal-content h2 {
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   font-size: 24px;
   font-weight: bold;
 }
@@ -83,7 +83,11 @@
 
 .modal-links span {
   cursor: pointer;
-  padding: 0 5px;
+  display: flex;
+  flex-direction: row;
+  font-size: small;
+  padding: auto 0;
+  margin-bottom: 30px;
 }
 
 .modal-links span:hover {

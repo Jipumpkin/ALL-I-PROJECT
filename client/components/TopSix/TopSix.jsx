@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import './TopSix.css';
+import styles from './TopSix.module.css';
 import '../../public/font/font.css';
 import { FaArrowRightLong, FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
@@ -13,8 +13,8 @@ const TopSix = () => {
   };
 
   return (
-    <div className="info-list-section">
-      <div className="navtopbar" style={{ display: 'flex', justifyContent: 'space-between', margin: '15px'}}>
+    <div className={styles["info-list-section"]}>
+      <div className={styles["navtopbar"]} style={{ display: 'flex', justifyContent: 'space-between', margin: '15px'}}>
       <span style={{ fontFamily: 'Ownglyph_meetme-Rg', fontSize: '25px' }}>
         가장 오래 기다린 용감한 아이들
       </span>
@@ -23,16 +23,16 @@ const TopSix = () => {
         <FaArrowRightLong style={{ marginLeft: '5px' }} />
       </span>
       </div>
-      <div className="scroll-wrapper">
-        <button className="scroll-button left" onClick={() => scroll(-200)}><FaChevronLeft /></button>
-        <div className="info-list" ref={scrollContainerRef}>
+      <div className={styles["scroll-wrapper"]}>
+        <button className={`${styles["scroll-button"]} ${styles["left"]}`} onClick={() => scroll(-200)}><FaChevronLeft /></button>
+        <div className={styles["info-list"]} ref={scrollContainerRef}>
           {[...Array(50)].map((_, index) => (
-            <div key={index} className="info-item">
+            <div key={index} className={styles["info-item"]}>
               <img src="/images/unknown_animal.png" alt={`정보 ${index + 1}`} />
             </div>
           ))}
         </div>
-        <button className="scroll-button right" onClick={() => scroll(200)}><FaChevronRight /></button>
+        <button className={`${styles["scroll-button"]} ${styles["right"]}`} onClick={() => scroll(200)}><FaChevronRight /></button>
       </div>
     </div>
   );

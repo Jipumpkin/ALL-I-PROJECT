@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './Title.css'
+import styles from './Title.module.css'
 import '../../public/font/font.css'
 const Title = () => {
     const images = [
@@ -32,14 +32,14 @@ const Title = () => {
         setCurrentImageIndex(index);
     };
     return (
-    <div className='headline'>
-        <div className="title-section" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
-            <img src={images[currentImageIndex]} alt="Carousel" className="carousel-image" />
-            <div className="carousel-dots">
+    <div className={styles['headline']}>
+        <div className={styles["title-section"]} onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
+            <img src={images[currentImageIndex]} alt="Carousel" className={styles["carousel-image"]} />
+            <div className={styles["carousel-dots"]}>
                 {images.map((_, index) => (
                     <div
                         key={index}
-                        className={`carousel-dot ${index === currentImageIndex ? 'active' : ''}`}
+                        className={`${styles["carousel-dot"]} ${index === currentImageIndex ? styles['active'] : ''}`}
                         onClick={() => goToImage(index)}
                     ></div>
                 ))}

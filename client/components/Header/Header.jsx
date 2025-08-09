@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Header.css';
+import styles from './Header.module.css';
 import LoginModal from '../LoginModal/LoginModal'; // LoginModal 컴포넌트 import
 
 const Header = () => {
@@ -11,21 +11,21 @@ const Header = () => {
 
   return (
     <>
-      <header className="header">
-        <div className="logo">
+            <header className={styles["header"]}>
+        <div className={styles["logo"]}>
           <a href="/">
-            <div className="imgFoot">
+            <div className={styles["imgFoot"]}>
               <img src="/images/foot.png" alt="로고" width="40" />
             </div>
-            <span className="logo-text">PAW </span>
-            <span className="logo-text">PAW </span>
+            <span className={styles["logo-text"]}>PAW </span>
+            <span className={styles["logo-text"]}>PAW </span>
           </a>
         </div>
         {/* 햄버거 메뉴 클릭 시 모달 토글 */}
-        <div className={`hamburger-menu ${isModalOpen ? 'active' : ''}`} onClick={toggleModal}>
-          <div className="bar"></div>
-          <div className="bar"></div>
-          <div className="bar"></div>
+        <div className={`${styles["hamburger-menu"]} ${isModalOpen ? styles['active'] : ''}`} onClick={toggleModal}>
+          <div className={styles["bar"]}></div>
+          <div className={styles["bar"]}></div>
+          <div className={styles["bar"]}></div>
         </div>
       </header>
 

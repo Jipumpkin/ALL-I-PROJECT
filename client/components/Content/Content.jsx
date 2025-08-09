@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './Content.css';
+import styles from './Content.module.css';
 import Title from '../Title/Title.jsx';
 import TopSix from '../TopSix/TopSix.jsx'
 const Content = ({children}) => {
@@ -49,7 +49,7 @@ const Content = ({children}) => {
   };
 
   return (
-    <div className="content-container">
+    <div className={styles["content-container"]}>
       <Title></Title>
       <TopSix></TopSix>
       </div>
