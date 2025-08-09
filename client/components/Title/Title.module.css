@@ -1,4 +1,5 @@
 .headline {
+  margin-top: 15px; /* 헤더와의 간격 추가 */
   margin-bottom: 10px;
   text-align: center;
   width: 100%;
@@ -13,7 +14,8 @@ nav ol {
 }
 ol li {
     list-style-type:none;
-    display: inline;
+    display: flex;
+    flex-direction: column;
 }
 ol p {
     font-family: 'Ownglyph_meetme-Rg';

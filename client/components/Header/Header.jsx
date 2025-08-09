@@ -1,55 +1,36 @@
 import React, { useState } from 'react';
-import { useMediaQuery } from 'react-responsive';
-import './Header.css';
-import { useNavigate } from 'react-router-dom';
+import styles from './Header.module.css';
+import LoginModal from '../LoginModal/LoginModal'; // LoginModal 컴포넌트 import
 
 const Header = () => {
-  const nav = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-    console.log("toggleMenu");
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 관리
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
   };
-
-  const toggleLogin = () => {
-    console.log("Login");
-    nav("/login");
-    setIsMenuOpen(false);
-  }
-  const toggleJoin = () => {
-    console.log("Join");
-    nav("/register");
-    setIsMenuOpen(false);
-  }
-
-  
 
   return (
     <>
-      <header className="header">
-        <div className="logo">
+            <header className={styles["header"]}>
+        <div className={styles["logo"]}>
           <a href="/">
-            <div className="imgFoot">
-            <img src="/images/foot.png" alt="로고" width="40" />
+            <div className={styles["imgFoot"]}>
+              <img src="/images/foot.png" alt="로고" width="40" />
             </div>
-            <span className="logo-text">PAW </span>
-            <span className="logo-text">PAW </span>
-
+            <span className={styles["logo-text"]}>PAW </span>
+            <span className={styles["logo-text"]}>PAW </span>
           </a>
         </div>
-        <div className={`hamburger-menu ${isMenuOpen ? 'active' : ''}`} onClick={toggleMenu}>
-          <div className="bar"></div>
-          <div className="bar"></div>
-          <div className="bar"></div>
+        {/* 햄버거 메뉴 클릭 시 모달 토글 */}
+        <div className={`${styles["hamburger-menu"]} ${isModalOpen ? styles['active'] : ''}`} onClick={toggleModal}>
+          <div className={styles["bar"]}></div>
+          <div className={styles["bar"]}></div>
+          <div className={styles["bar"]}></div>
         </div>
       </header>
-      {/* <div className="header-background"></div> */}
-      <nav className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
-          <ul style={{display:'flex', flexDirection:'column'}}>
-            <li><a href="#" onClick={toggleLogin}>로그인</a></li>
-            <li><a href="#" onClick={toggleJoin}>회원가입</a></li>
-          </ul>
-        </nav>
+
+      {/* isModalOpen이 true일 때 LoginModal 렌더링 */}
+      {isModalOpen && <LoginModal setIsOpen={setIsModalOpen} />}
     </>
   );
 };

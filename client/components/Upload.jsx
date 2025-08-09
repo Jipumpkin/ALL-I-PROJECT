@@ -1,17 +1,18 @@
 import React from 'react'
-import './Upload.css'
+import styles from './Upload.module.css'
 const Upload = () => {
   return (
-    <div className="upload-section">
+    return (
+    <div className={styles["upload-section"]}>
         <div
-          className="upload-box upload-file-box"
+          className={`${styles["upload-box"]} ${styles["upload-file-box"]}`}
           onDragOver={handleDragOver}
           onDrop={(e) => handleDrop(e, setUploadedImage1)}
         >
           {uploadedImage1 ? (
             <>
               <img src={uploadedImage1} alt="Uploaded" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <button className="clear-image-button" onClick={() => clearImage(setUploadedImage1)}>X</button>
+              <button className={styles["clear-image-button"]} onClick={() => clearImage(setUploadedImage1)}>X</button>
             </>
           ) : (
             <>
@@ -24,14 +25,14 @@ const Upload = () => {
           <input type="file" ref={fileInputRef1} style={{display:'none'}} onChange={(e) => handleFileChange(e, setUploadedImage1)} />
         </div>
         <div
-          className="upload-box upload-file-box"
+          className={`${styles["upload-box"]} ${styles["upload-file-box"]}`}
           onDragOver={handleDragOver}
           onDrop={(e) => handleDrop(e, setUploadedImage2)}
         >
           {uploadedImage2 ? (
             <>
               <img src={uploadedImage2} alt="Uploaded" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <button className="clear-image-button" onClick={() => clearImage(setUploadedImage2)}>X</button>
+              <button className={styles["clear-image-button"]} onClick={() => clearImage(setUploadedImage2)}>X</button>
             </>
           ) : (
             <>
