@@ -45,7 +45,7 @@ const Title = () => {
                 ))}
             </div>
         </div>
-        <nav>
+        <nav className={styles["nav"]}>
             <ol>
                 <li>
                     <Link to="https://www.animals.or.kr/support/intro"><img src="../images/nav_icon_info.png" alt="info"/></Link>

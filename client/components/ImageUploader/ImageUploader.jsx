@@ -71,6 +71,7 @@ const ImageUploader = () => {
         ))}
       </div>
     </div>
+  )
 };
 
 export default ImageUploader;

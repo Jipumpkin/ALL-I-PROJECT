@@ -1,58 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import styles from './Content.module.css';
 import Title from '../Title/Title.jsx';
-import TopSix from '../TopSix/TopSix.jsx'
-const Content = ({children}) => {
+import TopSix from '../TopSix/TopSix.jsx';
+import Upload from '../Upload.jsx'; // Upload 컴포넌트 import
 
-  const fileInputRef1 = useRef(null);
-  const fileInputRef2 = useRef(null);
-  const [uploadedImage1, setUploadedImage1] = useState(null);
-  const [uploadedImage2, setUploadedImage2] = useState(null);
-
-
-
-  const handleFileButtonClick = (ref) => {
-    ref.current.click();
-  };
-
-  const handleFileChange = (event, setImage) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleDrop = (event, setImage) => {
-    event.preventDefault();
-    event.stopPropagation();
-    const file = event.dataTransfer.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleDragOver = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-  };
-
-  const clearImage = (setImage) => {
-    setImage(null);
-  };
-
+const Content = () => {
   return (
     <div className={styles["content-container"]}>
-      <Title></Title>
-      <TopSix></TopSix>
-      </div>
+      <Title />
+      <TopSix />
+      <Upload /> {/* Upload 컴포넌트 사용 */}
+    </div>
   );
 };
 
