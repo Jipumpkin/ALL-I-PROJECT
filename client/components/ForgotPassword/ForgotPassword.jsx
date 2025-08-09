@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './ForgotPassword.module.css';
+import { Link } from 'react-router-dom';
 
 const ForgotPassword = () => {
   return (
@@ -30,7 +31,7 @@ const ForgotPassword = () => {
             </div>
             <button type="submit" className={styles["find-pw-button"]}>비밀번호 찾기</button>
             <div className={styles['login-links']}>
-              <a href='/login'>로그인하기</a>
+              <Link to='/login'>로그인하기</Link>
             </div>
           </form>
         </div>
