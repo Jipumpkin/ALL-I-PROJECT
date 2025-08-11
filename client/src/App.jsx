@@ -26,7 +26,7 @@ function App() {
           <Route path="/forgot-id" element={<ForgotId />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/account-delete" element={<AccountD />} />
-          <Route path="/maker" element={<Maker />} />
+          <Route path="/maker " element={<Maker />} />
         </Routes>
       </div>
       <Footer></Footer>
