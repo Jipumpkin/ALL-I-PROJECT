@@ -12,6 +12,7 @@ import Login from '../components/Login/Login'
 import ForgotId from '../components/ForgotId/ForgotId'
 import ForgotPassword from '../components/ForgotPassword/ForgotPassword'
 import AccountD from '../components/Account/AccountD'
+import Maker from '../components/Maker/Maker'
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
       <div className="main-content">
         <Routes>
           {/* 첫 화면 */}
-          <Route path="/" element={<Main />} />
+          <Route path="/" element={<Maker />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-id" element={<ForgotId />} />
