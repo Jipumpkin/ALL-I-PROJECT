@@ -1,203 +1,223 @@
 /* Maker.module.css */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
 
 .body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f7fafc;
-    padding: 1rem;
+  font-family: "Inter", sans-serif;
+  background-color: #f7fafc;
+  padding: 1rem;
 }
 
 .mainContainer {
-    max-width: 28rem;
-    margin: auto;
-    background-color: #ffffff;
-    padding: 1.5rem;
-    border-radius: 1.5rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  max-width: 28rem;
+  margin: auto;
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
+/* 이미지 영역 */
 .petImagePlaceholder,
 .userImageContainer {
-    width: 100%;
-    height: 12rem;
-    background-color: #e2e8f0;
-    border-radius: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: #6b7280;
-    font-weight: 700;
-    border: 2px dashed #d1d5db;
-    margin-bottom: 1.5rem;
+  width: 100%;
+  height: 12rem;
+  background-color: #e2e8f0;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #6b7280;
+  font-weight: 700;
+  border: 2px dashed #d1d5db;
+  margin-bottom: 1.5rem;
 }
 
 .userImageContainer {
-    position: relative;
-    cursor: pointer;
+  position: relative;
+  cursor: pointer;
 }
 
 .userImageText {
-    font-weight: 700;
+  font-weight: 700;
 }
 
 .userImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 1rem;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1rem;
 }
 
+/* 아이콘 바 (3등분 + 세로 구분선) */
 .iconButtonsContainer {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    gap: 1rem;
+  display: flex;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: #ffffff;
+  margin-bottom: 1.5rem;
 }
 
 .iconButton {
-    flex: 1;
-    padding: 0.75rem 1rem;
-    background-color: #ffffff;
-    color: #10b981;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    transition: all 0.05s ease-in-out;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px; /* 필요 시 높이 조절 */
+  cursor: pointer;
+  background: #ffffff;
+  color: #10b981; /* 아이콘 컬러 */
+  transition: background-color 0.15s ease, transform 0.05s ease;
+  padding: 0;
+  border: none;
+}
+
+.iconButton + .iconButton {
+  border-left: 1px solid #e5e7eb; /* 세로 구분선 */
 }
 
 .iconButton:hover {
-    background-color: #d1fae5;
+  background-color: #ecfdf5;
+}
+
+.iconButton:active {
+  transform: translateY(1px);
+}
+
+/* SVG/IMG 아이콘 크기 통일 */
+.iconButton svg,
+.iconButton img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }
 
 /* Modal Styling */
 .imageModalOverlay {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-color: rgba(107, 114, 128, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    z-index: 50;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(107, 114, 128, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 50;
 }
 
 .imageModal {
-    background-color: #ffffff;
-    padding: 1.5rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    width: 100%;
-    max-width: 24rem;
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  max-width: 24rem;
 }
 
 .modalTitle {
-    font-size: 1.125rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
 }
 
-.modalOptionButton, .modalCloseButton {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    transition: background-color 0.2s;
-    font-weight: 500;
+.modalOptionButton,
+.modalCloseButton {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+  font-weight: 500;
 }
 
 .modalOptionButton.primary {
-    background-color: #3b82f6;
-    color: #ffffff;
-    margin-bottom: 0.5rem;
+  background-color: #3b82f6;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
 }
 
 .modalOptionButton.primary:hover {
-    background-color: #2563eb;
+  background-color: #2563eb;
 }
 
 .modalOptionButton.secondary {
-    background-color: #10b981;
-    color: #ffffff;
-    margin-bottom: 0.5rem;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  background-color: #10b981;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .modalOptionButton.secondary:hover {
-    background-color: #059669;
+  background-color: #059669;
 }
 
 .modalOptionButton.tertiary {
-    background-color: #6b7280;
-    color: #ffffff;
+  background-color: #6b7280;
+  color: #ffffff;
 }
 
 .modalOptionButton.tertiary:hover {
-    background-color: #4b5563;
+  background-color: #4b5563;
 }
 
 .modalCloseButton {
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
-    color: #4b5563;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  color: #4b5563;
 }
 
 .modalCloseButton:hover {
-    color: #111827;
+  color: #111827;
 }
 
 /* Table Styling */
 .infoTableContainer {
-    border: 1px solid #e5e7eb;
-    border-radius: 1rem;
-    overflow: hidden;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .infoTable {
-    min-width: 100%;
-    border-collapse: collapse;
-    background-color: #ffffff;
+  min-width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
 }
 
 .infoTable thead {
-    background-color: #f9fafb;
+  background-color: #f9fafb;
 }
 
 .infoTable thead tr {
-    border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .tableHeader {
-    padding: 0.75rem 1rem;
-    text-align: left;
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: #374151;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .tableCellKey {
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
-    color: #1f2937;
-    font-weight: 600;
-    width: 33.333333%;
-    border-right: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #1f2937;
+  font-weight: 600;
+  width: 33.333333%;
+  border-right: 1px solid #e5e7eb;
 }
 
 .tableCellValue {
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
-    color: #4b5563;
-    width: 66.666667%;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #4b5563;
+  width: 66.666667%;
 }
