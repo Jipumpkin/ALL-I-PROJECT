@@ -1,18 +1,17 @@
-
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import {Route, Routes} from 'react-router-dom'
-import Header from '../components/Header/Header'
-import Footer from '../components/Footer/Footer'
-import Main from '../components/Main/Main'
-import Register from '../components/Register/Register'
-import Login from '../components/Login/Login'
-import ForgotId from '../components/ForgotId/ForgotId'
-import ForgotPassword from '../components/ForgotPassword/ForgotPassword'
-import AccountD from '../components/Account/AccountD'
-import Maker from '../components/Maker/Maker'
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
+import { Route, Routes } from "react-router-dom";
+import Header from "../components/Header/Header";
+import Footer from "../components/Footer/Footer";
+import Main from "../components/Main/Main";
+import Register from "../components/Register/Register";
+import Login from "../components/Login/Login";
+import ForgotId from "../components/ForgotId/ForgotId";
+import ForgotPassword from "../components/ForgotPassword/ForgotPassword";
+import AccountD from "../components/Account/AccountD";
+import Maker from "../components/Maker/Maker";
 
 function App() {
   return (
@@ -21,12 +20,13 @@ function App() {
       <div className="main-content">
         <Routes>
           {/* 첫 화면 */}
-          <Route path="/" element={<Maker />} />
+          <Route path="/" element={<Main />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-id" element={<ForgotId />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path='/account-delete' element={<AccountD />} />
+          <Route path="/account-delete" element={<AccountD />} />
+          <Route path="/maker" element={<Maker />} />
         </Routes>
       </div>
       <Footer></Footer>
