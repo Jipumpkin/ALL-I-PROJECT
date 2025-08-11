@@ -1,9 +1,33 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from './Maker.module.css';
 
 const Maker = () => {
   const [userImageUrl, setUserImageUrl] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [buttonStyle, setButtonStyle] = useState({});
+  const imageContainerRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        const { height } = entry.contentRect;
+        setButtonStyle({
+          height: `${height / 5}px`,
+          padding: '0.25rem'
+        });
+      }
+    });
+
+    if (imageContainerRef.current) {
+      observer.observe(imageContainerRef.current);
+    }
+
+    return () => {
+      if (imageContainerRef.current) {
+        observer.unobserve(imageContainerRef.current);
+      }
+    };
+  }, []);
 
   // Function to handle image change
   const handleImageChange = (url) => {
@@ -33,19 +57,20 @@ const Maker = () => {
 
       {/* 아이콘 버튼 3개 */}
       <div className={styles.iconButtonsContainer}>
-        <button className={styles.iconButton}>
-          <i className="fa-solid fa-dog text-2xl"></i>
+        <button className={styles.iconButton} style={buttonStyle}>
+          <img src="/images/image.png" alt="dog icon" style={{ width: '95%', height: '95%', objectFit: 'contain' }} />
         </button>
-        <button className={styles.iconButton}>
+        <button className={styles.iconButton} style={buttonStyle}>
           <i className="fa-solid fa-paw text-2xl"></i>
         </button>
-        <button className={styles.iconButton}>
+        <button className={styles.iconButton} style={buttonStyle}>
           <i className="fa-solid fa-ruler-horizontal text-2xl"></i>
         </button>
       </div>
 
       {/* 사용자 이미지 영역 */}
       <div
+        ref={imageContainerRef}
         className={styles.userImageContainer}
         onClick={() => setShowModal(true)}
       >
