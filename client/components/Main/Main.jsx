@@ -1,14 +1,12 @@
 import React from 'react'
 import Content from '../Content/Content.jsx'
-import './Main.css'
-// import './Main.css'
+import styles from './Main.module.css'
+
 const Main = () => {
   return (
-    <div className='main-Container'>
+    <div className={styles['main-Container']}>
         <Content>
         </Content>
-
-        
     </div>
   )
 }

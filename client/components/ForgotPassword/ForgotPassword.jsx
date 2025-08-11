@@ -1,22 +1,23 @@
 import React from 'react';
-import './ForgotPassword.css';
+import styles from './ForgotPassword.module.css';
+import { Link } from 'react-router-dom';
 
 const ForgotPassword = () => {
   return (
-    <div className="forgot-password-container">
-      <div className="forgot-password-box">
-        <div className="forgot-password-form">
+    <div className={styles["forgot-password-container"]}>
+      <div className={styles["forgot-password-box"]}>
+        <div className={styles["forgot-password-form"]}>
           <h2>비밀번호 찾기</h2>
           <form>
-            <div className="input-group">
+            <div className={styles["input-group"]}>
               <label htmlFor="name">이름</label>
               <input type="text" id="name" name="name" placeholder="이름을 입력해주세요" />
             </div>
-            <div className="input-group">
+            <div className={styles["input-group"]}>
               <label htmlFor="id">아이디</label>
               <input type="text" id="id" name="id" placeholder="아이디를 입력해주세요" />
             </div>
-            <div className="input-group">
+            <div className={styles["input-group"]}>
               <label htmlFor="phone">연락처</label>
               <input
                 type="tel"
@@ -28,9 +29,9 @@ const ForgotPassword = () => {
                 }}
               />
             </div>
-            <button type="submit" className="find-pw-button">비밀번호 찾기</button>
-            <div className='login-links'>
-              <a href='/login'>로그인하기</a>
+            <button type="submit" className={styles["find-pw-button"]}>비밀번호 찾기</button>
+            <div className={styles['login-links']}>
+              <Link to='/login'>로그인하기</Link>
             </div>
           </form>
         </div>
