@@ -13,6 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/animals', require('./routes/animalRoutes'));
 app.use('/api/shelters', require('./routes/shelterRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
 
 app.get('/', (req, res) => {
     res.json({ message: 'ALL-I-PROJECT Backend Server Running' });
