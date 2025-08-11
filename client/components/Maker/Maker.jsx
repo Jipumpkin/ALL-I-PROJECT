@@ -57,15 +57,23 @@ const Maker = () => {
         <button className={styles.iconButton} style={buttonStyle}>
           <img
             src="/images/ShowerBut.png"
-            alt="dog icon"
+            alt="shower icon"
             style={{ width: "95%", height: "95%", objectFit: "contain" }}
           />
         </button>
         <button className={styles.iconButton} style={buttonStyle}>
-          <i className="fa-solid fa-paw text-2xl"></i>
+          <img
+            src="/images/Bob.png"
+            alt="food icon"
+            style={{ width: "95%", height: "95%", objectFit: "contain" }}
+          />
         </button>
         <button className={styles.iconButton} style={buttonStyle}>
-          <i className="fa-solid fa-ruler-horizontal text-2xl"></i>
+          <img
+            src="/images/pretty.png"
+            alt="grooming icon"
+            style={{ width: "95%", height: "95%", objectFit: "contain" }}
+          />
         </button>
       </div>
 
