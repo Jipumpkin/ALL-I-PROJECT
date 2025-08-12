@@ -28,7 +28,7 @@
 .find-id-button {
   width: 100%;
   padding: 12px;
-  background-color: #1877f2;
+  background-color: #F89C1E;
   color: white;
   border: none;
   border-radius: 6px;
@@ -39,17 +39,20 @@
 }
 
 .find-id-button:hover {
-  background-color: #166fe5;
+  background-color: #F89C1E;
 }
 
 .login-links {
+  margin-top: 20px;
   display: flex;
-  justify-content: flex-end;  /* 오른쪽 정렬 */
-  margin-top: 16px;
+  justify-content: center;
+  gap: 15px;
+  font-size: 14px;
+  color: #555;
 }
 
 .login-links a {
-  color: #1877f285;  /* 연한 파란색 */
+  color: #F89C1E;  /* 연한 파란색 */
   text-decoration: none;
   font-size: 14px;
 }
