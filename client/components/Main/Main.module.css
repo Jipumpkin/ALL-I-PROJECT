@@ -1,0 +1,14 @@
+.main-Container {
+    display: flex;
+    justify-content:space-evenly;
+    align-items: start;
+    min-height: 50vh;
+    width: 100%;
+    max-width: 800px; /* Adjust as needed for desktop */
+    margin: 0 auto; /* Center the container */
+    /* cursor: url('../public/images/bone.png'), auto; */
+}
+
+body {
+    margin: 0;
+}

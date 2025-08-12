@@ -1,0 +1,37 @@
+body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: sans-serif;
+  overflow-x: hidden; /* 가로 스크롤바 제거 */
+}
+
+/* 커스텀 커서 설정 - cursor.png 이미지 사용 */
+body, html {
+  cursor: url('/images/cursor.png') 12 12, auto;
+}
+
+/* 모든 요소에 동일한 커서 적용 */
+* {
+  cursor: inherit;
+}
+
+/* 클릭 가능한 요소들만 포인터 스타일 */
+button, a, input[type="submit"], input[type="button"], .clickable {
+  cursor: url('/images/cursor.png') 12 12, pointer;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* 전체 화면 높이 */
+}
+
+.main-content {
+  flex: 1; 
+  overflow-y: auto;
+  overflow-x: hidden; /* 가로 스크롤바 제거 */
+  width: 100%;
+  box-sizing: border-box;
+}

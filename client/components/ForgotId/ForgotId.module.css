@@ -1,0 +1,87 @@
+.forgot-id-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 120px);
+  background-color: white;
+  padding: 20px;
+}
+
+.forgot-id-box {
+  background-color: white;
+  flex-direction: column;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  max-width: 450px;
+  width: 100%;
+  padding: 40px;
+}
+
+h2 {
+  margin-bottom: 24px;
+  font-size: 24px;
+  color: #1c1e21;
+  text-align: center;
+}
+
+.find-id-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #F89C1E;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.find-id-button:hover {
+  background-color: #E67E22;
+}
+
+.login-links {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  font-size: 14px;
+  color: #555;
+}
+
+.input-group {
+  margin-bottom: 16px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #606770;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #dddfe2;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.input-group input:focus {
+  border-color: #F89C1E;
+  outline: none;
+}
+
+.login-links a {
+  color: #F89C1E;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.login-links a:hover {
+  text-decoration: underline;
+}
