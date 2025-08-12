@@ -75,8 +75,16 @@ ADDED_FILES=$(git show --name-status --pretty="" $COMMIT_HASH | grep "^A" | cut 
 MODIFIED_FILES=$(git show --name-status --pretty="" $COMMIT_HASH | grep "^M" | cut -f2- || true)
 DELETED_FILES=$(git show --name-status --pretty="" $COMMIT_HASH | grep "^D" | cut -f2- || true)
 
+# 기능명 정리 (특수문자 제거, 한글 안전 처리)
+CLEAN_FEATURE_NAME=$(echo "$FEATURE_NAME" | sed 's/[^a-zA-Z0-9가-힣_-]/-/g' | sed 's/--*/-/g' | sed 's/^-\|-$//g')
+
+# 빈 문자열 방지
+if [ -z "$CLEAN_FEATURE_NAME" ]; then
+    CLEAN_FEATURE_NAME="unnamed-feature"
+fi
+
 # 문서 파일 경로
-DOC_FILE="docs/commits/${DATE}-${FEATURE_NAME}.md"
+DOC_FILE="docs/commits/${DATE}-${CLEAN_FEATURE_NAME}.md"
 
 print_info "문서를 생성합니다: ${DOC_FILE}"
 
