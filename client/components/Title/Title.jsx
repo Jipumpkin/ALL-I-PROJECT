@@ -23,7 +23,7 @@ const Title = () => {
         }, 3000); // Change image every 3 seconds
     
         return () => clearInterval(interval);
-      }, [images.length, isPaused]);
+      }, [isPaused]);
     const nextImage = () => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
      };
