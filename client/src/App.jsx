@@ -13,6 +13,7 @@ import ForgotId from "../components/ForgotId/ForgotId";
 import ForgotPassword from "../components/ForgotPassword/ForgotPassword";
 import AccountD from "../components/Account/AccountD";
 import Maker from "../components/Maker/Maker";
+import MakerResult from "../components/MakerResult/MakerResult";
 import MyAccount from "../components/MyAccount/MyAccount";
 import AdoptionHistory from "../components/AdoptionHistory/AdoptionHistory";
 import NotFound from "../components/NotFound/NotFound";
@@ -25,6 +26,7 @@ function App() {
         <Routes>
           {/* 첫 화면 */}
           <Route path="/maker" element={<Maker />} />
+          <Route path="/maker/result" element={<MakerResult />} />
           <Route path="/" element={<Main />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
