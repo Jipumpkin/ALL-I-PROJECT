@@ -1,103 +1,136 @@
 .accountd-container {
-  padding: 2rem;
-  max-width: 500px;
-  margin: 0 auto;
-  font-family: 'Arial', sans-serif;
-  color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 120px);
+  background-color: white;
+  padding: 20px;
 }
 
 .accountd-title {
   text-align: center;
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
+  font-size: 24px;
+  margin-bottom: 24px;
+  color: #1c1e21;
 }
 
 .accountd-box {
-  background-color: #dff7f3;
+  background-color: white;
   border-radius: 10px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  margin-bottom: 24px;
   text-align: center;
   line-height: 1.6;
+  width: 100%;
+  max-width: 450px;
 }
 
 .notice-title {
-  font-weight: bold;
-  color: #444;
-  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #1c1e21;
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+.notice-list {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
 }
 
 .notice-list p {
-  margin: 0.3rem 0;
-  font-size: 0.95rem;
+  margin: 8px 0;
+  font-size: 14px;
   text-align: left;
+  color: #606770;
 }
 
 .thank-you {
-  margin-top: 1rem;
-  font-size: 0.95rem;
-  color: #333;
+  margin-top: 16px;
+  font-size: 14px;
+  color: #606770;
+  font-style: italic;
 }
 
 .verify-info-bold {
-  font-size: 1rem;
-  font-weight: bold;
+  font-size: 16px;
+  font-weight: 600;
   text-align: center;
-  margin-bottom: 1.5rem;
-  color: #333;
+  margin-bottom: 24px;
+  color: #1c1e21;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 100%;
+  max-width: 450px;
 }
 
 .accountd-form {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 16px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 450px;
 }
 
 .accountd-form label {
-  font-weight: bold;
-  margin-bottom: 0.2rem;
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #606770;
 }
 
 .accountd-form input,
 .accountd-form select {
-  padding: 0.5rem;
-  border: 1px solid #aaa;
-  border-radius: 5px;
-  font-size: 1rem;
-  transition: border 0.3s, box-shadow 0.3s;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #dddfe2;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.2s ease;
 }
 
 .accountd-form input:focus,
 .accountd-form select:focus {
   outline: none;
-  border-color: #00c8b3;
-  box-shadow: 0 0 4px rgba(0, 200, 179, 0.4);
+  border-color: #F89C1E;
+  box-shadow: 0 0 0 2px rgba(248, 156, 30, 0.2);
 }
 
 .confirm-btn {
-  background-color: #00c8b3;
+  width: 100%;
+  padding: 12px;
+  background-color: #dc3545;
   color: white;
-  padding: 0.7rem;
   border: none;
-  border-radius: 5px;
-  font-size: 1rem;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 600;
   cursor: pointer;
-  margin-top: 0.5rem;
-  transition: background-color 0.3s, transform 0.1s;
+  margin-top: 8px;
+  transition: background-color 0.2s ease;
 }
 
 .confirm-btn:hover {
-  background-color: #00b0a0;
-}
-
-.confirm-btn:active {
-  transform: scale(0.98);
+  background-color: #c82333;
 }
 
 .error {
-  color: red;
-  font-size: 0.85rem;
-  margin-top: -0.3rem;
+  color: #c33;
+  font-size: 14px;
+  margin-top: 4px;
+  background-color: #fee;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #fcc;
 }
 
 .animate-fadein {
@@ -116,17 +149,33 @@
 }
 
 /* 모바일 대응 */
-@media (max-width: 500px) {
+@media (max-width: 768px) {
   .accountd-container {
-    padding: 1rem;
+    padding: 15px;
+  }
+
+  .accountd-box,
+  .verify-info-bold,
+  .accountd-form {
+    max-width: 100%;
+    margin: 0 0 20px 0;
+  }
+
+  .accountd-form {
+    padding: 30px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .accountd-container {
+    padding: 10px;
   }
 
   .accountd-title {
-    font-size: 1.5rem;
+    font-size: 20px;
   }
 
-  .accountd-form input,
-  .accountd-form select {
-    font-size: 1rem;
+  .accountd-form {
+    padding: 20px 15px;
   }
 }

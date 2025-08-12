@@ -1,30 +1,106 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './Login.module.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../src/context/AuthContext';
 
 const Login = () => {
+  const [formData, setFormData] = useState({
+    username: '',
+    password: ''
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // 실제 API 호출 예시 (현재는 시뮬레이션)
+      // const response = await fetch('/api/login', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(formData)
+      // });
+
+      // 임시 로그인 성공 시뮬레이션
+      if (formData.username && formData.password) {
+        // 성공 응답 시뮬레이션
+        const userData = {
+          id: 1,
+          username: formData.username,
+          email: `${formData.username}@example.com`,
+          name: '사용자'
+        };
+
+        // 로그인 성공
+        login(userData);
+        navigate('/'); // 메인 페이지로 이동
+      } else {
+        setError('아이디와 비밀번호를 입력해주세요.');
+      }
+    } catch (error) {
+      console.error('로그인 오류:', error);
+      setError('로그인 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className={styles["login-container"]}>
       <div className={styles["login-box"]}>
         <div className={styles["login-form"]}>
           <h2>로그인</h2>
-          <form>
+          <form onSubmit={handleSubmit}>
+            {error && <div className={styles["error-message"]}>{error}</div>}
             <div className={styles["input-group"]}>
               <label htmlFor="username">아이디</label>
-              <input type="text" id="username" name="username" />
+              <input 
+                type="text" 
+                id="username" 
+                name="username" 
+                value={formData.username}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className={styles["input-group"]}>
               <label htmlFor="password">비밀번호</label>
-              <input type="password" id="password" name="password" />
+              <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
             </div>
-            <button type="submit" className={styles["login-button"]}>로그인</button>
+            <button 
+              type="submit" 
+              className={styles["login-button"]}
+              disabled={isLoading}
+            >
+              {isLoading ? '로그인 중...' : '로그인'}
+            </button>
           </form>
           <div className={styles["login-links"]}>
             <div><Link to="/register">회원가입</Link></div>
             <div><Link to="/forgot-id">아이디찾기</Link></div>
             <div><Link to="/forgot-password">비밀번호찾기</Link></div>
-            
-            
           </div>
         </div>
       </div>

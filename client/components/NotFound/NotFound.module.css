@@ -1,0 +1,49 @@
+.notFound {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.container {
+  text-align: center;
+  max-width: 500px;
+}
+
+.title {
+  font-size: 6rem;
+  font-weight: bold;
+  color: #e74c3c;
+  margin: 0;
+  line-height: 1;
+}
+
+.subtitle {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin: 1rem 0;
+  font-weight: 600;
+}
+
+.message {
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  margin: 1.5rem 0 2rem 0;
+  line-height: 1.6;
+}
+
+.homeButton {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background-color: #3498db;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.homeButton:hover {
+  background-color: #2980b9;
+}
