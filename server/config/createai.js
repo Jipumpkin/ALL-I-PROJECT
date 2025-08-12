@@ -1,9 +1,9 @@
-const createai = require('createai');
+const OpenAI = require('openai');
 require('dotenv').config();
 
 
-const createai = new createai({
-    apiKey: process.env.CREATEAI_AI_KEY,
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
 });
 
-module.exports = createai ; 
+module.exports = openai ; 

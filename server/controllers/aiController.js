@@ -1,4 +1,4 @@
-const createai = require('../config/createai');
+const openai = require('../config/createai');
 // const Image = require('../models/Image');
 const User = require('../models/User');
 const Animal = require('../models/Animal');
@@ -86,7 +86,7 @@ const aiController = {
 
             // dalle 모델로 이미지 생성
             const imageResponse = await openai.images.generate({
-                model:"gpt-image-1",
+                model:"dall-e-3",
                 prompt: dallePrompt,
                 size: "1024x1024"
             });
