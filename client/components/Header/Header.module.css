@@ -16,10 +16,15 @@
   text-decoration: none;
 }
 
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .logo-text {
   font-size: 28px;
   font-weight: 900; /* Extra bold */
-  margin-left: 10px;
   font-family: "Arial Black", sans-serif;
   color: #f89c1e;
 }
@@ -28,14 +33,17 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-right: 10px;
+  align-items: center;
   gap: 6px;
   width: 32px;
   height: 32px;
   cursor: pointer;
+  padding: 5px;
+  margin-right: 15px;
 }
 
 .bar {
+  width: 24px;
   height: 4px;
   background-color: black;
   border-radius: 2px;

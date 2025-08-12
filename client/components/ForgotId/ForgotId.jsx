@@ -31,8 +31,4 @@ const ForgotId = () => {
   );
 };
 
-<<<<<<< HEAD
 export default ForgotId;
-=======
-export default ForgotId;
->>>>>>> 620054dd370e7ff633e2cb8a0a0a18cb26ed211d

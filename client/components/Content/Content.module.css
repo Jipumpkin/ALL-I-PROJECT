@@ -9,6 +9,7 @@
   margin: 0 auto; /* 가운데 정렬 */
   box-sizing: border-box;
   overflow-y: auto;
+  overflow-x: hidden; /* 가로 스크롤바 제거 */
 }
 
 
