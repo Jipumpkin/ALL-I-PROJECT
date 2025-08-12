@@ -24,13 +24,13 @@ function App() {
       <div className="main-content">
         <Routes>
           {/* 첫 화면 */}
+          <Route path="/maker" element={<Maker />} />
           <Route path="/" element={<Main />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-id" element={<ForgotId />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/account-delete" element={<AccountD />} />
-          <Route path="/maker " element={<Maker />} />
           <Route path="/my-account" element={<MyAccount />} />
           <Route path="/adoption-history" element={<AdoptionHistory />} />
           <Route path="*" element={<NotFound />} />
