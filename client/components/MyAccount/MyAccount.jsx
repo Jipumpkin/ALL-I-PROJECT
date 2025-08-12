@@ -48,6 +48,10 @@ const MyAccount = () => {
     navigate('/adoption-history');
   };
 
+  const handleAccountDelete = () => {
+    navigate('/account-delete');
+  };
+
   if (!user) {
     return (
       <div className={styles.container}>
@@ -129,6 +133,9 @@ const MyAccount = () => {
         <div className={styles.actions}>
           <button onClick={handleLogout} className={styles.logoutButton}>
             로그아웃
+          </button>
+          <button onClick={handleAccountDelete} className={styles.deleteButton}>
+            회원탈퇴
           </button>
         </div>
       </div>

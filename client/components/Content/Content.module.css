@@ -1,15 +1,48 @@
 .content-container {
   display: flex;
-  padding: 10px;
+  padding: var(--spacing-3xl) var(--spacing-lg);
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 800px; /* Adjust as needed for desktop */
-  height: 100%; /* 부모 요소(main-content)의 전체 높이 */
-  margin: 0 auto; /* 가운데 정렬 */
+  max-width: var(--container-max-width);
+  min-height: 100%;
+  margin: 0 auto;
   box-sizing: border-box;
   overflow-y: auto;
-  overflow-x: hidden; /* 가로 스크롤바 제거 */
+  overflow-x: hidden;
+  gap: var(--spacing-3xl);
+  font-family: var(--font-family-secondary);
+}
+
+/* Mobile responsive improvements */
+@media (max-width: 768px) {
+  .content-container {
+    padding: var(--spacing-2xl) var(--spacing-md);
+    gap: var(--spacing-2xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .content-container {
+    padding: var(--spacing-xl) var(--spacing-sm);
+    gap: var(--spacing-xl);
+  }
+}
+
+/* Smooth scrolling for content */
+.content-container {
+  scroll-behavior: smooth;
+}
+
+/* Improved spacing for nested content */
+.content-container > * {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Focus improvements for accessibility */
+.content-container:focus-within {
+  scroll-behavior: smooth;
 }
 
 
