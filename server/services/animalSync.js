@@ -19,20 +19,23 @@ if (!serviceKey || !dbConfig.host || !dbConfig.user || !dbConfig.password || !db
 
 // --- API 호출 및 데이터베이스 저장 함수 ---
 async function syncAnimalData() {
-  console.log('🚀 데이터 동기화를 시작합니다...');
+  console.log('🚀 최근 한 달간의 데이터 동기화를 시작합니다...');
 
   const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  const formattedDate = `${year}${month}${day}`;
+  
+  // 오늘로부터 한 달 전 날짜를 계산합니다.
+  const oneMonthAgo = new Date(today);
+  oneMonthAgo.setDate(today.getDate() - 30); // 약 30일 전
+
+  const formattedStartDate = `${oneMonthAgo.getFullYear()}${String(oneMonthAgo.getMonth() + 1).padStart(2, '0')}${String(oneMonthAgo.getDate()).padStart(2, '0')}`;
+  const formattedEndDate = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
 
   const apiUrl = 'https://apis.data.go.kr/1543061/abandonmentPublicService_v2/abandonmentPublic_v2';
   const queryParams = {
     serviceKey: serviceKey,
     _type: 'json',
-    bgnde: formattedDate,
-    endde: formattedDate,
+    bgnde: formattedStartDate, // 시작 날짜를 30일 전으로 설정
+    endde: formattedEndDate,   // 종료 날짜를 오늘로 설정
     numOfRows: 1000,
     pageNo: 1,
   };
@@ -67,31 +70,28 @@ async function syncAnimalData() {
 
     const items = data.response.body.items.item || [];
     if (items.length === 0) {
-      console.log('✅ 오늘 날짜의 유기동물 데이터가 없습니다.');
+      console.log('✅ 지정된 기간의 유기동물 데이터가 없습니다.');
       return;
     }
 
     console.log(`✅ API에서 ${items.length}건의 데이터를 성공적으로 가져왔습니다.`);
 
-    // --- 데이터베이스 연결 및 저장 ---
     console.log('🔌 데이터베이스에 연결 중...');
     connection = await mysql.createConnection(dbConfig);
     console.log('✅ 데이터베이스 연결 성공!');
 
-    // 트랜잭션 시작 (데이터 무결성 보장)
     await connection.beginTransaction();
 
     const transformedData = items.map(item => {
-      // API 데이터와 DB 스키마 매핑
       const genderMap = { 'M': 'male', 'F': 'female' };
       const statusMap = { '보호중': 'available' };
 
       return {
-        // ext_id는 API의 고유 번호(desertionNo)로 사용
         animal_ext_id: item.desertionNo,
         shelter_ext_id: item.careRegNo,
         shelter_name: item.careNm,
         shelter_address: item.careAddr,
+        shelter_tel: item.careTel,
         animal_species: item.upKindNm,
         animal_gender: genderMap[item.sexCd] || 'unknown',
         animal_age: item.age.replace('(년생)', '').trim(),
@@ -105,24 +105,22 @@ async function syncAnimalData() {
     });
 
     for (const animal of transformedData) {
-      // 1. 보호소 데이터 upsert (INSERT...ON DUPLICATE KEY UPDATE)
       const [shelterResult] = await connection.execute(
         `INSERT INTO shelters (shelter_name, address, region, contact_number, email, ext_id)
          VALUES (?, ?, ?, ?, ?, ?)
          ON DUPLICATE KEY UPDATE
-         shelter_name=VALUES(shelter_name), address=VALUES(address), region=VALUES(region)`,
+         shelter_name=VALUES(shelter_name), address=VALUES(address), region=VALUES(region), contact_number=VALUES(contact_number)`,
         [
           animal.shelter_name,
           animal.shelter_address,
           animal.animal_region,
-          item.careTel, // API에서 직접 가져옴
-          null, // email 필드는 API에 없어 null 처리
+          animal.shelter_tel,
+          null,
           animal.shelter_ext_id
         ]
       );
-      
+
       let shelterId;
-      // INSERT가 성공했으면 insertId를 사용하고, 아니면 기존 ID를 가져옴
       if (shelterResult.insertId) {
         shelterId = shelterResult.insertId;
       } else {
@@ -133,7 +131,6 @@ async function syncAnimalData() {
         shelterId = rows[0].shelter_id;
       }
 
-      // 2. 동물 데이터 upsert (INSERT...ON DUPLICATE KEY UPDATE)
       const [animalResult] = await connection.execute(
         `INSERT INTO animals (
           species, gender, age, image_url, shelter_id, status, region, rescued_at, ext_id, colorCd, specialMark
@@ -152,12 +149,10 @@ async function syncAnimalData() {
       console.log(`➡️ 동물 데이터(ext_id: ${animal.animal_ext_id}) 저장 완료`);
     }
 
-    // 트랜잭션 커밋
     await connection.commit();
     console.log('🎉 모든 데이터 동기화 완료!');
 
   } catch (error) {
-    // 오류 발생 시 트랜잭션 롤백
     if (connection) {
       await connection.rollback();
     }
