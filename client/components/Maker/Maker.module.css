@@ -78,7 +78,8 @@
   border-left: 1px solid #e5e7eb; /* 세로 구분선 */
 }
 
-.iconButton:hover {
+.iconButton:hover,
+.iconButton.active {
   background-color: #ecfdf5;
 }
 

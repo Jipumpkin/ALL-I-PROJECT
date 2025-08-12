@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./Maker.module.css";
 
 const Maker = () => {
   const [userImageUrl, setUserImageUrl] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [buttonStyle, setButtonStyle] = useState({});
+  const [activeButton, setActiveButton] = useState(null); // 현재 활성화된 버튼 상태
   const imageContainerRef = useRef(null);
+  const navigate = useNavigate(); // 페이지 이동을 위한 navigate 함수
 
   useEffect(() => {
     const observer = new ResizeObserver((entries) => {
@@ -28,6 +31,12 @@ const Maker = () => {
       }
     };
   }, []);
+
+  // 아이콘 버튼 클릭 핸들러
+  const handleIconClick = (path, buttonName) => {
+    navigate(path); // 지정된 경로로 페이지 이동
+    setActiveButton(buttonName); // 클릭된 버튼을 활성 상태로 설정
+  };
 
   // Function to handle image change
   const handleImageChange = (url) => {
@@ -54,21 +63,39 @@ const Maker = () => {
 
       {/* 아이콘 버튼 3개 */}
       <div className={styles.iconButtonsContainer}>
-        <button className={styles.iconButton} style={buttonStyle}>
+        <button
+          className={`${styles.iconButton} ${
+            activeButton === "shower" ? styles.active : ""
+          }`}
+          style={buttonStyle}
+          onClick={() => handleIconClick("/shower", "shower")}
+        >
           <img
             src="/images/ShowerBut.png"
             alt="shower icon"
             style={{ width: "95%", height: "95%", objectFit: "contain" }}
           />
         </button>
-        <button className={styles.iconButton} style={buttonStyle}>
+        <button
+          className={`${styles.iconButton} ${
+            activeButton === "food" ? styles.active : ""
+          }`}
+          style={buttonStyle}
+          onClick={() => handleIconClick("/food", "food")}
+        >
           <img
             src="/images/Bob.png"
             alt="food icon"
             style={{ width: "95%", height: "95%", objectFit: "contain" }}
           />
         </button>
-        <button className={styles.iconButton} style={buttonStyle}>
+        <button
+          className={`${styles.iconButton} ${
+            activeButton === "grooming" ? styles.active : ""
+          }`}
+          style={buttonStyle}
+          onClick={() => handleIconClick("/grooming", "grooming")}
+        >
           <img
             src="/images/pretty.png"
             alt="grooming icon"
