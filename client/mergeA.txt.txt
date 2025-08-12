@@ -1,4 +1,0 @@
-1. 시리얼 명령어는 기계어와 다른가?
-기계어 : --fetch(PC) ----> MAR ----> M[MAR] -----> MBR ----> --> IR -----clockpulse-----> CU(Instruction Decoder)
-시리얼 명령어 : 
-2. 기계어는 CPU가 직접 실행할 수 있는 코드이다. 
