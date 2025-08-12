@@ -3,31 +3,26 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 84px - 5vh);
-  background-color: #f0f2f5;
+  min-height: calc(100vh - 120px);
+  background-color: white;
+  padding: 20px;
 }
 
 .login-box {
   display: flex;
   flex-direction: column;
   background-color: white;
-  border-radius: 0;
-  box-shadow: none;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  width: 100vw;
-  height: 100vh;
-  max-width: 900px;
   width: 100%;
+  max-width: 450px;
 }
 
 
 
 .login-form {
-  flex: 1;
-  padding: 48px;
-  min-height: 500px;
+  padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;

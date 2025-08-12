@@ -16,10 +16,15 @@
   text-decoration: none;
 }
 
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .logo-text {
   font-size: 28px;
   font-weight: 900; /* Extra bold */
-  margin-left: 10px;
   font-family: "Arial Black", sans-serif;
   color: #f89c1e;
 }

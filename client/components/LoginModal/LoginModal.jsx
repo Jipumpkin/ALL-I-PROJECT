@@ -25,17 +25,16 @@ const LoginModal = ({ setIsOpen }) => {
           <IoClose />
         </button>
         
-        <h2>로그인</h2>
+        <h2>메뉴</h2>
         
-        <div className={styles["login-form"]}>
-          <input type="text" placeholder="아이디를 입력하세요" />
-          <input type="password" placeholder="비밀번호를 입력하세요" />
-          <button className={styles["login-btn"]}>로그인</button>
+        <div className={styles["menu-buttons"]}>
+          <button className={styles["menu-btn"]} onClick={() => handleNavigate('/login')}>로그인</button>
+          <button className={styles["menu-btn"]} onClick={() => handleNavigate('/register')}>회원가입</button>
         </div>
         
         <div className={styles["modal-links"]}>
-          <span onClick={() => handleNavigate('/register')}>회원가입</span>
-          <span onClick={() => handleNavigate('/forgot-id')}>아이디/비밀번호 찾기</span>
+          <span onClick={() => handleNavigate('/forgot-id')}>아이디 찾기</span>
+          <span onClick={() => handleNavigate('/forgot-password')}>비밀번호 찾기</span>
         </div>
       </div>
     </>
