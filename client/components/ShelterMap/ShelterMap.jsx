@@ -101,12 +101,71 @@ const ShelterMap = () => {
     });
   };
 
+  // 사용자 위치 마커 추가 함수
+  const addUserLocationMarker = (map, lat, lng) => {
+    const userMarkerPosition = new window.kakao.maps.LatLng(lat, lng);
+    
+    // 사용자 위치용 커스텀 마커 이미지
+    const userImageSrc = 'data:image/svg+xml;base64,' + btoa(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
+        <circle cx="15" cy="15" r="12" fill="#4285F4" stroke="#ffffff" stroke-width="3"/>
+        <circle cx="15" cy="15" r="6" fill="#ffffff"/>
+      </svg>
+    `);
+    
+    const userImageSize = new window.kakao.maps.Size(30, 30);
+    const userImageOption = { offset: new window.kakao.maps.Point(15, 15) };
+    const userMarkerImage = new window.kakao.maps.MarkerImage(userImageSrc, userImageSize, userImageOption);
+    
+    const userMarker = new window.kakao.maps.Marker({
+      position: userMarkerPosition,
+      title: '내 위치',
+      image: userMarkerImage
+    });
+    
+    userMarker.setMap(map);
+
+    // 사용자 위치 정보창
+    const userInfoContent = `
+      <div style="padding:8px;font-size:12px;width:120px;text-align:center;">
+        <strong style="color:#4285F4;">📍 내 위치</strong><br/>
+        <span style="color:#666;">현재 위치입니다</span>
+      </div>
+    `;
+    
+    const userInfowindow = new window.kakao.maps.InfoWindow({
+      content: userInfoContent
+    });
+
+    // 사용자 위치 마커 클릭 이벤트
+    window.kakao.maps.event.addListener(userMarker, 'click', () => {
+      userInfowindow.open(map, userMarker);
+    });
+
+    return userMarker;
+  };
+
   // 보호소 마커 추가 함수
   const addShelterMarker = (map, place) => {
     const markerPosition = new window.kakao.maps.LatLng(place.y, place.x);
+    
+    // 보호소용 커스텀 마커 이미지
+    const shelterImageSrc = 'data:image/svg+xml;base64,' + btoa(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="30" viewBox="0 0 24 30">
+        <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" fill="#F89C1E"/>
+        <circle cx="12" cy="12" r="6" fill="#ffffff"/>
+        <text x="12" y="16" text-anchor="middle" font-family="Arial" font-size="8" fill="#F89C1E">🏠</text>
+      </svg>
+    `);
+    
+    const shelterImageSize = new window.kakao.maps.Size(24, 30);
+    const shelterImageOption = { offset: new window.kakao.maps.Point(12, 30) };
+    const shelterMarkerImage = new window.kakao.maps.MarkerImage(shelterImageSrc, shelterImageSize, shelterImageOption);
+    
     const marker = new window.kakao.maps.Marker({
       position: markerPosition,
-      title: place.place_name
+      title: place.place_name,
+      image: shelterMarkerImage
     });
     marker.setMap(map);
 
@@ -146,14 +205,9 @@ const ShelterMap = () => {
       const newMap = new window.kakao.maps.Map(container, options);
       setMap(newMap);
 
-      // 사용자 위치 마커 (빨간색)
+      // 사용자 위치 마커 추가
       if (userLocation || (lat && lng)) {
-        const userMarkerPosition = new window.kakao.maps.LatLng(lat, lng);
-        const userMarker = new window.kakao.maps.Marker({
-          position: userMarkerPosition,
-          title: '현재 위치'
-        });
-        userMarker.setMap(newMap);
+        addUserLocationMarker(newMap, lat, lng);
       }
 
       // 카카오 장소 검색 서비스 사용
