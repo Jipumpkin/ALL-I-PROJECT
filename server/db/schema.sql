@@ -7,6 +7,7 @@ CREATE TABLE users (
     nickname VARCHAR(50),
     gender ENUM('male', 'female', 'other', 'unknown') DEFAULT 'unknown',
     phone_number VARCHAR(20),
+    image_url TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     last_login_at DATETIME

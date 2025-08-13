@@ -14,23 +14,23 @@ class User {
     }
 
     static async create(userData) {
-        const { username, email, password_hash, nickname, gender, phone_number } = userData;
+        const { username, email, password_hash, nickname, gender, phone_number, image_url } = userData;
         const query = `
-            INSERT INTO users (username, email, password_hash, nickname, gender, phone_number)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO users (username, email, password_hash, nickname, gender, phone_number, image_url)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
-        const [result] = await db.execute(query, [username, email, password_hash, nickname, gender, phone_number]);
+        const [result] = await db.execute(query, [username, email, password_hash, nickname, gender, phone_number, image_url]);
         return this.findById(result.insertId);
     }
 
     static async update(id, userData) {
-        const { username, email, nickname, gender, phone_number } = userData;
+        const { username, email, nickname, gender, phone_number, image_url } = userData;
         const query = `
             UPDATE users 
-            SET username = ?, email = ?, nickname = ?, gender = ?, phone_number = ?, updated_at = CURRENT_TIMESTAMP
+            SET username = ?, email = ?, nickname = ?, gender = ?, phone_number = ?, image_url = ?, updated_at = CURRENT_TIMESTAMP
             WHERE user_id = ?
         `;
-        await db.execute(query, [username, email, nickname, gender, phone_number, id]);
+        await db.execute(query, [username, email, nickname, gender, phone_number, image_url, id]);
         return this.findById(id);
     }
 
