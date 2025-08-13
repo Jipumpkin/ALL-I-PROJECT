@@ -13,9 +13,12 @@ import ForgotId from "../components/ForgotId/ForgotId";
 import ForgotPassword from "../components/ForgotPassword/ForgotPassword";
 import AccountD from "../components/Account/AccountD";
 import Maker from "../components/Maker/Maker";
+import MakerResult from "../components/MakerResult/MakerResult";
 import MyAccount from "../components/MyAccount/MyAccount";
 import AdoptionHistory from "../components/AdoptionHistory/AdoptionHistory";
 import Intro from "../components/Intro/intro";
+import Animals from "../components/Animals/Animals";
+import AdoptionApply from "../components/AdoptionApply/AdoptionApply";
 import NotFound from "../components/NotFound/NotFound";
 
 function App() {
@@ -25,6 +28,8 @@ function App() {
       <div className="main-content">
         <Routes>
           {/* 첫 화면 */}
+          <Route path="/maker" element={<Maker />} />
+          <Route path="/maker/result" element={<MakerResult />} />
           <Route path="/" element={<Main />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
@@ -35,6 +40,8 @@ function App() {
           <Route path="/my-account" element={<MyAccount />} />
           <Route path="/adoption-history" element={<AdoptionHistory />} />
           <Route path="/intro" element={<Intro />} />
+          <Route path="/animals" element={<Animals />} />
+          <Route path="/adoption-apply" element={<AdoptionApply />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
