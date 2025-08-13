@@ -1,5 +1,5 @@
-@import './styles/variables.css';
-@import './styles/utilities.css';
+@import "./styles/variables.css";
+@import "./styles/utilities.css";
 
 /* Reset and Base Styles */
 * {
@@ -29,8 +29,9 @@ body {
 }
 
 /* Custom cursor settings */
-body, html {
-  cursor: url('/images/cursor.png') 12 12, auto;
+body,
+html {
+  cursor: url("/images/cursor.png") 12 12, auto;
 }
 
 * {
@@ -38,13 +39,13 @@ body, html {
 }
 
 /* Clickable elements */
-button, 
-a, 
-input[type="submit"], 
-input[type="button"], 
+button,
+a,
+input[type="submit"],
+input[type="button"],
 .clickable,
 .btn {
-  cursor: url('/images/cursor.png') 12 12, pointer;
+  cursor: url("/images/cursor.png") 12 12, pointer;
 }
 
 #root {
@@ -83,7 +84,12 @@ input[type="button"],
 }
 
 /* Typography improvements */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-tight);
   margin-bottom: var(--spacing-md);
@@ -107,8 +113,8 @@ a:hover {
 }
 
 /* Form elements base styling */
-input, 
-textarea, 
+input,
+textarea,
 select {
   font-family: inherit;
   font-size: var(--font-size-base);
