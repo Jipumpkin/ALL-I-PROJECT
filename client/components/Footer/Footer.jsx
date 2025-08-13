@@ -1,23 +1,36 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
-import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
 
 const Footer = () => {
   return (
     <footer className={styles.footer}>
       <div className={styles['footer-content']}>
         <div className={styles['footer-section']}>
-          <p>&copy; {new Date().getFullYear()} PAW PAW. All rights reserved.</p>
+          <div className={styles['footer-brand']}>
+            <span className={styles['brand-name']}>🐾 PAW PAW</span>
+            <p className={styles['brand-desc']}>유기동물과 사람 사이의 따뜻한 연결</p>
+          </div>
         </div>
         <div className={styles['footer-section']}>
-          <a href="/terms">Terms of Service</a>
-          <a href="/privacy">Privacy Policy</a>
+          <div className={styles['footer-links']}>
+            <Link to="/intro" onClick={() => window.scrollTo(0, 0)}>서비스 소개</Link>
+            <a href="https://www.animal.go.kr" target="_blank" rel="noopener noreferrer">동물보호관리시스템</a>
+            <a href="https://www.animal.go.kr/front/awtis/vworld/vworldMap.do?menuNo=5000000027" target="_blank" rel="noopener noreferrer">입양센터 찾기</a>
+          </div>
         </div>
         <div className={styles['footer-section']}>
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer"><FaGithub /></a>
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"><FaTwitter /></a>
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"><FaLinkedin /></a>
+          <div className={styles['footer-info']}>
+            <p className={styles['contact-info']}>📞 상담 문의: 1588-0000</p>
+            <p className={styles['contact-info']}>📧 pawpaw.adopt@gmail.com</p>
+            <p className={styles['copyright']}>&copy; {new Date().getFullYear()} PAW PAW. 모든 권리 보유.</p>
+          </div>
         </div>
+      </div>
+      <div className={styles['footer-bottom']}>
+        <p className={styles['footer-message']}>
+          💝 입양은 구매가 아닌 새로운 가족을 만나는 일입니다
+        </p>
       </div>
     </footer>
   );

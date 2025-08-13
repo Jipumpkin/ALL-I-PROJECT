@@ -26,8 +26,9 @@ body {
 
 h2 {
     text-align: center;
-    color: #333;
+    color: var(--color-text-primary);
     margin-bottom: 25px;
+    font-size: 24px;
 }
 
 /* Form styles */
@@ -44,23 +45,23 @@ label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: #606770;
+    color: var(--color-text-secondary);
 }
 
 input[type="text"],
 input[type="password"] {
     width: 100%;
     padding: 12px;
-    border: 1px solid #dddfe2;
-    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
     box-sizing: border-box;
-    transition: border-color 0.3s;
+    transition: var(--transition-fast);
     font-size: 16px;
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus {
-    border-color: #F89C1E;
+    border-color: var(--color-primary);
     outline: none;
 }
 
@@ -69,18 +70,18 @@ button[type="submit"] {
     width: 100%;
     padding: 12px;
     border: none;
-    border-radius: 6px;
-    background-color: #F89C1E;
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-primary);
     color: white;
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: var(--transition-fast);
     margin-top: 15px;
 }
 
-button[type="submit"]:hover {
-    background-color: #E67E22;
+button[type="submit"]:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
 }
 
 .birthdate-select select {
