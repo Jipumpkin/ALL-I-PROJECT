@@ -16,6 +16,7 @@ import Maker from "../components/Maker/Maker";
 import MakerResult from "../components/MakerResult/MakerResult";
 import MyAccount from "../components/MyAccount/MyAccount";
 import AdoptionHistory from "../components/AdoptionHistory/AdoptionHistory";
+import Intro from "../components/Intro/intro";
 import Animals from "../components/Animals/Animals";
 import AdoptionApply from "../components/AdoptionApply/AdoptionApply";
 import NotFound from "../components/NotFound/NotFound";
@@ -38,6 +39,7 @@ function App() {
           <Route path="/maker" element={<Maker />} />
           <Route path="/my-account" element={<MyAccount />} />
           <Route path="/adoption-history" element={<AdoptionHistory />} />
+          <Route path="/intro" element={<Intro />} />
           <Route path="/animals" element={<Animals />} />
           <Route path="/adoption-apply" element={<AdoptionApply />} />
           <Route path="*" element={<NotFound />} />
