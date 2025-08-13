@@ -1,0 +1,73 @@
+.animals-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.animals-title {
+  font-size: 2rem;
+  color: #333;
+  margin: 0;
+}
+
+.back-button {
+  padding: 10px 20px;
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #4b5563;
+}
+
+.category-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.category-btn {
+  padding: 12px 24px;
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.category-btn:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.category-btn.active {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.animals-content {
+  padding: 20px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  min-height: 300px;
+}
+
+.animals-content p {
+  font-size: 1.1rem;
+  color: #6b7280;
+  text-align: center;
+}
