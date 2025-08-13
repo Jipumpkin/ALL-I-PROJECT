@@ -36,12 +36,7 @@ const MakerResult = () => {
   return (
     <div className={styles.resultContainer}>
       <div className={styles.resultHeader}>
-        <button 
-          className={styles.backButton} 
-          onClick={() => navigate('/maker')}
-        >
-          ← 돌아가기
-        </button>
+    
         <h1 className={styles.resultTitle}>완료되었습니다!</h1>
         <p className={styles.resultSubtitle}>{getActionMessage(action)}</p>
       </div>
