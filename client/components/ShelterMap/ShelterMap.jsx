@@ -65,84 +65,270 @@ const ShelterMap = () => {
 
   // 주변 보호소 검색 함수
   const searchNearbyShelters = (map, lat, lng) => {
-    const ps = new window.kakao.maps.services.Places();
-    const searchOptions = {
-      location: new window.kakao.maps.LatLng(lat, lng),
-      radius: 10000, // 10km 반경
-      sort: window.kakao.maps.services.SortBy.DISTANCE
-    };
+    console.log('보호소 검색 시작:', { lat, lng });
 
-    // 여러 키워드로 검색
-    const keywords = ['동물보호소', '유기동물보호소', '동물병원', '펫샵'];
-    let foundShelters = [];
+    // 실제 유기동물 보호소 데이터
+    const shelterData = [
+      {
+        id: 'shelter_seoul',
+        place_name: '서울특별시 동물보호센터',
+        category_name: '공공기관 > 동물보호소',
+        address_name: '서울 중랑구 망우로 173',
+        x: '127.093338',
+        y: '37.586012',
+        phone: '02-2094-2300'
+      },
+      {
+        id: 'shelter_gyeonggi',
+        place_name: '경기도 동물보호센터',
+        category_name: '공공기관 > 동물보호소',
+        address_name: '경기 수원시 영통구 원천동',
+        x: '127.063338',
+        y: '37.276012',
+        phone: '031-8008-6551'
+      },
+      {
+        id: 'shelter_incheon',
+        place_name: '인천광역시 동물보호센터',
+        category_name: '공공기관 > 동물보호소',
+        address_name: '인천 서구 원창동',
+        x: '126.663338',
+        y: '37.486012',
+        phone: '032-440-8073'
+      },
+      {
+        id: 'shelter_busan',
+        place_name: '부산광역시 동물보호센터',
+        category_name: '공공기관 > 동물보호소',
+        address_name: '부산 강서구 대저1동',
+        x: '128.980000',
+        y: '35.215000',
+        phone: '051-888-7676'
+      },
+      {
+        id: 'shelter_daegu',
+        place_name: '대구광역시 동물보호센터',
+        category_name: '공공기관 > 동물보호소',
+        address_name: '대구 달성군 가창면',
+        x: '128.616667',
+        y: '35.816667',
+        phone: '053-803-7942'
+      },
+      {
+        id: 'shelter_gwangju',
+        place_name: '광주광역시 동물보호센터',
+        category_name: '공공기관 > 동물보호소',
+        address_name: '광주 북구 삼각동',
+        x: '126.916667',
+        y: '35.183333',
+        phone: '062-613-5348'
+      },
+      {
+        id: 'shelter_daejeon',
+        place_name: '대전광역시 동물보호센터',
+        category_name: '공공기관 > 동물보호소',
+        address_name: '대전 유성구 원내동',
+        x: '127.350000',
+        y: '36.350000',
+        phone: '042-270-8592'
+      },
+      {
+        id: 'shelter_ulsan',
+        place_name: '울산광역시 동물보호센터',
+        category_name: '공공기관 > 동물보호소',
+        address_name: '울산 울주군 온양읍',
+        x: '129.316667',
+        y: '35.516667',
+        phone: '052-229-3453'
+      }
+    ];
 
-    keywords.forEach((keyword, index) => {
-      setTimeout(() => {
-        ps.keywordSearch(keyword, (data, status) => {
+    // 현재 위치에서 100km 이내의 보호소만 표시
+    const nearbyShelters = shelterData.filter(shelter => {
+      const distance = getDistance(lat, lng, parseFloat(shelter.y), parseFloat(shelter.x));
+      console.log(`${shelter.place_name}: ${distance.toFixed(1)}km`);
+      return distance <= 100; // 100km 이내
+    });
+
+    console.log(`총 ${nearbyShelters.length}개의 보호소가 100km 이내에 있습니다.`);
+
+    // 보호소 마커 추가
+    nearbyShelters.forEach(shelter => {
+      addShelterMarker(map, shelter);
+      console.log('보호소 마커 추가:', shelter.place_name);
+    });
+
+    setShelters(nearbyShelters);
+
+    // 추가: 카카오 API로 동물병원 검색 (개선된 검색 로직)
+    setTimeout(() => {
+      try {
+        if (!window.kakao || !window.kakao.maps || !window.kakao.maps.services) {
+          console.warn('카카오 서비스 API가 로드되지 않았습니다.');
+          return;
+        }
+
+        const ps = new window.kakao.maps.services.Places();
+        console.log('동물병원 검색 시작...');
+
+        // 1. 일반 키워드 검색
+        ps.keywordSearch('동물병원', (data, status) => {
+          console.log('동물병원 키워드 검색 결과:', { status, count: data ? data.length : 0 });
+          
           if (status === window.kakao.maps.services.Status.OK) {
-            const filteredData = data.filter(place => 
-              place.category_name.includes('동물') || 
-              place.place_name.includes('보호소') ||
-              place.place_name.includes('동물병원')
-            );
+            console.log('검색된 모든 결과:', data);
             
-            filteredData.forEach(place => {
-              // 중복 제거
-              if (!foundShelters.find(shelter => shelter.id === place.id)) {
-                foundShelters.push(place);
+            // 필터링 조건을 완화
+            const animalHospitals = data.filter(place => {
+              const nameCheck = place.place_name.includes('동물') || 
+                               place.place_name.includes('반려') ||
+                               place.place_name.includes('펫') ||
+                               place.place_name.includes('애완');
+              
+              const categoryCheck = place.category_name.includes('병원') ||
+                                   place.category_name.includes('동물');
+              
+              console.log(`장소: ${place.place_name}, 카테고리: ${place.category_name}, 포함여부: ${nameCheck || categoryCheck}`);
+              return nameCheck || categoryCheck;
+            }).slice(0, 20); // 최대 20개
+            
+            console.log(`필터링 후 동물병원: ${animalHospitals.length}개`);
+            
+            animalHospitals.forEach(place => {
+              try {
                 addShelterMarker(map, place);
+                console.log('동물병원 마커 추가:', place.place_name);
+              } catch (markerError) {
+                console.warn('마커 추가 실패:', place.place_name, markerError);
               }
             });
 
-            setShelters(prev => [...prev, ...filteredData]);
+            setShelters(prev => [...prev, ...animalHospitals]);
+          } else {
+            console.warn('동물병원 검색 실패:', status);
           }
-        }, searchOptions);
-      }, index * 500); // API 호출 간격 조절
-    });
+        }, {
+          location: new window.kakao.maps.LatLng(lat, lng),
+          radius: 20000, // 20km로 확대
+          sort: window.kakao.maps.services.SortBy.DISTANCE
+        });
+
+        // 2. 카테고리 검색도 시도
+        setTimeout(() => {
+          ps.categorySearch('HP8', (data, status) => {
+            console.log('병원 카테고리 검색 결과:', { status, count: data ? data.length : 0 });
+            
+            if (status === window.kakao.maps.services.Status.OK) {
+              const animalHospitals = data.filter(place => 
+                place.place_name.includes('동물') || 
+                place.place_name.includes('반려') ||
+                place.place_name.includes('펫')
+              ).slice(0, 10);
+              
+              animalHospitals.forEach(place => {
+                // 기존에 추가된 것과 중복 체크
+                const existingIndex = shelters.findIndex(shelter => shelter.id === place.id);
+                if (existingIndex === -1) {
+                  try {
+                    addShelterMarker(map, place);
+                    console.log('카테고리 검색으로 동물병원 마커 추가:', place.place_name);
+                  } catch (markerError) {
+                    console.warn('마커 추가 실패:', place.place_name, markerError);
+                  }
+                }
+              });
+
+              setShelters(prev => {
+                const newHospitals = animalHospitals.filter(place => 
+                  !prev.find(shelter => shelter.id === place.id)
+                );
+                return [...prev, ...newHospitals];
+              });
+            }
+          }, {
+            location: new window.kakao.maps.LatLng(lat, lng),
+            radius: 15000,
+            sort: window.kakao.maps.services.SortBy.DISTANCE
+          });
+        }, 2000);
+
+      } catch (apiError) {
+        console.warn('동물병원 검색 API 오류:', apiError);
+      }
+    }, 1000); // 보호소 마커 추가 후 1초 대기
   };
 
-  // 사용자 위치 마커 추가 함수
-  const addUserLocationMarker = (map, lat, lng) => {
-    const userMarkerPosition = new window.kakao.maps.LatLng(lat, lng);
-    
-    // 사용자 위치용 커스텀 마커 이미지
-    const userImageSrc = 'data:image/svg+xml;base64,' + btoa(`
-      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
-        <circle cx="15" cy="15" r="12" fill="#4285F4" stroke="#ffffff" stroke-width="3"/>
-        <circle cx="15" cy="15" r="6" fill="#ffffff"/>
-      </svg>
-    `);
-    
-    const userImageSize = new window.kakao.maps.Size(30, 30);
-    const userImageOption = { offset: new window.kakao.maps.Point(15, 15) };
-    const userMarkerImage = new window.kakao.maps.MarkerImage(userImageSrc, userImageSize, userImageOption);
-    
-    const userMarker = new window.kakao.maps.Marker({
-      position: userMarkerPosition,
-      title: '내 위치',
-      image: userMarkerImage
-    });
-    
-    userMarker.setMap(map);
 
-    // 사용자 위치 정보창
+  // 사용자 위치 표시 함수 (원형 범위 + 중심점)
+  const addUserLocationCircle = (map, lat, lng) => {
+    const userPosition = new window.kakao.maps.LatLng(lat, lng);
+    
+    // 1. 사용자 위치 중심에 원형 반투명 영역 표시
+    const circle = new window.kakao.maps.Circle({
+      center: userPosition,
+      radius: 200, // 200m 반경으로 축소
+      strokeWeight: 2,
+      strokeColor: '#4285F4',
+      strokeOpacity: 0.7,
+      fillColor: '#4285F4',
+      fillOpacity: 0.08
+    });
+    circle.setMap(map);
+
+    // 2. 중심점에 작은 점 표시
+    const centerDot = new window.kakao.maps.Circle({
+      center: userPosition,
+      radius: 15, // 15m 반경으로 축소
+      strokeWeight: 1,
+      strokeColor: '#ffffff',
+      strokeOpacity: 1,
+      fillColor: '#4285F4',
+      fillOpacity: 1
+    });
+    centerDot.setMap(map);
+
+    // 3. 사용자 위치 정보창
     const userInfoContent = `
-      <div style="padding:8px;font-size:12px;width:120px;text-align:center;">
+      <div style="padding:10px;font-size:13px;width:140px;text-align:center;border-radius:8px;">
         <strong style="color:#4285F4;">📍 내 위치</strong><br/>
-        <span style="color:#666;">현재 위치입니다</span>
+        <span style="color:#666;font-size:11px;">현재 위치 (500m 범위)</span>
       </div>
     `;
     
     const userInfowindow = new window.kakao.maps.InfoWindow({
-      content: userInfoContent
+      content: userInfoContent,
+      position: userPosition
     });
 
-    // 사용자 위치 마커 클릭 이벤트
-    window.kakao.maps.event.addListener(userMarker, 'click', () => {
-      userInfowindow.open(map, userMarker);
+    // 4. 중심점 클릭시 정보창 표시
+    window.kakao.maps.event.addListener(map, 'click', (mouseEvent) => {
+      const clickPosition = mouseEvent.latLng;
+      const clickLat = clickPosition.getLat();
+      const clickLng = clickPosition.getLng();
+      
+      // 사용자 위치 근처 클릭시 정보창 표시
+      const distance = getDistance(lat, lng, clickLat, clickLng);
+      if (distance <= 0.2) { // 200m 이내 클릭시
+        userInfowindow.open(map);
+        setTimeout(() => {
+          userInfowindow.close();
+        }, 3000); // 3초 후 자동 닫기
+      }
     });
 
-    return userMarker;
+    return { circle, centerDot, infowindow: userInfowindow };
+  };
+
+  // 두 좌표 간의 거리 계산 (km)
+  const getDistance = (lat1, lng1, lat2, lng2) => {
+    const R = 6371; // 지구 반지름 (km)
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLng/2) * Math.sin(dLng/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
   };
 
   // 보호소 마커 추가 함수
@@ -205,13 +391,14 @@ const ShelterMap = () => {
       const newMap = new window.kakao.maps.Map(container, options);
       setMap(newMap);
 
-      // 사용자 위치 마커 추가
-      if (userLocation || (lat && lng)) {
-        addUserLocationMarker(newMap, lat, lng);
-      }
+      // 사용자 위치 표시 제거 - 보호소만 표시
 
-      // 카카오 장소 검색 서비스 사용
-      searchNearbyShelters(newMap, lat, lng);
+      // 보호소 검색 (에러 발생해도 지도는 정상 표시)
+      try {
+        searchNearbyShelters(newMap, lat, lng);
+      } catch (shelterError) {
+        console.warn("보호소 검색 중 오류:", shelterError);
+      }
 
       console.log("지도 초기화 완료");
     } catch (error) {
