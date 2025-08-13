@@ -34,14 +34,12 @@ const MakerResult = () => {
   };
 
   return (
-    <div className={styles.resultContainer}>
-      <div className={styles.resultHeader}>
-    
-        <h1 className={styles.resultTitle}>완료되었습니다!</h1>
-        <p className={styles.resultSubtitle}>{getActionMessage(action)}</p>
-      </div>
-
-      <div className={styles.resultContent}>
+    <div className={styles.body}>
+      <div className={styles.resultContainer}>
+        <div className={styles.resultHeader}>
+          <h1 className={styles.resultTitle}>완료되었습니다!</h1>
+          <p className={styles.resultSubtitle}>{getActionMessage(action)}</p>
+        </div>
         <div className={styles.resultImageContainer}>
           <img 
             src={resultImage} 
@@ -51,7 +49,7 @@ const MakerResult = () => {
         </div>
 
         <div className={styles.resultInfoSection}>
-          <h2 className={styles.infoTitle}>반려동물 정보</h2>
+          {/* <h2 className={styles.infoTitle}>반려동물 정보</h2> */}
           <div className={styles.infoTableContainer}>
             <table className={styles.infoTable}>
               <thead>
