@@ -13,7 +13,7 @@ app.use(express.json());
 
 app.get('/health', (_,res)=>res.json({ok:true}));
 
-app.use('/', require('./routes/animals'));
+app.use('/api/animals', require('./routes/animalRoutes'));
 require('./jobs/cron');
 
 const PORT = process.env.PORT || 3000;

@@ -1,6 +1,29 @@
 const db = require('../config/database');
 
 class Animal {
+    static async findOldest() {
+        const query = `
+            SELECT animal_id, species, gender, age, image_url, region, rescued_at
+            FROM animals 
+            WHERE status = 'available' -- 보호중인 동물 중에서
+            ORDER BY rescued_at ASC -- 구조일이 가장 오래된 순으로
+            LIMIT 3 -- 3마리만 조회
+        `;
+        const [rows] = await db.execute(query);
+        return rows;
+    }
+
+    static async findAllForList() {
+        const query = `
+            SELECT animal_id, species, gender, age, image_url, region 
+            FROM animals 
+            ORDER BY RAND()
+            LIMIT 12
+        `;
+        const [rows] = await db.execute(query);
+        return rows;
+    }
+
     static async findAll() {
         const query = 'SELECT * FROM animals';
         const [rows] = await db.execute(query);

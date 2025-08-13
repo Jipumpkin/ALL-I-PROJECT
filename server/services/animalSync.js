@@ -1,31 +1,22 @@
+// server/services/animalSync.js
+
 const https = require('https');
 const url = require('url');
 const mysql = require('mysql2/promise');
-
-// --- 환경 변수 로드 ---
-const serviceKey = process.env.PUBLICDATA_API_KEY;
-const dbConfig = {
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: parseInt(process.env.DB_PORT, 10),
-};
-
-if (!serviceKey || !dbConfig.host || !dbConfig.user || !dbConfig.password || !dbConfig.database) {
-  console.error('💥 오류: 필수 환경 변수(API 키 또는 DB 정보)가 설정되지 않았습니다.');
-  process.exit(1);
-}
+const { getConnection } = require('../db/connection');
 
 // --- API 호출 및 데이터베이스 저장 함수 ---
 async function syncAnimalData() {
   console.log('🚀 최근 한 달간의 데이터 동기화를 시작합니다...');
 
-  const today = new Date();
+  const serviceKey = process.env.PUBLICDATA_API_KEY;
+  if (!serviceKey) {
+    throw new Error('💥 오류: PUBLICDATA_API_KEY가 설정되지 않았습니다.');
+  }
   
-  // 오늘로부터 한 달 전 날짜를 계산합니다.
+  const today = new Date();
   const oneMonthAgo = new Date(today);
-  oneMonthAgo.setDate(today.getDate() - 30); // 약 30일 전
+  oneMonthAgo.setDate(today.getDate() - 30);
 
   const formattedStartDate = `${oneMonthAgo.getFullYear()}${String(oneMonthAgo.getMonth() + 1).padStart(2, '0')}${String(oneMonthAgo.getDate()).padStart(2, '0')}`;
   const formattedEndDate = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
@@ -34,8 +25,8 @@ async function syncAnimalData() {
   const queryParams = {
     serviceKey: serviceKey,
     _type: 'json',
-    bgnde: formattedStartDate, // 시작 날짜를 30일 전으로 설정
-    endde: formattedEndDate,   // 종료 날짜를 오늘로 설정
+    bgnde: formattedStartDate,
+    endde: formattedEndDate,
     numOfRows: 1000,
     pageNo: 1,
   };
@@ -77,7 +68,7 @@ async function syncAnimalData() {
     console.log(`✅ API에서 ${items.length}건의 데이터를 성공적으로 가져왔습니다.`);
 
     console.log('🔌 데이터베이스에 연결 중...');
-    connection = await mysql.createConnection(dbConfig);
+    connection = await getConnection();
     console.log('✅ 데이터베이스 연결 성공!');
 
     await connection.beginTransaction();
@@ -165,4 +156,4 @@ async function syncAnimalData() {
   }
 }
 
-syncAnimalData();
+module.exports = { syncAnimalData };
