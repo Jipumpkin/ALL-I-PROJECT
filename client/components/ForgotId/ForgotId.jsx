@@ -31,5 +31,4 @@ const ForgotId = () => {
   );
 };
 
-
 export default ForgotId;
