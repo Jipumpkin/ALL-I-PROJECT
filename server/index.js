@@ -16,6 +16,8 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/animals', require('./routes/animalRoutes'));
 app.use('/api/shelters', require('./routes/shelterRoutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));
+app.use('/api/posts', require('./routes/postRoutes'));
+app.use('/api', require('./routes/commentRoutes'));
 
 app.get('/', (req, res) => {
     res.json({ message: 'ALL-I-PROJECT Backend Server Running' });
