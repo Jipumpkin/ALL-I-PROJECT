@@ -1,18 +1,133 @@
-body, #root {
+@import './styles/variables.css';
+@import './styles/utilities.css';
+
+/* Reset and Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  font-family: sans-serif;
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom cursor settings */
+body, html {
+  cursor: url('/images/cursor.png') 12 12, auto;
+}
+
+* {
+  cursor: inherit;
+}
+
+/* Clickable elements */
+button, 
+a, 
+input[type="submit"], 
+input[type="button"], 
+.clickable,
+.btn {
+  cursor: url('/images/cursor.png') 12 12, pointer;
 }
 
 #root {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* 전체 화면 높이 */
+  min-height: 100vh;
+  width: 100%;
 }
 
 .main-content {
-  flex: 1; 
-  overflow-y: auto; 
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+  margin-bottom: var(--spacing-xl);
+}
+
+/* Improved focus styles for accessibility */
+*:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* High contrast focus for keyboard users */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Typography improvements */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary);
+}
+
+p {
+  margin-bottom: var(--spacing-md);
+  line-height: var(--line-height-normal);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+/* Form elements base styling */
+input, 
+textarea, 
+select {
+  font-family: inherit;
+  font-size: var(--font-size-base);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--border-radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-light);
 }
