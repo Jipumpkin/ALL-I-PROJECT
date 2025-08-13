@@ -12,7 +12,6 @@ const Header = () => {
   return (
     <>
       <header className={styles["header"]}>
-        <div></div>
         <a href="/" className={styles["logo-container"]}>
           <span className={styles["imgFoot"]}>
             <img src="/images/foot.png" alt="로고" width="40" />

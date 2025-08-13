@@ -47,9 +47,9 @@ const AdoptionApply = () => {
     <div className={styles["adoption-container"]}>
       <div className={styles["header"]}>
         <h2 className={styles["adoption-title"]}>입양 신청하기</h2>
-        <button onClick={() => navigate('/')} className={styles["back-button"]}>
+        {/* <button onClick={() => navigate('/')} className={styles["back-button"]}>
           홈으로 돌아가기
-        </button>
+        </button> */}
       </div>
 
       <div className={styles["adoption-info"]}>
