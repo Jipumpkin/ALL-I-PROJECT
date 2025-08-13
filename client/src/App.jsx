@@ -15,6 +15,7 @@ import AccountD from "../components/Account/AccountD";
 import Maker from "../components/Maker/Maker";
 import MyAccount from "../components/MyAccount/MyAccount";
 import AdoptionHistory from "../components/AdoptionHistory/AdoptionHistory";
+import Intro from "../components/Intro/intro";
 import NotFound from "../components/NotFound/NotFound";
 
 function App() {
@@ -30,9 +31,10 @@ function App() {
           <Route path="/forgot-id" element={<ForgotId />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/account-delete" element={<AccountD />} />
-          <Route path="/maker " element={<Maker />} />
+          <Route path="/maker" element={<Maker />} />
           <Route path="/my-account" element={<MyAccount />} />
           <Route path="/adoption-history" element={<AdoptionHistory />} />
+          <Route path="/intro" element={<Intro />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
