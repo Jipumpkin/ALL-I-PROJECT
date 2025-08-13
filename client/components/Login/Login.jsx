@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styles from './Login.module.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../src/context/AuthContext';
+import axios from 'axios';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -27,34 +28,25 @@ const Login = () => {
     setError('');
 
     try {
-      // 실제 API 호출 예시 (현재는 시뮬레이션)
-      // const response = await fetch('/api/login', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(formData)
-      // });
+      const response = await axios.post('http://localhost:3003/api/login', formData, {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
 
-      // 임시 로그인 성공 시뮬레이션
-      if (formData.username && formData.password) {
-        // 성공 응답 시뮬레이션
-        const userData = {
-          id: 1,
-          username: formData.username,
-          email: `${formData.username}@example.com`,
-          name: '사용자'
-        };
-
-        // 로그인 성공
-        login(userData);
-        navigate('/'); // 메인 페이지로 이동
+      if (response.data.success) {
+        login(response.data.user);
+        navigate('/');
       } else {
-        setError('아이디와 비밀번호를 입력해주세요.');
+        setError(response.data.message);
       }
     } catch (error) {
       console.error('로그인 오류:', error);
-      setError('로그인 중 오류가 발생했습니다.');
+      if (error.response) {
+        setError(error.response.data.message || '로그인에 실패했습니다.');
+      } else {
+        setError('서버와 연결할 수 없습니다.');
+      }
     } finally {
       setIsLoading(false);
     }
