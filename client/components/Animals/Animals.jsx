@@ -14,9 +14,6 @@ const Animals = () => {
     <div className={styles["animals-container"]}>
       <div className={styles["header"]}>
         <h2 className={styles["animals-title"]}>유기동물</h2>
-        <button onClick={() => navigate('/')} className={styles["back-button"]}>
-          홈으로 돌아가기
-        </button>
       </div>
 
       <div className={styles["category-buttons"]}>
