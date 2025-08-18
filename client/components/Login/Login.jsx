@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from './Login.module.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../src/context/AuthContext';
 import axios from 'axios';
 
@@ -14,6 +14,7 @@ const Login = () => {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleChange = (e) => {
     setFormData({
@@ -36,7 +37,9 @@ const Login = () => {
 
       if (response.data.success) {
         login(response.data.user);
-        navigate('/');
+        // 보호된 페이지에서 온 경우 원래 페이지로, 아니면 메인으로
+        const from = location.state?.from?.pathname || '/';
+        navigate(from, { replace: true });
       } else {
         setError(response.data.message);
       }
