@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwtUtils = require('../utils/jwt');
+const hashUtils = require('../utils/hash');
 
 const userController = {
     getAllUsers: async (req, res) => {
@@ -47,6 +48,193 @@ const userController = {
             res.status(204).send();
         } catch (error) {
             res.status(500).json({ error: error.message });
+        }
+    },
+
+    // === 인증 관련 API ===
+
+    /**
+     * 회원가입 API
+     * POST /api/users/auth/register
+     * Body: { username, email, password, nickname?, gender?, phone_number? }
+     */
+    register: async (req, res) => {
+        try {
+            const { username, email, password, nickname, gender, phone_number } = req.body;
+
+            // 필수 입력값 검증
+            if (!username || !email || !password) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'username, email, password는 필수 입력값입니다.',
+                    errors: {
+                        username: !username ? 'username이 필요합니다.' : null,
+                        email: !email ? 'email이 필요합니다.' : null,
+                        password: !password ? 'password가 필요합니다.' : null
+                    }
+                });
+            }
+
+            // 이메일 형식 검증
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return res.status(400).json({
+                    success: false,
+                    message: '올바른 이메일 형식이 아닙니다.',
+                    errors: { email: '유효한 이메일 주소를 입력해주세요.' }
+                });
+            }
+
+            // 비밀번호 강도 검증
+            if (!hashUtils.validatePassword(password)) {
+                return res.status(400).json({
+                    success: false,
+                    message: '비밀번호가 보안 요구사항을 충족하지 않습니다.',
+                    errors: { 
+                        password: '비밀번호는 8자 이상, 영문자, 숫자, 특수문자를 포함해야 합니다.' 
+                    }
+                });
+            }
+
+            // 비밀번호 해싱
+            const hashedPassword = await hashUtils.hashPassword(password);
+
+            // 사용자 생성 (이메일 중복 체크 포함)
+            const userData = {
+                username,
+                email,
+                password_hash: hashedPassword,
+                nickname: nickname || username,
+                gender,
+                phone_number
+            };
+
+            const newUser = await User.createWithValidation(userData);
+
+            // JWT 토큰 생성
+            const payload = {
+                userId: newUser.user_id,
+                email: newUser.email,
+                username: newUser.username
+            };
+
+            const accessToken = jwtUtils.generateAccessToken(payload);
+            const refreshToken = jwtUtils.generateRefreshToken(payload);
+
+            res.status(201).json({
+                success: true,
+                message: '회원가입이 성공적으로 완료되었습니다.',
+                data: {
+                    user: {
+                        id: newUser.user_id,
+                        username: newUser.username,
+                        email: newUser.email,
+                        nickname: newUser.nickname,
+                        created_at: newUser.created_at
+                    },
+                    tokens: {
+                        accessToken,
+                        refreshToken
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error('Register error:', error);
+            
+            // 이메일 중복 에러 처리
+            if (error.message === '이미 존재하는 이메일입니다.') {
+                return res.status(409).json({
+                    success: false,
+                    message: error.message,
+                    errors: { email: '이미 가입된 이메일 주소입니다.' }
+                });
+            }
+
+            res.status(500).json({
+                success: false,
+                message: '회원가입 중 오류가 발생했습니다.',
+                error: error.message
+            });
+        }
+    },
+
+    /**
+     * 로그인 API
+     * POST /api/users/auth/login
+     * Body: { email, password }
+     */
+    login: async (req, res) => {
+        try {
+            const { email, password } = req.body;
+
+            // 필수 입력값 검증
+            if (!email || !password) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'email과 password는 필수 입력값입니다.',
+                    errors: {
+                        email: !email ? 'email이 필요합니다.' : null,
+                        password: !password ? 'password가 필요합니다.' : null
+                    }
+                });
+            }
+
+            // 이메일로 사용자 검색
+            const user = await User.findByEmail(email);
+            if (!user) {
+                return res.status(401).json({
+                    success: false,
+                    message: '이메일 또는 비밀번호가 올바르지 않습니다.',
+                    errors: { auth: '로그인 정보를 확인해주세요.' }
+                });
+            }
+
+            // 비밀번호 검증
+            const isValidPassword = await hashUtils.comparePassword(password, user.password_hash);
+            if (!isValidPassword) {
+                return res.status(401).json({
+                    success: false,
+                    message: '이메일 또는 비밀번호가 올바르지 않습니다.',
+                    errors: { auth: '로그인 정보를 확인해주세요.' }
+                });
+            }
+
+            // JWT 토큰 생성
+            const payload = {
+                userId: user.user_id,
+                email: user.email,
+                username: user.username
+            };
+
+            const accessToken = jwtUtils.generateAccessToken(payload);
+            const refreshToken = jwtUtils.generateRefreshToken(payload);
+
+            res.json({
+                success: true,
+                message: '로그인이 성공적으로 완료되었습니다.',
+                data: {
+                    user: {
+                        id: user.user_id,
+                        username: user.username,
+                        email: user.email,
+                        nickname: user.nickname,
+                        created_at: user.created_at
+                    },
+                    tokens: {
+                        accessToken,
+                        refreshToken
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error('Login error:', error);
+            res.status(500).json({
+                success: false,
+                message: '로그인 중 오류가 발생했습니다.',
+                error: error.message
+            });
         }
     },
 

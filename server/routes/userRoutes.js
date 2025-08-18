@@ -23,4 +23,8 @@ router.get('/test/optional-auth', optionalAuthMiddleware, userController.testOpt
 // 사용자 프로필 조회 (인증 필요)
 router.get('/profile', authMiddleware, userController.getUserProfile);
 
+// === 인증 관련 라우트 ===
+router.post('/auth/register', userController.register);
+router.post('/auth/login', userController.login);
+
 module.exports = router;
