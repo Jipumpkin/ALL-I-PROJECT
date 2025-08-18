@@ -11,8 +11,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/api/users', require('./routes/userRoutes'));
-app.use('/api/animals', require('./routes/animalRoutes'));
-app.use('/api/shelters', require('./routes/shelterRoutes'));
+
+// Mock API 라우트 (프론트엔드 호환용)
+app.use('/api', require('./routes/mockRoutes'));
+
+// TODO: 추후 추가 예정
+// app.use('/api/animals', require('./routes/animalRoutes'));
+// app.use('/api/shelters', require('./routes/shelterRoutes'));
 
 app.get('/', (req, res) => {
     res.json({ message: 'ALL-I-PROJECT Backend Server Running' });

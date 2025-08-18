@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const jwtUtils = require('../utils/jwt');
 const hashUtils = require('../utils/hash');
+const mockDB = require('../utils/mockDatabase');
 
 const userController = {
     getAllUsers: async (req, res) => {
@@ -233,6 +234,193 @@ const userController = {
             res.status(500).json({
                 success: false,
                 message: '로그인 중 오류가 발생했습니다.',
+                error: error.message
+            });
+        }
+    },
+
+    // === Mock API (프론트엔드 호환용) ===
+
+    /**
+     * Mock 로그인 API (프론트엔드 완전 호환)
+     * POST /api/login
+     * Body: { username, password } - username은 실제로는 email도 허용
+     */
+    mockLogin: async (req, res) => {
+        try {
+            const { username, password } = req.body;
+
+            // 필수 입력값 검증
+            if (!username || !password) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'username과 password는 필수 입력값입니다.',
+                    errors: {
+                        username: !username ? 'username이 필요합니다.' : null,
+                        password: !password ? 'password가 필요합니다.' : null
+                    }
+                });
+            }
+
+            // username 또는 email로 사용자 검색 (Mock DB)
+            const user = await mockDB.findByUsernameOrEmail(username);
+            if (!user) {
+                return res.status(401).json({
+                    success: false,
+                    message: '사용자명 또는 비밀번호가 올바르지 않습니다.',
+                    errors: { auth: '로그인 정보를 확인해주세요.' }
+                });
+            }
+
+            // 비밀번호 검증
+            const isValidPassword = await hashUtils.comparePassword(password, user.password_hash);
+            if (!isValidPassword) {
+                return res.status(401).json({
+                    success: false,
+                    message: '사용자명 또는 비밀번호가 올바르지 않습니다.',
+                    errors: { auth: '로그인 정보를 확인해주세요.' }
+                });
+            }
+
+            // 로그인 시간 업데이트
+            await mockDB.updateLastLogin(user.user_id);
+
+            // JWT 토큰 생성
+            const payload = {
+                userId: user.user_id,
+                email: user.email,
+                username: user.username
+            };
+
+            const accessToken = jwtUtils.generateAccessToken(payload);
+            const refreshToken = jwtUtils.generateRefreshToken(payload);
+
+            res.json({
+                success: true,
+                message: '로그인이 성공적으로 완료되었습니다.',
+                user: {
+                    id: user.user_id,
+                    username: user.username,
+                    email: user.email,
+                    nickname: user.nickname
+                },
+                tokens: {
+                    accessToken,
+                    refreshToken
+                }
+            });
+
+        } catch (error) {
+            console.error('Mock Login error:', error);
+            res.status(500).json({
+                success: false,
+                message: '로그인 중 오류가 발생했습니다.',
+                error: error.message
+            });
+        }
+    },
+
+    /**
+     * Mock 회원가입 API (프론트엔드 호환용)
+     * POST /api/register  
+     * Body: { username, email?, password, nickname?, phone_number? }
+     */
+    mockRegister: async (req, res) => {
+        try {
+            const { username, email, password, nickname, phone_number } = req.body;
+
+            // 필수 입력값 검증
+            if (!username || !password) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'username과 password는 필수 입력값입니다.',
+                    errors: {
+                        username: !username ? 'username이 필요합니다.' : null,
+                        password: !password ? 'password가 필요합니다.' : null
+                    }
+                });
+            }
+
+            // email이 없으면 username을 email로 사용 (임시 처리)
+            const userEmail = email || `${username}@mock.com`;
+
+            // 이메일 형식 검증 (email이 제공된 경우만)
+            if (email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    return res.status(400).json({
+                        success: false,
+                        message: '올바른 이메일 형식이 아닙니다.',
+                        errors: { email: '유효한 이메일 주소를 입력해주세요.' }
+                    });
+                }
+            }
+
+            // 비밀번호 강도 검증
+            if (!hashUtils.validatePassword(password)) {
+                return res.status(400).json({
+                    success: false,
+                    message: '비밀번호가 보안 요구사항을 충족하지 않습니다.',
+                    errors: { 
+                        password: '비밀번호는 8자 이상, 영문자, 숫자, 특수문자를 포함해야 합니다.' 
+                    }
+                });
+            }
+
+            // 비밀번호 해싱
+            const hashedPassword = await hashUtils.hashPassword(password);
+
+            // 사용자 생성 (Mock DB)
+            const userData = {
+                username,
+                email: userEmail,
+                password_hash: hashedPassword,
+                nickname: nickname || username,
+                phone_number: phone_number || null
+            };
+
+            const newUser = await mockDB.createUser(userData);
+
+            // JWT 토큰 생성
+            const payload = {
+                userId: newUser.user_id,
+                email: newUser.email,
+                username: newUser.username
+            };
+
+            const accessToken = jwtUtils.generateAccessToken(payload);
+            const refreshToken = jwtUtils.generateRefreshToken(payload);
+
+            res.status(201).json({
+                success: true,
+                message: '회원가입이 성공적으로 완료되었습니다.',
+                user: {
+                    id: newUser.user_id,
+                    username: newUser.username,
+                    email: newUser.email,
+                    nickname: newUser.nickname
+                },
+                tokens: {
+                    accessToken,
+                    refreshToken
+                }
+            });
+
+        } catch (error) {
+            console.error('Mock Register error:', error);
+            
+            // 이메일 중복 에러 처리
+            if (error.message === '이미 존재하는 이메일입니다.') {
+                return res.status(409).json({
+                    success: false,
+                    message: error.message,
+                    errors: { email: '이미 가입된 이메일 주소입니다.' }
+                });
+            }
+
+            res.status(500).json({
+                success: false,
+                message: '회원가입 중 오류가 발생했습니다.',
                 error: error.message
             });
         }
