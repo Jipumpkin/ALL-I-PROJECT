@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -9,6 +10,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// 정적 파일 서빙 (업로드된 이미지 접근용)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // 테스트 라우트
 app.get('/api/test', (req, res) => {
@@ -41,6 +45,8 @@ app.post('/api/register', (req, res) => {
 
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api', require('./routes/commentRoutes'));
+app.use('/api/posts', require('./routes/postRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
 
 // TODO: 추후 추가 예정
 // app.use('/api/animals', require('./routes/animalRoutes'));
@@ -67,6 +73,8 @@ const server = app.listen(PORT, () => {
     console.log('   - POST /api/register');
     console.log('   - /api/users/* (userRoutes)');
     console.log('   - /api/posts/:postId/comments/* (commentRoutes)');
+    console.log('   - /api/posts/* (postRoutes)');
+    console.log('   - /api/ai/* (aiRoutes)');
     console.log(`🌐 서버 주소: http://localhost:${PORT}`);
     console.log('✅ 서버가 정상적으로 시작되었습니다!');
 });

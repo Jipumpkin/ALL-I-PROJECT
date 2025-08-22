@@ -1,19 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const postController = require('../controllers/postController');
-const auth = require('../middleware/auth');
+const { authMiddleware } = require('../middleware/auth');
 const upload = require('../middleware/upload');
+const { handleUploadError } = require('../middleware/upload');
 
 router.get('/', postController.getPosts);
 
 router.get('/:id', postController.getPostById);
 
-router.post('/', auth, upload.single('image'), postController.createPost);
+router.post('/', authMiddleware, upload.single('image'), postController.createPost);
 
-router.put('/:id', auth, upload.single('image'), postController.updatePost);
+router.put('/:id', authMiddleware, upload.single('image'), postController.updatePost);
 
-router.delete('/:id', auth, postController.deletePost);
+router.delete('/:id', authMiddleware, postController.deletePost);
 
-router.post('/:id/like', auth, postController.toggleLike);
+router.post('/:id/like', authMiddleware, postController.toggleLike);
+
+// 업로드 에러 핸들러
+router.use(handleUploadError);
 
 module.exports = router;
