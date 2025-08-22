@@ -31,7 +31,7 @@ const BravestAnimals = () => {
           <div key={animal.animal_id} className={styles.card}>
             <img src={animal.image_url} alt={animal.species} className={styles.image} />
             <div className={styles.info}>
-              <h3>{animal.species} ({animal.gender === 'male' ? '남' : '여'})</h3>
+              <h3>{animal.species} ({animal.gender === 'male' ? '수컷' : '암컷'})</h3>
               <p>{animal.region}</p>
               <p>구조일: {new Date(animal.rescued_at).toLocaleDateString()}</p>
             </div>

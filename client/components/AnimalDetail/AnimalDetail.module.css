@@ -1,0 +1,85 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  max-width: 800px;
+  margin: 20px auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profileSection {
+  margin-bottom: 20px;
+}
+
+.profileImage {
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 50%; /* 프로필처럼 보이도록 원형으로 */
+  border: 3px solid #ddd;
+}
+
+.infoSection {
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 30px;
+  text-align: left; /* 정보 왼쪽 정렬 */
+}
+
+.infoSection p {
+  font-size: 1.1em;
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.infoSection strong {
+  color: #555;
+  margin-right: 5px;
+}
+
+.divider {
+  width: 80%;
+  border: none;
+  border-top: 1px solid #eee; /* 옅은 색 실선 */
+  margin: 20px 0;
+}
+
+.shelterInfoSection {
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 30px;
+  text-align: left;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.shelterInfoSection h3 {
+  text-align: center;
+  margin-top: 0;
+  color: #333;
+}
+
+.shelterInfoSection p {
+  font-size: 1em;
+  margin: 5px 0;
+}
+
+.uploadButton {
+  padding: 12px 25px;
+  font-size: 1.1em;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.uploadButton:hover {
+  background-color: #45a049;
+}

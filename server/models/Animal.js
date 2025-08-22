@@ -5,9 +5,9 @@ class Animal {
         const query = `
             SELECT animal_id, species, gender, age, image_url, region, rescued_at
             FROM animals 
-            WHERE status = 'available' -- 보호중인 동물 중에서
-            ORDER BY rescued_at ASC -- 구조일이 가장 오래된 순으로
-            LIMIT 3 -- 3마리만 조회
+            WHERE status = 'available' -- 蹂댄몄 臾 以
+            ORDER BY rescued_at ASC -- 援ъ“쇱 媛 ㅻ 쇰
+            LIMIT 3 -- 3留由щ 議고
         `;
         const [rows] = await db.execute(query);
         return rows;
@@ -17,8 +17,19 @@ class Animal {
         const query = `
             SELECT animal_id, species, gender, age, image_url, region 
             FROM animals 
-            ORDER BY RAND()
+            ORDER BY rescued_at DESC
             LIMIT 12
+        `;
+        const [rows] = await db.execute(query);
+        return rows;
+    }
+
+    static async findRandom(limit) {
+        const query = `
+            SELECT animal_id, species, gender, age, image_url, region
+            FROM animals
+            ORDER BY RAND()
+            LIMIT ${parseInt(limit, 10)}
         `;
         const [rows] = await db.execute(query);
         return rows;
@@ -31,7 +42,19 @@ class Animal {
     }
 
     static async findById(id) {
-        const query = 'SELECT * FROM animals WHERE animal_id = ?';
+        const query = `
+            SELECT
+                a.*,
+                s.shelter_name,
+                s.address AS shelter_address,
+                s.contact_number AS shelter_contact_number
+            FROM
+                animals a
+            JOIN
+                shelters s ON a.shelter_id = s.shelter_id
+            WHERE
+                a.animal_id = ?
+        `;
         const [rows] = await db.execute(query, [id]);
         return rows[0];
     }

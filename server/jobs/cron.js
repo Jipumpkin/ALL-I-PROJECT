@@ -2,7 +2,7 @@ require('dotenv').config();
 const cron = require('node-cron');
 const { syncRecentMonth } = require('../services/animalSync');
 
-cron.schedule('0 0 * * *', async () => {
+cron.schedule('0 12 * * *', async () => {
   try {
     await syncRecentMonth();
   } catch (e) {
@@ -10,4 +10,4 @@ cron.schedule('0 0 * * *', async () => {
   }
 }, { timezone: 'Asia/Seoul' });
 
-console.log('cron registered: 0 0 * * * (Asia/Seoul)');
+console.log('cron registered: 0 12 * * * (Asia/Seoul)');

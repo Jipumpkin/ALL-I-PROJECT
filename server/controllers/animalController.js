@@ -1,7 +1,7 @@
 const Animal = require('../models/Animal');
 
 const animalController = {
-    // 가장 오래 기다린 동물 목록 조회
+    // 媛 ㅻ 湲곕ㅻ┛ 臾 紐⑸ 議고
     getOldestAnimals: async (req, res) => {
         try {
             const animals = await Animal.findOldest();
@@ -11,13 +11,14 @@ const animalController = {
         }
     },
 
-    // 메인 페이지용 동물 목록 조회
+    // 硫 댁 臾 紐⑸ 議고
     getAnimalList: async (req, res) => {
         try {
-            // 모델에 새로운 함수를 만들어 필요한 데이터만 조회
-            const animals = await Animal.findAllForList(); 
+            // 紐⑤㍪㗐 濡 ⑥瑜 留ㅼ  곗댄곕 議고
+            const animals = await Animal.findRandom(10); 
             res.json(animals);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: error.message });
         }
     },

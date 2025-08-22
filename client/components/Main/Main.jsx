@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import BravestAnimals from '../BravestAnimals/BravestAnimals.jsx';
 import Content from '../Content/Content.jsx';
 import styles from './Main.module.css';
@@ -25,6 +26,12 @@ const Main = () => {
     fetchAnimals();
   }, []);
 
+  const genderMap = {
+    male: '수컷',
+    female: '암컷',
+    unknown: '불명'
+  };
+
   return (
     <div className={styles['main-Container']}>
       <Content>
@@ -37,13 +44,15 @@ const Main = () => {
               <div className={styles['animal-grid']}>
                 {animals.map((animal) => (
                   <div key={animal.animal_id} className={styles['animal-card']}>
-                    <img src={animal.image_url} alt={animal.species} className={styles['animal-image']} />
-                    <div className={styles['animal-info']}>
-                      <p><strong>품종:</strong> {animal.species}</p>
-                      <p><strong>생년:</strong> {animal.age}</p>
-                      <p><strong>성별:</strong> {animal.gender}</p>
-                      <p><strong>구조지역:</strong> {animal.region}</p>
-                    </div>
+                    <Link to={`/animal/${animal.animal_id}`} className={styles['animal-card-link']}>
+                      <img src={animal.image_url} alt={animal.species} className={styles['animal-image']} />
+                      <div className={styles['animal-info']}>
+                        <p><strong>품종:</strong> {animal.species}</p>
+                        <p><strong>생년:</strong> {animal.age}</p>
+                        <p><strong>성별:</strong> {genderMap[animal.gender] || '정보 없음'}</p>
+                        <p><strong>구조지역:</strong> {animal.region}</p>
+                      </div>
+                    </Link>
                   </div>
                 ))}
               </div>

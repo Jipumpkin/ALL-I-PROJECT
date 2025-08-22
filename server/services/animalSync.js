@@ -76,22 +76,41 @@ async function syncAnimalData() {
     const transformedData = items.map(item => {
       const genderMap = { 'M': 'male', 'F': 'female' };
       const statusMap = { '보호중': 'available' };
+      const placeholderImage = '/images/unknown_animal.png'; // 이미지 준비중 placeholder
+
+      // 데이터 클리닝 및 유효성 검사
+      const cleanedItem = {
+        desertionNo: item.desertionNo,
+        careRegNo: item.careRegNo,
+        careNm: item.careNm ? item.careNm.trim() : '정보 없음',
+        careAddr: item.careAddr ? item.careAddr.trim() : '정보 없음',
+        careTel: item.careTel ? item.careTel.trim() : '정보 없음',
+        upKindNm: item.upKindNm ? item.upKindNm.trim() : '기타',
+        sexCd: item.sexCd,
+        age: item.age ? item.age.replace('(년생)', '').trim() : '나이 미상',
+        processState: item.processState,
+        orgNm: item.orgNm ? item.orgNm.trim() : '지역 정보 없음',
+        happenDt: item.happenDt,
+        colorCd: item.colorCd ? item.colorCd.trim() : '정보 없음',
+        specialMark: item.specialMark ? item.specialMark.trim() : '특이사항 없음',
+        popfile1: item.popfile1 && item.popfile1.startsWith('http') ? item.popfile1 : placeholderImage,
+      };
 
       return {
-        animal_ext_id: item.desertionNo,
-        shelter_ext_id: item.careRegNo,
-        shelter_name: item.careNm,
-        shelter_address: item.careAddr,
-        shelter_tel: item.careTel,
-        animal_species: item.upKindNm,
-        animal_gender: genderMap[item.sexCd] || 'unknown',
-        animal_age: item.age.replace('(년생)', '').trim(),
-        animal_status: statusMap[item.processState] || 'available',
-        animal_region: item.orgNm,
-        animal_rescued_at: item.happenDt,
-        animal_colorCd: item.colorCd,
-        animal_specialMark: item.specialMark,
-        animal_image_url: item.popfile1,
+        animal_ext_id: cleanedItem.desertionNo,
+        shelter_ext_id: cleanedItem.careRegNo,
+        shelter_name: cleanedItem.careNm,
+        shelter_address: cleanedItem.careAddr,
+        shelter_tel: cleanedItem.careTel,
+        animal_species: cleanedItem.upKindNm,
+        animal_gender: genderMap[cleanedItem.sexCd] || 'unknown',
+        animal_age: cleanedItem.age,
+        animal_status: statusMap[cleanedItem.processState] || 'available',
+        animal_region: cleanedItem.orgNm,
+        animal_rescued_at: cleanedItem.happenDt,
+        animal_colorCd: cleanedItem.colorCd,
+        animal_specialMark: cleanedItem.specialMark,
+        animal_image_url: cleanedItem.popfile1,
       };
     });
 
