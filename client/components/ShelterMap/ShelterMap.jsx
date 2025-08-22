@@ -188,17 +188,96 @@ const ShelterMap = () => {
         capacity: 180,
         current_animals: 42,
         website: 'https://animal.gg.go.kr'
+      },
+      // 추가 지역 보호소들
+      {
+        id: 'shelter_gyeonggi_goyang',
+        place_name: '고양시 동물보호센터',
+        category_name: '공공기관 > 동물보호소',
+        address_name: '경기도 고양시 덕양구 대자동',
+        x: '126.8336',
+        y: '37.6264',
+        phone: '031-8075-3363',
+        capacity: 150,
+        current_animals: 38,
+        website: 'https://www.goyang.go.kr'
+      },
+      {
+        id: 'shelter_gyeonggi_seongnam',
+        place_name: '성남시 동물보호센터',
+        category_name: '공공기관 > 동물보호소',
+        address_name: '경기도 성남시 중원구 상대원동',
+        x: '127.1378',
+        y: '37.4201',
+        phone: '031-729-3081',
+        capacity: 120,
+        current_animals: 45,
+        website: 'https://www.seongnam.go.kr'
+      },
+      {
+        id: 'shelter_gyeonggi_bucheon',
+        place_name: '부천시 동물보호센터',
+        category_name: '공공기관 > 동물보호소',
+        address_name: '경기도 부천시 오정구 고강동',
+        x: '126.7358',
+        y: '37.5073',
+        phone: '032-625-4237',
+        capacity: 100,
+        current_animals: 32,
+        website: 'https://www.bucheon.go.kr'
+      },
+      {
+        id: 'shelter_seoul_gangnam',
+        place_name: '강남구 동물보호센터',
+        category_name: '공공기관 > 동물보호소',
+        address_name: '서울특별시 강남구 개포동',
+        x: '127.0495',
+        y: '37.4979',
+        phone: '02-3423-5974',
+        capacity: 80,
+        current_animals: 25,
+        website: 'https://www.gangnam.go.kr'
+      },
+      {
+        id: 'shelter_seoul_mapo',
+        place_name: '마포구 동물보호센터',
+        category_name: '공공기관 > 동물보호소',
+        address_name: '서울특별시 마포구 상암동',
+        x: '126.8895',
+        y: '37.5759',
+        phone: '02-3153-9981',
+        capacity: 70,
+        current_animals: 22,
+        website: 'https://www.mapo.go.kr'
       }
     ];
 
-    // 현재 위치에서 100km 이내의 보호소만 표시
+    // 현재 위치에서 30km 이내의 보호소만 표시 (더 정확한 주변 검색)
     const nearbyShelters = shelterData.filter(shelter => {
       const distance = getDistance(lat, lng, parseFloat(shelter.y), parseFloat(shelter.x));
       console.log(`${shelter.place_name}: ${distance.toFixed(1)}km`);
-      return distance <= 100; // 100km 이내
+      return distance <= 30; // 30km 이내로 축소
     });
 
-    console.log(`총 ${nearbyShelters.length}개의 보호소가 100km 이내에 있습니다.`);
+    console.log(`총 ${nearbyShelters.length}개의 보호소가 30km 이내에 있습니다.`);
+    
+    // 주변에 보호소가 없을 경우 반경을 확장하여 재검색
+    if (nearbyShelters.length === 0) {
+      console.log('30km 이내에 보호소가 없습니다. 반경을 50km로 확장하여 재검색합니다.');
+      const expandedShelters = shelterData.filter(shelter => {
+        const distance = getDistance(lat, lng, parseFloat(shelter.y), parseFloat(shelter.x));
+        return distance <= 50;
+      });
+      
+      if (expandedShelters.length > 0) {
+        expandedShelters.forEach(shelter => {
+          addShelterMarker(map, shelter);
+          console.log('확장 검색으로 보호소 마커 추가:', shelter.place_name);
+        });
+        setShelters(expandedShelters);
+        return; // 확장 검색 결과로 종료
+      }
+    }
 
     // 보호소 마커 추가
     nearbyShelters.forEach(shelter => {
@@ -257,7 +336,7 @@ const ShelterMap = () => {
           }
         }, {
           location: new window.kakao.maps.LatLng(lat, lng),
-          radius: 20000, // 20km로 확대
+          radius: 10000, // 10km로 축소 (더 정확한 주변 검색)
           sort: window.kakao.maps.services.SortBy.DISTANCE
         });
 
@@ -423,7 +502,8 @@ const ShelterMap = () => {
       getDistance(userLocation.lat, userLocation.lng, parseFloat(place.y), parseFloat(place.x)) : null;
     
     const infoContent = `
-      <div style="padding:12px;font-size:13px;width:280px;border-radius:8px;">
+      <div style="padding:12px;font-size:13px;width:280px;border-radius:8px;position:relative;">
+        <div style="position:absolute;top:8px;right:8px;cursor:pointer;font-size:16px;color:#999;font-weight:bold;" onclick="if(window.currentInfoWindow) { window.currentInfoWindow.close(); window.currentInfoWindow = null; }">✕</div>
         <strong style="color:#F89C1E;font-size:14px;">🏠 ${place.place_name}</strong><br/>
         <div style="margin:6px 0;padding:4px;background-color:#f8f9fa;border-radius:4px;">
           <span style="color:#666;font-size:12px;">${place.category_name}</span><br/>
@@ -440,7 +520,7 @@ const ShelterMap = () => {
         ${distance ? `<div style="margin:4px 0;"><span style="color:#28a745;font-size:12px;">📏 거리: ${distance.toFixed(1)}km</span></div>` : ''}
         ${place.website ? `<div style="margin:4px 0;"><a href="${place.website}" target="_blank" style="color:#0066cc;font-size:12px;text-decoration:none;">🌐 홈페이지 바로가기</a></div>` : ''}
         <div style="margin-top:8px;padding-top:6px;border-top:1px solid #eee;">
-          <span style="color:#999;font-size:11px;">💡 클릭하면 입양 가능한 동물 정보를 확인할 수 있습니다</span>
+          <span style="color:#999;font-size:11px;">${place.capacity ? '💡 동물보호센터 - 입양 문의 가능' : '💡 동물병원 - 치료 및 상담 가능'}</span>
         </div>
       </div>
     `;
@@ -451,7 +531,21 @@ const ShelterMap = () => {
 
     // 마커 클릭 이벤트
     window.kakao.maps.event.addListener(marker, 'click', () => {
+      // 다른 열린 정보창들 모두 닫기
+      if (window.currentInfoWindow && window.currentInfoWindow !== infowindow) {
+        window.currentInfoWindow.close();
+      }
+      
       infowindow.open(map, marker);
+      window.currentInfoWindow = infowindow;
+    });
+    
+    // 지도 클릭시 정보창 닫기
+    window.kakao.maps.event.addListener(map, 'click', () => {
+      if (window.currentInfoWindow) {
+        window.currentInfoWindow.close();
+        window.currentInfoWindow = null;
+      }
     });
   };
 
@@ -491,7 +585,7 @@ const ShelterMap = () => {
   if (error && error.includes("API")) {
     return (
       <div className={styles['map-container']}>
-        <h2>내 주변 유기동물 보호소</h2>
+        <h2>내 주변 반려동물 관련 시설</h2>
         <div className={styles['error-container']}>
           <p style={{color: 'red', marginBottom: '10px'}}>⚠️ 지도 서비스를 이용할 수 없습니다</p>
           <div className={styles['solution-box']}>
@@ -511,8 +605,8 @@ const ShelterMap = () => {
           </div>
           
           <div className={styles['shelter-list']}>
-            <h3>📍 보호소 검색 서비스 준비 중...</h3>
-            <p>카카오 맵 API가 활성화되면 실제 보호소 위치를 표시합니다.</p>
+            <h3>📍 반려동물 관련 시설 검색 서비스 준비 중...</h3>
+            <p>카카오 맵 API가 활성화되면 실제 보호소 및 동물병원 위치를 표시합니다.</p>
           </div>
         </div>
       </div>
@@ -531,23 +625,23 @@ const ShelterMap = () => {
             📍 {shelters.length}개의 관련 시설을 찾았습니다.
           </p>
           <div className={styles['map-legend']}>
-            <div className={styles['legend-title']}>🏠 보호소 상태별 마커</div>
+            <div className={styles['legend-title']}>🏠 시설 유형별 마커</div>
             <div className={styles['legend-items']}>
               <div className={styles['legend-item']}>
                 <span className={styles['legend-marker']} style={{backgroundColor: '#28a745'}}></span>
-                <span>여유 (50% 미만)</span>
+                <span>보호소 - 여유 (50% 미만)</span>
               </div>
               <div className={styles['legend-item']}>
                 <span className={styles['legend-marker']} style={{backgroundColor: '#ffc107'}}></span>
-                <span>보통 (50-80%)</span>
+                <span>보호소 - 보통 (50-80%)</span>
               </div>
               <div className={styles['legend-item']}>
                 <span className={styles['legend-marker']} style={{backgroundColor: '#dc3545'}}></span>
-                <span>포화 (80% 이상)</span>
+                <span>보호소 - 포화 (80% 이상)</span>
               </div>
               <div className={styles['legend-item']}>
                 <span className={styles['legend-marker']} style={{backgroundColor: '#F89C1E'}}></span>
-                <span>정보 없음</span>
+                <span>동물병원 / 기타시설</span>
               </div>
             </div>
           </div>
