@@ -4,99 +4,238 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 반투명 검은 배경 */
-  z-index: 1000;
+  background-color: var(--color-bg-overlay);
+  z-index: var(--z-modal-overlay);
+  animation: fadeIn var(--transition-normal) ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
 }
 
 .modal-content {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 350px;
-  padding: 10px 5px;
-  background-color: white;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  z-index: 1001;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 100vh;
+  padding: var(--spacing-3xl) var(--spacing-2xl);
+  background-color: var(--color-bg-glass);
+  backdrop-filter: var(--backdrop-blur-lg);
+  -webkit-backdrop-filter: var(--backdrop-blur-lg);
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-modal);
+  z-index: var(--z-modal);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  animation: slideIn var(--transition-normal) ease-out;
+  overflow-y: auto;
+  font-family: var(--font-family-secondary);
 }
 
 .modal-close-btn {
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: var(--spacing-2xl);
+  right: var(--spacing-4xl);
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: var(--font-size-xl);
   cursor: pointer;
+  padding: var(--spacing-sm);
+  color: var(--color-text-primary);
+  transition: var(--transition-fast);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-full);
+}
+
+.modal-close-btn:hover {
+  color: var(--color-text-secondary);
+  background-color: var(--color-primary-light);
+}
+
+.modal-close-btn:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .modal-content h2 {
-  margin-bottom: 20px;
-  font-size: 24px;
-  font-weight: bold;
+  margin-bottom: var(--spacing-3xl);
+  margin-top: var(--spacing-xl);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
 }
 
-.login-form {
+.menu-buttons {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
 }
 
-.login-form input {
+.menu-btn {
   width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-sizing: border-box;
-}
-
-.login-btn {
-  width: 100%;
-  padding: 12px;
-  background-color: #F89C1E; /* 주황색 배경 */
+  padding: var(--spacing-md);
+  background-color: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: var(--transition-fast);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
-.login-btn:hover {
-  background-color: #E67E22;
+.menu-btn:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.menu-btn:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.menu-btn:active {
+  transform: translateY(0);
 }
 
 .modal-links {
-  margin-top: 20px;
   display: flex;
   justify-content: center;
-  gap: 15px;
-  font-size: 14px;
-  color: #555;
+  gap: var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-3xl);
 }
 
 .modal-links span {
   cursor: pointer;
-  display: flex;
-  flex-direction: row;
-  font-size: small;
-  padding: auto 0;
-  margin-bottom: 30px;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition-fast);
+  position: relative;
 }
 
 .modal-links span:hover {
+  color: var(--color-primary);
   text-decoration: underline;
+  background-color: var(--color-primary-light);
+}
+
+.modal-links span:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 /* 구분선 */
 .modal-links span:not(:last-child)::after {
   content: '|';
-  margin-left: 15px;
-  color: #ccc;
+  margin-left: var(--spacing-lg);
+  color: var(--color-border);
+  position: absolute;
+  right: calc(var(--spacing-lg) * -1);
+}
+
+.user-info {
+  text-align: center;
+  margin-bottom: var(--spacing-3xl);
+  padding: var(--spacing-xl);
+  background-color: var(--color-bg-light);
+  border-radius: var(--border-radius-xl);
+  border: 1px solid var(--color-border-light);
+}
+
+.user-info p {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+}
+
+.user-info strong {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.logout-btn {
+  background-color: var(--color-secondary) !important;
+}
+
+.logout-btn:hover:not(:disabled) {
+  background-color: var(--color-secondary-hover) !important;
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 60%;
+    max-width: 380px;
+    padding: var(--spacing-2xl) var(--spacing-lg);
+  }
+  
+  .modal-close-btn {
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    width: 80%;
+    max-width: 320px;
+    padding: var(--spacing-xl) var(--spacing-md);
+  }
+  
+  .modal-close-btn {
+    width: 40px;
+    height: 40px;
+    font-size: var(--font-size-lg);
+  }
+  
+  .menu-btn {
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    min-height: 40px;
+  }
+  
+  .modal-content h2 {
+    font-size: var(--font-size-lg);
+  }
 }

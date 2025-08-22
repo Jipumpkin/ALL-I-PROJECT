@@ -1,0 +1,463 @@
+/* Maker.module.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
+
+.body {
+  font-family: "Inter", sans-serif;
+  background-color: #f7fafc;
+  padding: 1rem;
+}
+
+.mainContainer {
+  max-width: 28rem;
+  margin: auto;
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* 이미지 영역 */
+.petImagePlaceholder,
+.userImageContainer {
+  width: 100%;
+  height: 12rem;
+  background-color: #e2e8f0;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #6b7280;
+  font-weight: 700;
+  border: 2px dashed #d1d5db;
+  margin-bottom: 1.5rem;
+}
+
+.userImageContainer {
+  position: relative;
+  cursor: pointer;
+}
+
+.userImageText {
+  font-weight: 700;
+}
+
+.userImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+/* 아이콘 바 (3등분 + 세로 구분선) */
+.iconButtonsContainer {
+  display: flex;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: #ffffff;
+  margin-bottom: 1.5rem;
+}
+
+.iconButton {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px; /* 필요 시 높이 조절 */
+  cursor: pointer;
+  background: #ffffff;
+  color: #d97706; /* 아이콘 컬러 */
+  transition: background-color 0.15s ease, transform 0.05s ease;
+  padding: 0;
+  border: none;
+}
+
+.iconButton + .iconButton {
+  border-left: 1px solid #e5e7eb; /* 세로 구분선 */
+}
+
+.iconButton:hover,
+.iconButton.active {
+  background-color: #fff7ed;
+}
+
+.iconButton:active {
+  transform: translateY(1px);
+}
+
+/* SVG/IMG 아이콘 크기 통일 */
+.iconButton svg,
+.iconButton img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+/* Modal Styling */
+.imageModalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(107, 114, 128, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 50;
+}
+
+.imageModal {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  max-width: 24rem;
+}
+
+.modalTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.modalOptionButton,
+.modalCloseButton {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+  font-weight: 500;
+}
+
+.modalOptionButton.primary {
+  background-color: #3b82f6;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.modalOptionButton.primary:hover {
+  background-color: #2563eb;
+}
+
+.modalOptionButton.secondary {
+  background-color: #d97706;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalOptionButton.secondary:hover {
+  background-color: #b45309;
+}
+
+.modalOptionButton.tertiary {
+  background-color: #6b7280;
+  color: #ffffff;
+}
+
+.modalOptionButton.tertiary:hover {
+  background-color: #4b5563;
+}
+
+.modalCloseButton {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  color: #4b5563;
+}
+
+.modalCloseButton:hover {
+  color: #111827;
+}
+
+/* Loading Modal Styling */
+.loadingModalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 60;
+}
+
+.loadingModal {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  max-width: 20rem;
+  text-align: center;
+  border: 2px solid #e5e7eb;
+  position: relative;
+}
+
+.loadingCloseButton {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #6b7280;
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.loadingCloseButton:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.loadingSpinner {
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #d97706;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1.5rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingMessage {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1f2937;
+  line-height: 1.5;
+}
+
+.loadingMessage > div {
+  margin-bottom: 0.25rem;
+}
+
+.loadingMessage > div:last-child {
+  margin-bottom: 0;
+}
+
+/* Result Modal Styling */
+.resultModalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 70;
+  overflow-y: auto;
+}
+
+.resultModal {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 32rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  margin: auto;
+}
+
+.resultCloseButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #6b7280;
+  cursor: pointer;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+
+.resultCloseButton:hover {
+  background-color: rgba(243, 244, 246, 0.95);
+  color: #374151;
+}
+
+.resultHeader {
+  padding: 2rem 2rem 1rem;
+  text-align: center;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: white;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.resultTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.resultSubtitle {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.resultImageContainer {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.resultImage {
+  width: 100%;
+  max-width: 20rem;
+  height: 20rem;
+  object-fit: cover;
+  border-radius: 1rem;
+  border: 3px solid #e5e7eb;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.resultImagePlaceholder {
+  width: 100%;
+  max-width: 20rem;
+  height: 20rem;
+  background-color: #f3f4f6;
+  border: 2px dashed #d1d5db;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-weight: 500;
+  text-align: center;
+}
+
+.resultInfoTable {
+  padding: 0 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.resultActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem 2rem 2rem;
+}
+
+.resultActionButton {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.resultActionButton.primary {
+  background-color: #f97316;
+  color: white;
+}
+
+.resultActionButton.primary:hover {
+  background-color: #ea580c;
+  transform: translateY(-1px);
+}
+
+.resultActionButton.secondary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.resultActionButton.secondary:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.resultActionButton.tertiary {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+}
+
+.resultActionButton.tertiary:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+/* Table Styling */
+.infoTableContainer {
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.infoTable {
+  min-width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+.infoTable thead {
+  background-color: #f9fafb;
+}
+
+.infoTable thead tr {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tableHeader {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tableCellKey {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #1f2937;
+  font-weight: 600;
+  width: 33.333333%;
+  border-right: 1px solid #e5e7eb;
+}
+
+.tableCellValue {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #4b5563;
+  width: 66.666667%;
+}

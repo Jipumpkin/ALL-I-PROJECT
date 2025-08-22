@@ -2,44 +2,45 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 84px - 5vh);
-  background-color: #f0f2f5;
+  min-height: calc(100vh - 120px);
+  background-color: white;
+  padding: 20px;
 }
 
 .forgot-id-box {
   background-color: white;
   flex-direction: column;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  max-width: 400px;
+  max-width: 450px;
   width: 100%;
-  padding: 48px;
+  padding: 40px;
 }
 
-.forgot-id-form h2 {
-  margin-top: 64px;
+h2 {
   margin-bottom: 24px;
   font-size: 24px;
-  color: #1c1e21;
+  color: var(--color-text-primary);
   text-align: center;
 }
 
 .find-id-button {
   width: 100%;
   padding: 12px;
-  background-color: #F89C1E;
+  background-color: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--border-radius-md);
   font-size: 18px;
   font-weight: 600;
   cursor: pointer;
   margin-top: 8px;
+  transition: var(--transition-fast);
 }
 
 .find-id-button:hover {
-  background-color: #F89C1E;
+  background-color: var(--color-primary-hover);
 }
 
 .login-links {
@@ -48,13 +49,40 @@
   justify-content: center;
   gap: 15px;
   font-size: 14px;
-  color: #555;
+  color: var(--color-text-secondary);
+}
+
+.input-group {
+  margin-bottom: 16px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: var(--transition-fast);
+}
+
+.input-group input:focus {
+  border-color: var(--color-primary);
+  outline: none;
 }
 
 .login-links a {
-  color: #F89C1E;  /* 연한 파란색 */
+  color: var(--color-primary);
   text-decoration: none;
   font-size: 14px;
+  transition: var(--transition-fast);
 }
 
 .login-links a:hover {

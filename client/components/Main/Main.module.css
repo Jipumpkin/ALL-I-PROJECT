@@ -1,11 +1,14 @@
 .main-Container {
     display: flex;
-    justify-content:space-evenly;
-    align-items: start;
+    justify-content: space-evenly;
+    align-items: flex-start;
     min-height: 50vh;
     width: 100%;
-    max-width: 1200px; /* Adjust as needed for desktop */
+    max-width: var(--container-max-width, 1200px); /* Use variable with fallback */
     margin: 0 auto; /* Center the container */
+    padding: var(--spacing-lg, 20px); /* Use variable with fallback */
+    box-sizing: border-box;
+    font-family: var(--font-family-secondary);
     /* cursor: url('../public/images/bone.png'), auto; */
 }
 
@@ -55,4 +58,19 @@ body {
     text-decoration: none; /* 밑줄 제거 */
     color: inherit; /* 부모 요소의 글자색 상속 (파란색 제거) */
     display: block; /* 카드 전체를 클릭 가능하게 */
+}
+
+/* Mobile responsive improvements */
+@media (max-width: 768px) {
+    .main-Container {
+        padding: var(--spacing-md);
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-Container {
+        padding: var(--spacing-sm);
+    }
 }
