@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +29,7 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:3003/api/login', formData, {
+      const response = await axios.post('http://localhost:3003/api/users/auth/login', formData, {
         headers: {
           'Content-Type': 'application/json',
         }
@@ -63,13 +63,14 @@ const Login = () => {
           <form onSubmit={handleSubmit}>
             {error && <div className={styles["error-message"]}>{error}</div>}
             <div className={styles["input-group"]}>
-              <label htmlFor="email">이메일</label>
+              <label htmlFor="username">아이디</label>
               <input 
-                type="email" 
-                id="email" 
-                name="email" 
-                value={formData.email}
+                type="text" 
+                id="username" 
+                name="username" 
+                value={formData.username}
                 onChange={handleChange}
+                placeholder="아이디를 입력해주세요"
                 required
               />
             </div>

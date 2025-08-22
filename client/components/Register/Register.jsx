@@ -11,30 +11,73 @@ const Register = () => {
   
   const [formData, setFormData] = useState({
     username: '',
-    email: '',
     password: '',
     confirmPassword: '',
-    name: '',
-    phone: '',
-    birthYear: '',
-    birthMonth: '',
-    birthDay: ''
+    email: '',
+    nickname: '',
+    gender: '',
+    phone: ''
   });
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isUsernameChecked, setIsUsernameChecked] = useState(false);
+  const [usernameCheckMessage, setUsernameCheckMessage] = useState('');
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+    
+    // username이 변경되면 중복체크 초기화
+    if (name === 'username') {
+      setIsUsernameChecked(false);
+      setUsernameCheckMessage('');
+    }
+  };
+
+  // 아이디 중복체크 함수
+  const checkUsernameDuplicate = async () => {
+    if (!formData.username) {
+      setUsernameCheckMessage('아이디를 입력해주세요.');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3003/api/users/auth/check-username', {
+        username: formData.username
+      });
+      
+      if (response.data.success && response.data.available) {
+        setIsUsernameChecked(true);
+        setUsernameCheckMessage('사용 가능한 아이디입니다.');
+      } else {
+        setIsUsernameChecked(false);
+        setUsernameCheckMessage('이미 사용 중인 아이디입니다.');
+      }
+    } catch (error) {
+      if (error.response?.status === 409) {
+        setIsUsernameChecked(false);
+        setUsernameCheckMessage('이미 사용 중인 아이디입니다.');
+      } else {
+        setUsernameCheckMessage('중복체크 중 오류가 발생했습니다.');
+      }
+    }
   };
 
   const registerHandler = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+
+    // 아이디 중복체크 확인
+    if (!isUsernameChecked) {
+      setError('아이디 중복체크를 완료해주세요.');
+      setIsLoading(false);
+      return;
+    }
 
     // 비밀번호 확인
     if (formData.password !== formData.confirmPassword) {
@@ -44,8 +87,8 @@ const Register = () => {
     }
 
     // 필수 필드 검증
-    if (!formData.username || !formData.email || !formData.password || !formData.name) {
-      setError('아이디, 이메일, 비밀번호, 이름은 필수 입력 항목입니다.');
+    if (!formData.username || !formData.password || !formData.email || !formData.nickname) {
+      setError('아이디, 비밀번호, 이메일, 닉네임은 필수 입력 항목입니다.');
       setIsLoading(false);
       return;
     }
@@ -54,17 +97,14 @@ const Register = () => {
       // API 요청 데이터 구성
       const requestData = {
         username: formData.username,
-        email: formData.email,
         password: formData.password,
-        nickname: formData.name, // name을 nickname으로 매핑
-        phone_number: formData.phone || null,
-        // 생년월일 조합 (선택사항)
-        birthdate: formData.birthYear && formData.birthMonth && formData.birthDay 
-          ? `${formData.birthYear}-${formData.birthMonth.padStart(2, '0')}-${formData.birthDay.padStart(2, '0')}`
-          : null
+        email: formData.email,
+        nickname: formData.nickname,
+        gender: formData.gender || null,
+        phone_number: formData.phone || null
       };
 
-      const response = await axios.post('http://localhost:3003/api/register', requestData, {
+      const response = await axios.post('http://localhost:3003/api/users/auth/register', requestData, {
         headers: {
           'Content-Type': 'application/json',
         }
@@ -79,7 +119,16 @@ const Register = () => {
       }
     } catch (error) {
       console.error('회원가입 오류:', error);
-      if (error.response) {
+      if (error.response?.data?.errors) {
+        const errors = error.response.data.errors;
+        if (errors.username) {
+          setError(errors.username);
+        } else if (errors.email) {
+          setError(errors.email);
+        } else {
+          setError(error.response.data.message || '회원가입에 실패했습니다.');
+        }
+      } else if (error.response) {
         setError(error.response.data.message || '회원가입에 실패했습니다.');
       } else {
         setError('서버와 연결할 수 없습니다.');
@@ -99,20 +148,66 @@ const Register = () => {
       <form onSubmit={registerHandler}>
         {error && <div className={styles["error-message"]}>{error}</div>}
         
+        {/* 아이디 */}
         <div className={styles["form-group"]}>
-          <label htmlFor="username">아이디</label>
+          <label htmlFor="username">아이디 *</label>
+          <div className={styles["input-with-button"]}>
+            <input 
+              type="text" 
+              id="username" 
+              name="username" 
+              value={formData.username}
+              onChange={handleChange}
+              placeholder="아이디를 입력해주세요"
+              required
+            />
+            <button 
+              type="button" 
+              onClick={checkUsernameDuplicate}
+              className={styles["check-button"]}
+              disabled={!formData.username}
+            >
+              중복체크
+            </button>
+          </div>
+          {usernameCheckMessage && (
+            <div className={`${styles["check-message"]} ${isUsernameChecked ? styles["success"] : styles["error"]}`}>
+              {usernameCheckMessage}
+            </div>
+          )}
+        </div>
+
+        {/* 비밀번호 */}
+        <div className={styles["form-group"]}>
+          <label htmlFor="password">비밀번호 *</label>
           <input 
-            type="text" 
-            id="username" 
-            name="username" 
-            value={formData.username}
+            type="password" 
+            id="password" 
+            name="password" 
+            value={formData.password}
             onChange={handleChange}
-            placeholder="아이디를 입력해주세요"
+            placeholder="비밀번호를 입력해주세요"
             required
           />
         </div>
+
+        {/* 비밀번호 확인 */}
         <div className={styles["form-group"]}>
-          <label htmlFor="email">이메일</label>
+          <label htmlFor="confirmPassword">비밀번호 확인 *</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            placeholder="비밀번호를 다시 입력해주세요"
+            required
+          />
+        </div>
+
+        {/* 이메일 */}
+        <div className={styles["form-group"]}>
+          <label htmlFor="email">이메일 *</label>
           <input 
             type="email" 
             id="email" 
@@ -123,103 +218,60 @@ const Register = () => {
             required
           />
         </div>
+
+        {/* 닉네임 */}
         <div className={styles["form-group"]}>
-          <label htmlFor="password">비밀번호</label>
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className={styles["form-group"]}>
-          <label htmlFor="confirmPassword">비밀번호 재확인</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className={styles["form-group"]}>
-          <label htmlFor="name">이름</label>
+          <label htmlFor="nickname">닉네임 *</label>
           <input
             type="text"
-            id="name"
-            name="name"
-            value={formData.name}
+            id="nickname"
+            name="nickname"
+            value={formData.nickname}
             onChange={handleChange}
-            placeholder="이름을(를) 입력해주세요"
+            placeholder="닉네임을 입력해주세요"
             required
           />
         </div>
+
+        {/* 성별 */}
+        <div className={styles["form-group"]}>
+          <label htmlFor="gender">성별</label>
+          <select
+            id="gender"
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+          >
+            <option value="">선택해주세요</option>
+            <option value="male">남성</option>
+            <option value="female">여성</option>
+            <option value="other">기타</option>
+          </select>
+        </div>
+
+        {/* 연락처 */}
         <div className={styles["form-group"]}>
           <label htmlFor="phone">연락처</label>
           <input
-            type="text"
+            type="tel"
             id="phone"
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            placeholder="연락처를 입력해주세요"
+            placeholder="연락처를 입력해주세요 (예: 010-1234-5678)"
           />
         </div>
+
+        {/* 사용자 집 이미지 (이미지합성용) */}
         <div className={styles["form-group"]}>
-          <label htmlFor="birthdate">생년월일</label>
-          <div className={styles["birthdate-select"]}>
-            <select 
-              id="birthYear" 
-              name="birthYear"
-              value={formData.birthYear}
-              onChange={handleChange}
-            >
-              <option value="">년</option>
-              {Array.from(
-                { length: 100 },
-                (_, i) => new Date().getFullYear() - i
-              ).map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-            <select 
-              id="birthMonth" 
-              name="birthMonth"
-              value={formData.birthMonth}
-              onChange={handleChange}
-            >
-              <option value="">월</option>
-              {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
-                <option key={month} value={month}>
-                  {month}
-                </option>
-              ))}
-            </select>
-            <select 
-              id="birthDay" 
-              name="birthDay"
-              value={formData.birthDay}
-              onChange={handleChange}
-            >
-              <option value="">일</option>
-              {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-                <option key={day} value={day}>
-                  {day}
-                </option>
-              ))}
-            </select>
-          </div>
+          <label>사용자 집 이미지 (이미지합성용)</label>
+          <ImageUploader />
         </div>
-        {/* 이미지 업로더 삽입 */}
-        <ImageUploader />
+
         <button 
           type="submit" 
-          disabled={isLoading}
+          disabled={isLoading || !isUsernameChecked}
+          className={styles["submit-button"]}
         >
           {isLoading ? '가입 중...' : '가입하기'}
         </button>

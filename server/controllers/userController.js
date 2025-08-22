@@ -144,6 +144,15 @@ const userController = {
         } catch (error) {
             console.error('Register error:', error);
             
+            // username 중복 에러 처리
+            if (error.message === '이미 존재하는 사용자명입니다.') {
+                return res.status(409).json({
+                    success: false,
+                    message: error.message,
+                    errors: { username: '이미 사용 중인 사용자명입니다.' }
+                });
+            }
+            
             // 이메일 중복 에러 처리
             if (error.message === '이미 존재하는 이메일입니다.') {
                 return res.status(409).json({
@@ -164,30 +173,30 @@ const userController = {
     /**
      * 로그인 API
      * POST /api/users/auth/login
-     * Body: { email, password }
+     * Body: { username, password }
      */
     login: async (req, res) => {
         try {
-            const { email, password } = req.body;
+            const { username, password } = req.body;
 
             // 필수 입력값 검증
-            if (!email || !password) {
+            if (!username || !password) {
                 return res.status(400).json({
                     success: false,
-                    message: 'email과 password는 필수 입력값입니다.',
+                    message: 'username과 password는 필수 입력값입니다.',
                     errors: {
-                        email: !email ? 'email이 필요합니다.' : null,
+                        username: !username ? 'username이 필요합니다.' : null,
                         password: !password ? 'password가 필요합니다.' : null
                     }
                 });
             }
 
-            // 이메일로 사용자 검색
-            const user = await User.findByEmail(email);
+            // username으로 사용자 검색
+            const user = await User.findByUsername(username);
             if (!user) {
                 return res.status(401).json({
                     success: false,
-                    message: '이메일 또는 비밀번호가 올바르지 않습니다.',
+                    message: '사용자명 또는 비밀번호가 올바르지 않습니다.',
                     errors: { auth: '로그인 정보를 확인해주세요.' }
                 });
             }
@@ -197,7 +206,7 @@ const userController = {
             if (!isValidPassword) {
                 return res.status(401).json({
                     success: false,
-                    message: '이메일 또는 비밀번호가 올바르지 않습니다.',
+                    message: '사용자명 또는 비밀번호가 올바르지 않습니다.',
                     errors: { auth: '로그인 정보를 확인해주세요.' }
                 });
             }
@@ -552,6 +561,49 @@ const userController = {
     },
 
     /**
+     * 아이디 중복 체크 API
+     * POST /api/users/auth/check-username
+     * Body: { username }
+     */
+    checkUsername: async (req, res) => {
+        try {
+            const { username } = req.body;
+
+            if (!username) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'username이 필요합니다.',
+                    errors: { username: 'username을 입력해주세요.' }
+                });
+            }
+
+            const exists = await User.checkUsernameExists(username);
+            
+            if (exists) {
+                return res.status(409).json({
+                    success: false,
+                    message: '이미 사용 중인 아이디입니다.',
+                    available: false
+                });
+            } else {
+                return res.json({
+                    success: true,
+                    message: '사용 가능한 아이디입니다.',
+                    available: true
+                });
+            }
+
+        } catch (error) {
+            console.error('Username check error:', error);
+            res.status(500).json({
+                success: false,
+                message: '아이디 중복 체크 중 오류가 발생했습니다.',
+                error: error.message
+            });
+        }
+    },
+
+    /**
      * 사용자 프로필 조회 (인증 필수)
      * GET /api/users/profile
      * Headers: Authorization: Bearer <token>
@@ -582,6 +634,148 @@ const userController = {
             res.status(500).json({
                 success: false,
                 message: '프로필 조회 중 오류가 발생했습니다.',
+                error: error.message
+            });
+        }
+    },
+
+    /**
+     * 사용자 프로필 수정 (인증 필수)
+     * PUT /api/users/profile
+     * Headers: Authorization: Bearer <token>
+     * Body: { nickname?, phone_number?, gender? }
+     */
+    updateUserProfile: async (req, res) => {
+        try {
+            const userId = req.user.user_id;
+            const { nickname, phone_number, gender } = req.body;
+
+            // 수정 가능한 필드만 필터링
+            const updateData = {};
+            if (nickname !== undefined) updateData.nickname = nickname;
+            if (phone_number !== undefined) updateData.phone_number = phone_number;
+            if (gender !== undefined) updateData.gender = gender;
+
+            // 최소한 하나의 필드는 있어야 함
+            if (Object.keys(updateData).length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: '수정할 정보가 없습니다.',
+                    errors: { general: '닉네임, 연락처, 성별 중 하나 이상을 입력해주세요.' }
+                });
+            }
+
+            // 닉네임 길이 검증
+            if (nickname && (nickname.length < 2 || nickname.length > 20)) {
+                return res.status(400).json({
+                    success: false,
+                    message: '닉네임은 2~20자 사이여야 합니다.',
+                    errors: { nickname: '닉네임은 2~20자 사이여야 합니다.' }
+                });
+            }
+
+            // 연락처 형식 검증
+            if (phone_number && !/^010-\d{4}-\d{4}$/.test(phone_number)) {
+                return res.status(400).json({
+                    success: false,
+                    message: '연락처 형식이 올바르지 않습니다.',
+                    errors: { phone_number: '010-1234-5678 형식으로 입력해주세요.' }
+                });
+            }
+
+            // 성별 값 검증
+            if (gender && !['male', 'female', 'other'].includes(gender)) {
+                return res.status(400).json({
+                    success: false,
+                    message: '올바르지 않은 성별 값입니다.',
+                    errors: { gender: '성별은 male, female, other 중 하나여야 합니다.' }
+                });
+            }
+
+            // 사용자 정보 업데이트
+            const updatedUser = await User.updateProfile(userId, updateData);
+
+            res.json({
+                success: true,
+                message: '프로필이 성공적으로 수정되었습니다.',
+                data: {
+                    profile: {
+                        id: updatedUser.user_id,
+                        username: updatedUser.username,
+                        email: updatedUser.email,
+                        nickname: updatedUser.nickname,
+                        gender: updatedUser.gender,
+                        phone_number: updatedUser.phone_number,
+                        updated_at: updatedUser.updated_at
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error('Update user profile error:', error);
+            res.status(500).json({
+                success: false,
+                message: '프로필 수정 중 오류가 발생했습니다.',
+                error: error.message
+            });
+        }
+    },
+
+    /**
+     * 회원탈퇴 (인증 필수)
+     * DELETE /api/users/account
+     * Headers: Authorization: Bearer <token>
+     * Body: { password }
+     */
+    deleteAccount: async (req, res) => {
+        try {
+            const userId = req.user.user_id;
+            const { password } = req.body;
+
+            // 비밀번호 확인 필수
+            if (!password) {
+                return res.status(400).json({
+                    success: false,
+                    message: '비밀번호 확인이 필요합니다.',
+                    errors: { password: '현재 비밀번호를 입력해주세요.' }
+                });
+            }
+
+            // 사용자 정보 조회
+            const user = await User.findById(userId);
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: '사용자를 찾을 수 없습니다.'
+                });
+            }
+
+            // 비밀번호 검증
+            const isValidPassword = await hashUtils.comparePassword(password, user.password_hash);
+            if (!isValidPassword) {
+                return res.status(401).json({
+                    success: false,
+                    message: '비밀번호가 올바르지 않습니다.',
+                    errors: { password: '현재 비밀번호를 정확히 입력해주세요.' }
+                });
+            }
+
+            // 회원탈퇴 처리
+            await User.deleteAccount(userId);
+
+            res.json({
+                success: true,
+                message: '회원탈퇴가 완료되었습니다.',
+                data: {
+                    deletedAt: new Date().toISOString()
+                }
+            });
+
+        } catch (error) {
+            console.error('Delete account error:', error);
+            res.status(500).json({
+                success: false,
+                message: '회원탈퇴 처리 중 오류가 발생했습니다.',
                 error: error.message
             });
         }

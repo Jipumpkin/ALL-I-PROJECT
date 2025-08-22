@@ -3,12 +3,10 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const { authMiddleware, optionalAuthMiddleware } = require('../middleware/auth');
 
-// 기본 CRUD 라우트
-router.get('/', userController.getAllUsers);
-router.get('/:id', userController.getUserById);
-router.post('/', userController.createUser);
-router.put('/:id', userController.updateUser);
-router.delete('/:id', userController.deleteUser);
+// === 인증 관련 라우트 (우선순위 높음) ===
+router.post('/auth/register', userController.register);
+router.post('/auth/login', userController.login);
+router.post('/auth/check-username', userController.checkUsername);
 
 // === 미들웨어 테스트용 임시 라우트 ===
 // JWT 토큰 생성 테스트 (실제 로그인 전까지 임시)
@@ -23,8 +21,22 @@ router.get('/test/optional-auth', optionalAuthMiddleware, userController.testOpt
 // 사용자 프로필 조회 (인증 필요)
 router.get('/profile', authMiddleware, userController.getUserProfile);
 
-// === 인증 관련 라우트 ===
-router.post('/auth/register', userController.register);
-router.post('/auth/login', userController.login);
+// 사용자 프로필 수정 (인증 필요)
+router.put('/profile', authMiddleware, userController.updateUserProfile);
+
+// 회원탈퇴 (인증 필요)
+router.delete('/account', authMiddleware, userController.deleteAccount);
+
+// 테스트 라우트
+router.get('/test-route', (req, res) => {
+    res.json({ message: 'Test route working' });
+});
+
+// 기본 CRUD 라우트 (마지막에 배치하여 다른 라우트와 충돌 방지)
+router.get('/', userController.getAllUsers);
+router.get('/:id', userController.getUserById);
+router.post('/', userController.createUser);
+router.put('/:id', userController.updateUser);
+router.delete('/:id', userController.deleteUser);
 
 module.exports = router;
