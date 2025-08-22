@@ -1,23 +1,16 @@
-// controllers/animalController.js
+// ✅ db/connection.js에서 내보낸 pool 객체를 구조 분해 할당으로 가져옵니다.
+const { pool } = require('../db/connection');
 
-const pool = require('../db/connection');
-
-// --- 1. 동물 목록 조회 (보호소 필터링, 페이지네이션) ---
+// --- 1. 동물 목록 조회 (필터링, 페이지네이션) ---
 const getAnimals = async (req, res) => {
-    // 받는 파라미터를 filter, page, shelter_id로 단순화
-    const { 
-        filter, 
-        page = 1,
-        shelter_id 
-    } = req.query;
-    
+    const { filter, page = 1, shelter_id } = req.query;
     const limit = 12;
     const offset = (page - 1) * limit;
 
     const whereClauses = [];
     const queryParams = [];
 
-    // --- 카테고리 필터 조건 ---
+    // 카테고리 필터
     if (filter && filter !== 'all') {
         if (filter === 'dog') {
             whereClauses.push('species LIKE ?');
@@ -31,40 +24,34 @@ const getAnimals = async (req, res) => {
             queryParams.push('%고양이%');
         }
     }
-
-    // --- 보호소 필터 조건 추가 ---
+    // 보호소 필터
     if (shelter_id && shelter_id !== 'all') {
-        whereClauses.push('a.shelter_id = ?'); // 'animals' 테이블을 a로 별칭
+        // 테이블 별칭 'a'를 사용하여 shelter_id를 명확히 지정
+        whereClauses.push('a.shelter_id = ?');
         queryParams.push(shelter_id);
     }
 
     const whereQuery = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
-
+    
     try {
-        // shelter_id 필터링을 위해 animals 테이블에 별칭 'a'를 부여
         const countQuery = `SELECT COUNT(*) as count FROM animals a ${whereQuery}`;
         const [countRows] = await pool.query(countQuery, queryParams);
         const totalAnimals = countRows[0].count;
         const totalPages = Math.ceil(totalAnimals / limit);
 
-        const animalsQuery = `
-            SELECT * FROM animals a
-            ${whereQuery}
-            ORDER BY created_at DESC
-            LIMIT ? OFFSET ?
-        `;
+        // 정렬 기준을 rescued_at(구조일)으로 변경하여 최신순으로 표시
+        const animalsQuery = `SELECT * FROM animals a ${whereQuery} ORDER BY rescued_at DESC LIMIT ? OFFSET ?`;
         const finalParams = [...queryParams, limit, offset];
         const [animals] = await pool.query(animalsQuery, finalParams);
         
         res.json({ animals, totalPages });
-
     } catch (error) {
         console.error('Error fetching animals:', error);
         res.status(500).json({ error: 'Internal server error', details: error.message });
     }
 };
 
-// --- 2. 모든 보호소 목록 조회 (새로 추가된 함수) ---
+// --- 2. 모든 보호소 목록 조회 ---
 const getAllShelters = async (req, res) => {
     try {
         const query = 'SELECT shelter_id, shelter_name FROM shelters ORDER BY shelter_name ASC';
@@ -76,16 +63,22 @@ const getAllShelters = async (req, res) => {
     }
 };
 
-// --- 3. ID로 특정 동물 조회 ---
+// --- 3. 특정 ID의 동물 상세 정보 조회 (로직 구현) ---
 const getAnimalById = async (req, res) => {
     const { id } = req.params;
     try {
         const query = `
-            SELECT a.*, s.shelter_name, s.address as shelter_address, s.contact_number as shelter_contact_number 
+            SELECT 
+                a.*, 
+                s.shelter_name, 
+                s.address as shelter_address, 
+                s.contact_number as shelter_contact
             FROM animals a
             LEFT JOIN shelters s ON a.shelter_id = s.shelter_id
-            WHERE a.animal_id = ?`;
+            WHERE a.animal_id = ?
+        `;
         const [rows] = await pool.query(query, [id]);
+
         if (rows.length === 0) {
             return res.status(404).json({ error: 'Animal not found' });
         }
@@ -96,13 +89,17 @@ const getAnimalById = async (req, res) => {
     }
 };
 
-// --- 4. 보호소 입소일이 오래된 동물 조회 ---
+// --- 4. 가장 오래된 동물 조회 (로직 수정) ---
 const getOldestAnimals = async (req, res) => {
-    // (기존 코드와 동일)
     try {
-        const query = `SELECT * FROM animals ORDER BY created_at ASC LIMIT 12`;
+        const query = `
+            SELECT * FROM animals
+            ORDER BY rescued_at ASC  -- ✅ 정렬 기준을 'rescued_at' (실제 구조일)로 수정
+            LIMIT 12
+        `;
         const [animals] = await pool.query(query);
-        res.json({ animals });
+        // 다른 API와 응답 형식을 통일 (totalPages 포함)
+        res.json({ animals: animals, totalPages: 1 });
     } catch (error) {
         console.error('Error fetching oldest animals:', error);
         res.status(500).json({ error: 'Internal server error', details: error.message });
@@ -111,7 +108,7 @@ const getOldestAnimals = async (req, res) => {
 
 module.exports = {
     getAnimals,
-    getAllShelters, // export에 추가
+    getAllShelters,
     getAnimalById,
     getOldestAnimals,
 };
