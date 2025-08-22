@@ -15,10 +15,4 @@ const dbConfig = {
 
 const pool = mysql.createPool(dbConfig);
 
-// animalSync.js에서 사용하는 getConnection 함수 추가
-const getConnection = async () => {
-    return await pool.getConnection();
-};
-
 module.exports = pool;
-module.exports.getConnection = getConnection;

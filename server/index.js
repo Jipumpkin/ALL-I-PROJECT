@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const cron = require('node-cron');
+const path = require('path');
 require('dotenv').config();
 
 const { syncAnimalData } = require('./services/animalSync'); // services 파일의 함수를 불러옵니다.
