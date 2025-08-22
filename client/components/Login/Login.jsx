@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import styles from './Login.module.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../src/context/AuthContext';
 import axios from 'axios';
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -14,6 +14,7 @@ const Login = () => {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleChange = (e) => {
     setFormData({
@@ -35,8 +36,10 @@ const Login = () => {
       });
 
       if (response.data.success) {
-        login(response.data.user);
-        navigate('/');
+        login(response.data.data.user, response.data.data.tokens);
+        // 보호된 페이지에서 온 경우 원래 페이지로, 아니면 메인으로
+        const from = location.state?.from?.pathname || '/';
+        navigate(from, { replace: true });
       } else {
         setError(response.data.message);
       }
@@ -60,12 +63,12 @@ const Login = () => {
           <form onSubmit={handleSubmit}>
             {error && <div className={styles["error-message"]}>{error}</div>}
             <div className={styles["input-group"]}>
-              <label htmlFor="username">아이디</label>
+              <label htmlFor="email">이메일</label>
               <input 
-                type="text" 
-                id="username" 
-                name="username" 
-                value={formData.username}
+                type="email" 
+                id="email" 
+                name="email" 
+                value={formData.email}
                 onChange={handleChange}
                 required
               />

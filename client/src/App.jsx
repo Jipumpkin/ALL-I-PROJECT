@@ -20,6 +20,7 @@ import Intro from "../components/Intro/intro";
 import Animals from "../components/Animals/Animals";
 import AdoptionApply from "../components/AdoptionApply/AdoptionApply";
 import NotFound from "../components/NotFound/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 function App() {
   return (
@@ -27,21 +28,45 @@ function App() {
       <Header></Header>
       <div className="main-content">
         <Routes>
-          {/* 첫 화면 */}
-          <Route path="/maker" element={<Maker />} />
-          <Route path="/maker/result" element={<MakerResult />} />
+          {/* 공개 페이지 */}
           <Route path="/" element={<Main />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-id" element={<ForgotId />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/account-delete" element={<AccountD />} />
-          <Route path="/maker" element={<Maker />} />
-          <Route path="/my-account" element={<MyAccount />} />
-          <Route path="/adoption-history" element={<AdoptionHistory />} />
-          <Route path="/intro" element={<Intro />} />
-          <Route path="/animals" element={<Animals />} />
-          <Route path="/adoption-apply" element={<AdoptionApply />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/animals" element={<Animals />} />
+          
+          {/* 인증이 필요한 페이지 */}
+          <Route path="/maker" element={
+            <ProtectedRoute>
+              <Maker />
+            </ProtectedRoute>
+          } />
+          <Route path="/maker/result" element={
+            <ProtectedRoute>
+              <MakerResult />
+            </ProtectedRoute>
+          } />
+          <Route path="/my-account" element={
+            <ProtectedRoute>
+              <MyAccount />
+            </ProtectedRoute>
+          } />
+          <Route path="/adoption-history" element={
+            <ProtectedRoute>
+              <AdoptionHistory />
+            </ProtectedRoute>
+          } />
+          <Route path="/adoption-apply" element={
+            <ProtectedRoute>
+              <AdoptionApply />
+            </ProtectedRoute>
+          } />
+          <Route path="/account-delete" element={
+            <ProtectedRoute>
+              <AccountD />
+            </ProtectedRoute>
+          } />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

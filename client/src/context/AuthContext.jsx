@@ -17,25 +17,34 @@ export const AuthProvider = ({ children }) => {
   // 초기 로드 시 로컬 스토리지에서 사용자 정보 확인
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
-    if (savedUser) {
+    const token = localStorage.getItem('accessToken');
+    if (savedUser && token) {
       try {
         setUser(JSON.parse(savedUser));
       } catch (error) {
         console.error('사용자 정보 파싱 오류:', error);
         localStorage.removeItem('user');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
       }
     }
     setIsLoading(false);
   }, []);
 
-  const login = (userData) => {
+  const login = (userData, tokens) => {
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
+    if (tokens) {
+      localStorage.setItem('accessToken', tokens.accessToken);
+      localStorage.setItem('refreshToken', tokens.refreshToken);
+    }
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
   };
 
   const isAuthenticated = () => {
