@@ -77,7 +77,23 @@ const getAnimalById = async (req, res) => {
   }
 };
 
+const getOldestAnimals = async (req, res) => {
+  try {
+    const query = `
+      SELECT * FROM animals
+      ORDER BY created_at ASC
+      LIMIT 12
+    `;
+    const [animals] = await pool.query(query);
+    res.json({ animals });
+  } catch (error) {
+    console.error('Error fetching oldest animals:', error);
+    res.status(500).json({ error: 'Internal server error', details: error.message });
+  }
+};
+
 module.exports = {
   getAnimals,
   getAnimalById,
+  getOldestAnimals,
 };

@@ -18,7 +18,7 @@ import Maker from "../components/Maker/Maker";
 import MakerResult from "../components/MakerResult/MakerResult";
 import MyAccount from "../components/MyAccount/MyAccount";
 import AdoptionHistory from "../components/AdoptionHistory/AdoptionHistory";
-import Intro from "../components/Intro/intro";
+import Intro from "../components/Intro/Intro";
 import Animals from "../components/Animals/Animals";
 import AdoptionApply from "../components/AdoptionApply/AdoptionApply";
 import NotFound from "../components/NotFound/NotFound";
@@ -38,6 +38,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/animal/:id" element={<AnimalDetail />} />
           <Route path="/image-uploader" element={<ImageUploader />} />
+          <Route path="/intro" element={<Intro />} />
           <Route path="/animals" element={<Animals />} />
           
           {/* 인증이 필요한 페이지 */}
