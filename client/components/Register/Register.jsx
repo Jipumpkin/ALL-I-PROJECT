@@ -4,6 +4,7 @@ import ImageUploader from "../ImageUploader/ImageUploader";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../src/context/AuthContext";
 import axios from "axios";
+import { sanitizeInput, validateEmail, validatePhone, limitLength } from "../../src/utils/security";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -28,19 +29,24 @@ const Register = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    // 연락처 필드에서 숫자만 입력 허용
+    // 입력값 보안 처리
+    let sanitizedValue = sanitizeInput(value);
+    
+    // 필드별 특별 처리
     if (name === 'phone') {
-      const numericValue = value.replace(/[^0-9]/g, '');
-      setFormData({
-        ...formData,
-        [name]: numericValue
-      });
-      return;
+      // 연락처: 숫자만 허용
+      sanitizedValue = value.replace(/[^0-9]/g, '');
+    } else if (name === 'email') {
+      // 이메일: 길이 제한
+      sanitizedValue = limitLength(sanitizedValue, 100);
+    } else {
+      // 일반 텍스트 필드: 길이 제한
+      sanitizedValue = limitLength(sanitizedValue, 50);
     }
     
     setFormData({
       ...formData,
-      [name]: value
+      [name]: sanitizedValue
     });
 
     // 비밀번호 확인 실시간 검증
@@ -80,6 +86,20 @@ const Register = () => {
     // 필수 필드 검증
     if (!formData.username || !formData.email || !formData.password || !formData.name) {
       setError('아이디, 이메일, 비밀번호, 이름은 필수 입력 항목입니다.');
+      setIsLoading(false);
+      return;
+    }
+
+    // 이메일 형식 검증
+    if (!validateEmail(formData.email)) {
+      setError('올바른 이메일 형식을 입력해주세요.');
+      setIsLoading(false);
+      return;
+    }
+
+    // 전화번호 검증 (입력된 경우만)
+    if (formData.phone && !validatePhone(formData.phone)) {
+      setError('올바른 전화번호 형식을 입력해주세요. (예: 01012345678)');
       setIsLoading(false);
       return;
     }
