@@ -11,6 +11,7 @@ const Register = () => {
   
   const [formData, setFormData] = useState({
     username: '',
+    email: '',
     password: '',
     confirmPassword: '',
     name: '',
@@ -43,8 +44,8 @@ const Register = () => {
     }
 
     // 필수 필드 검증
-    if (!formData.username || !formData.password || !formData.name) {
-      setError('아이디, 비밀번호, 이름은 필수 입력 항목입니다.');
+    if (!formData.username || !formData.email || !formData.password || !formData.name) {
+      setError('아이디, 이메일, 비밀번호, 이름은 필수 입력 항목입니다.');
       setIsLoading(false);
       return;
     }
@@ -53,6 +54,7 @@ const Register = () => {
       // API 요청 데이터 구성
       const requestData = {
         username: formData.username,
+        email: formData.email,
         password: formData.password,
         nickname: formData.name, // name을 nickname으로 매핑
         phone_number: formData.phone || null,
@@ -70,7 +72,7 @@ const Register = () => {
 
       if (response.data.success) {
         // 회원가입 성공 시 자동 로그인
-        login(response.data.user);
+        login(response.data.data.user, response.data.data.tokens);
         navigate('/');
       } else {
         setError(response.data.message || '회원가입에 실패했습니다.');
@@ -105,6 +107,19 @@ const Register = () => {
             name="username" 
             value={formData.username}
             onChange={handleChange}
+            placeholder="아이디를 입력해주세요"
+            required
+          />
+        </div>
+        <div className={styles["form-group"]}>
+          <label htmlFor="email">이메일</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="이메일을 입력해주세요"
             required
           />
         </div>
