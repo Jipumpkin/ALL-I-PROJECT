@@ -12,6 +12,8 @@ import Login from "../components/Login/Login";
 import ForgotId from "../components/ForgotId/ForgotId";
 import ForgotPassword from "../components/ForgotPassword/ForgotPassword";
 import AccountD from "../components/Account/AccountD";
+import AnimalDetail from '../components/AnimalDetail/AnimalDetail';
+import ImageUploader from '../components/ImageUploader/ImageUploader';
 import Maker from "../components/Maker/Maker";
 import MakerResult from "../components/MakerResult/MakerResult";
 import MyAccount from "../components/MyAccount/MyAccount";
@@ -34,7 +36,9 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-id" element={<ForgotId />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/animal/:id" element={<AnimalDetail />} />
+          <Route path="/image-uploader" element={<ImageUploader />} />
           <Route path="/intro" element={<Intro />} />
           <Route path="/animals" element={<Animals />} />
           <Route path="/shelter-map" element={<ShelterMap />} />

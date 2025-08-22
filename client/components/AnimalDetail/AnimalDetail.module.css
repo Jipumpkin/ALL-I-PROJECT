@@ -1,0 +1,106 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.profileSection {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.profileImage {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.infoWrapper {
+  position: relative;
+}
+
+.infoWrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 120px; /* Same as the width of .infoLabel */
+  width: 1px;
+  background-color: #eee;
+}
+
+.infoTable {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.tableTitle {
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+
+.infoRow {
+  display: flex;
+  padding: 10px 0;
+}
+
+.infoLabel {
+  width: 120px;
+  font-weight: bold;
+  padding-right: 10px;
+  flex-shrink: 0;
+  color: #555;
+}
+
+.infoValue {
+  flex-grow: 1;
+  padding-left: 15px;
+  color: #333;
+  display: flex; /* Add this */
+  justify-content: space-between; /* Add this */
+  align-items: center; /* Add this */
+}
+
+.shortcutButton {
+  width: 24px; /* Adjust size as needed */
+  height: 24px; /* Adjust size as needed */
+  font-size: 16px; /* Adjust icon size as needed */
+  border: none; /* Remove border */
+  border-radius: 3px;
+  text-decoration: none;
+  color: white; /* Icon color */
+  background-color: #28a745; /* Green color */
+  margin-left: 10px;
+  display: flex; /* Add flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+}
+
+.shortcutButton:hover {
+  background-color: #218838; /* Darker green on hover */
+}
+
+.divider {
+  margin: 30px 0;
+  border: 0;
+  border-top: 1px solid #ddd;
+}
+
+.uploadButton {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1em;
+  margin-top: 20px;
+}
+
+.uploadButton:hover {
+  background-color: #0056b3;
+}
