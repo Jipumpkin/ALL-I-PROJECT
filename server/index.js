@@ -40,6 +40,7 @@ app.post('/api/register', (req, res) => {
 });
 
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api', require('./routes/commentRoutes'));
 
 // TODO: 추후 추가 예정
 // app.use('/api/animals', require('./routes/animalRoutes'));
@@ -65,6 +66,7 @@ const server = app.listen(PORT, () => {
     console.log('   - POST /api/login');
     console.log('   - POST /api/register');
     console.log('   - /api/users/* (userRoutes)');
+    console.log('   - /api/posts/:postId/comments/* (commentRoutes)');
     console.log(`🌐 서버 주소: http://localhost:${PORT}`);
     console.log('✅ 서버가 정상적으로 시작되었습니다!');
 });
