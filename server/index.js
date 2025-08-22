@@ -49,10 +49,10 @@ app.post('/api/register', (req, res) => {
 
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/animals', require('./routes/animalRoutes'));
-
-// TODO: 추후 추가 예정
-// app.use('/api/animals', require('./routes/animalRoutes'));
-// app.use('/api/shelters', require('./routes/shelterRoutes'));
+app.use('/api', require('./routes/commentRoutes'));
+app.use('/api/posts', require('./routes/postRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
+// app.use('/api/shelters', require('./routes/shelterRoutes')); // TODO: 구현 예정
 
 app.get('/', (req, res) => {
     res.json({ message: 'ALL-I-PROJECT Backend Server Running' });
@@ -74,6 +74,7 @@ const server = app.listen(PORT, async () => {
     console.log('   - POST /api/login');
     console.log('   - POST /api/register');
     console.log('   - /api/users/* (userRoutes)');
+    console.log('   - /api/animals/* (animalRoutes)');
     console.log('   - /api/posts/:postId/comments/* (commentRoutes)');
     console.log('   - /api/posts/* (postRoutes)');
     console.log('   - /api/ai/* (aiRoutes)');
