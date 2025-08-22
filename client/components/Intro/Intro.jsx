@@ -135,29 +135,25 @@ export default function PawPawIntro() {
             <div className={styles.chip}>
               포우포우는 여러분의 상상에서 시작됩니다
             </div>
-            <h1 className={styles.heroTitle}>
-              “이 아이가 우리 집에 온다면?” 입양 전, 일상을 먼저 경험해보는 공간
-            </h1>
+            <h5 className={styles.heroTitle}>
+              "이 아이가 우리 집에 온다면?" <br />입양 전, 일상을 먼저 경험해보는 공간
+            </h5>
             <p className={styles.heroDesc}>
               포우포우는 보호소의 유기동물이 여러분의 집에 왔을 때의 하루를
               가상으로 체험하는 프로젝트입니다. 씻기고, 밥 주고, 미용하고,
               산책하며 <strong>현실적인 돌봄 루틴</strong>을 확인해 보세요.
             </p>
             <div className={styles.heroCta}>
-              <button className={styles.btn}>입양 시작하기</button>
-              <button className={`${styles.btn} ${styles.btnOutline}`}>
+              <button className={styles.btn} onClick={() => window.location.href = '/adoption-apply'}>입양 신청하기</button>
+              <button className={`${styles.btn} ${styles.btnOutline}`} onClick={() => window.location.href = '/shelter-map'}>
                 내 근처 센터
               </button>
             </div>
-            <ul className={styles.heroMeta} aria-label="주요 기능 요약">
-              <li>이미지 합성 데모 지원</li>
-              <li>초보 집사 케어 가이드</li>
-              <li>1:1 입양 상담 연결</li>
-            </ul>
+          
           </div>
           <div className={styles.heroVisual}>
             <div className={styles.heroCard}>
-              <img src="/images/hoochoo1.jpeg" alt="포우포우 미리보기" />
+              <img src="/images/hoochoo1.jpeg" alt="" />
               <div className={styles.heroCardFooter}>
                 <span className={styles.heroLabel}>상상 속 하루</span>
                 <span
@@ -224,15 +220,8 @@ export default function PawPawIntro() {
               합성해 드립니다. 가족이 될 준비, 상상에서 시작해요.
             </p>
             <div className={styles.upload}>
-              <input type="file" accept="image/*" id="homePhoto" />
-              <label
-                htmlFor="homePhoto"
-                className={`${styles.btn} ${styles.btnOutline}`}
-              >
-                사진 선택
-              </label>
-              <button className={`${styles.btn} ${styles.btnSecondary}`}>
-                합성해보기
+              <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={() => window.location.href = '/maker'}>
+                합성하기
               </button>
             </div>
             <p className={styles.caption}>
@@ -242,9 +231,9 @@ export default function PawPawIntro() {
           </div>
           <div className={styles.mergeVisual}>
             <div className={styles.mergeCard}>
-              <img src="/images/mock_merge.jpg" alt="합성 미리보기" />
+              <img src="" alt="메이커 영상 넣기" />
               <span className={`${styles.badge} ${styles.badgeSoft}`}>
-                Demo
+               
               </span>
             </div>
           </div>
@@ -286,52 +275,6 @@ export default function PawPawIntro() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className={styles.footer}>
-        <div className={`${styles.container} ${styles.footerGrid}`}>
-          <div>
-            <div className={styles.brand}>
-              <img
-                src="/images/foot.png"
-                alt="로고"
-                className={styles.brandLogo}
-              />
-              <div className={styles.brandName}>PAWPAW</div>
-            </div>
-            <p className={styles.muted}>
-              유기동물과 사람 사이의 따뜻한 연결로 작은 기적을 만듭니다.
-            </p>
-          </div>
-          <div>
-            <div className={styles.footTitle}>바로가기</div>
-            <ul className={styles.footList}>
-              <li>
-                <a href="#about">소개</a>
-              </li>
-              <li>
-                <a href="#features">시뮬 버튼</a>
-              </li>
-              <li>
-                <a href="#how">진행 단계</a>
-              </li>
-              <li>
-                <a href="#faq">FAQ</a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <div className={styles.footTitle}>문의</div>
-            <ul className={styles.footList}>
-              <li>help@pawpaw.app</li>
-              <li>서울 ○○구 ○○로 123</li>
-              <li>02-000-0000</li>
-            </ul>
-          </div>
-        </div>
-        <div className={styles.copy}>
-          © {new Date().getFullYear()} PawPaw. All rights reserved.
-        </div>
-      </footer>
     </div>
   );
 }
