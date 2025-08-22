@@ -21,6 +21,7 @@ import Animals from "../components/Animals/Animals";
 import AdoptionApply from "../components/AdoptionApply/AdoptionApply";
 import NotFound from "../components/NotFound/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import ShelterMap from "../components/ShelterMap/ShelterMap";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/intro" element={<Intro />} />
           <Route path="/animals" element={<Animals />} />
+          <Route path="/shelter-map" element={<ShelterMap />} />
           
           {/* 인증이 필요한 페이지 */}
           <Route path="/maker" element={

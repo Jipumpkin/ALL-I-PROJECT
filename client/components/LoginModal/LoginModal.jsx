@@ -34,7 +34,7 @@ const LoginModal = ({ setIsOpen }) => {
         
         <h2>메뉴</h2>
         
-        {isAuthenticated() ? (
+        {isAuthenticated() || true ? (
           // 로그인 상태일 때
           <>
             <div className={styles["user-info"]}>
