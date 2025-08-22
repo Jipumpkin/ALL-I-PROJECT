@@ -27,6 +27,17 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // 연락처 필드에서 숫자만 입력 허용
+    if (name === 'phone') {
+      const numericValue = value.replace(/[^0-9]/g, '');
+      setFormData({
+        ...formData,
+        [name]: numericValue
+      });
+      return;
+    }
+    
     setFormData({
       ...formData,
       [name]: value

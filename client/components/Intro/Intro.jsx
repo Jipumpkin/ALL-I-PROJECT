@@ -231,7 +231,16 @@ export default function PawPawIntro() {
           </div>
           <div className={styles.mergeVisual}>
             <div className={styles.mergeCard}>
-              <img src="" alt="메이커 영상 넣기" />
+              <video 
+                controls 
+                autoPlay 
+                muted 
+                loop
+                style={{width: '100%', height: 'auto', borderRadius: '16px'}}
+              >
+                <source src="/videos/maker-demo.mp4" type="video/mp4" />
+                메이커 데모 영상
+              </video>
               <span className={`${styles.badge} ${styles.badgeSoft}`}>
                
               </span>
