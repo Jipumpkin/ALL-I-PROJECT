@@ -3,6 +3,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const cron = require('node-cron');
 require('dotenv').config();
 
 const { syncAnimalData } = require('./services/animalSync'); // services 파일의 함수를 불러옵니다.
@@ -79,6 +80,21 @@ const server = app.listen(PORT, async () => {
     } catch (err) {
         console.error('💥 초기 데이터 동기화 실패:', err);
     }
+
+    // 🕒 매일 자정(00:00)에 데이터 동기화 실행
+    cron.schedule('0 0 * * *', async () => {
+        console.log('🔄 정기 데이터 동기화 시작...');
+        try {
+            await syncAnimalData();
+            console.log('✅ 정기 데이터 동기화 완료');
+        } catch (error) {
+            console.error('❌ 정기 데이터 동기화 실패:', error);
+        }
+    }, {
+        timezone: 'Asia/Seoul'
+    });
+
+    console.log('⏰ 정기 데이터 동기화 스케줄러 활성화 (매일 자정)');
 });
 
 server.on('error', (error) => {

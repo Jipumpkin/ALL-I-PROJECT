@@ -1,21 +1,86 @@
-// /server/db.js
+// /server/config/database.js
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '.env') }); // 위치에 맞게: 상위면 '..'
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') }); // 상위 폴더의 .env 파일
 
 const mysql = require('mysql2/promise');
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  port: Number(process.env.DB_PORT || 3306),   // ★ 추가
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'alli_core', // 기본값도 프로젝트 DB로
+// 원격 데이터베이스 설정 (우선순위)
+const remoteConfig = {
+  host: process.env.REMOTE_DB_HOST || '192.168.1.96',
+  port: Number(process.env.REMOTE_DB_PORT || 3307),
+  user: process.env.REMOTE_DB_USER || 'alli_admin',
+  password: process.env.REMOTE_DB_PASSWORD || '250801',
+  database: process.env.REMOTE_DB_NAME || 'alli_core',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  // 선택: 필요하면 아래 옵션 켜기
-  // dateStrings: true,
-  // namedPlaceholders: true,
-});
+  connectTimeout: 5000 // 5초 타임아웃
+};
 
-module.exports = pool;
+// 로컬 데이터베이스 설정 (백업)
+const localConfig = {
+  host: process.env.LOCAL_DB_HOST || 'localhost',
+  port: Number(process.env.LOCAL_DB_PORT || 3306),
+  user: process.env.LOCAL_DB_USER || 'root',
+  password: process.env.LOCAL_DB_PASSWORD || '12345',
+  database: process.env.LOCAL_DB_NAME || 'alli_core_local',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+};
+
+let pool = null;
+
+// 데이터베이스 연결 초기화 함수
+async function initializeDatabase() {
+  console.log('🔄 데이터베이스 연결 초기화 중...');
+  
+  try {
+    // 원격 데이터베이스 연결 시도
+    console.log('📡 원격 데이터베이스 연결 시도 중...');
+    pool = mysql.createPool(remoteConfig);
+    
+    // 연결 테스트
+    const connection = await pool.getConnection();
+    await connection.ping();
+    connection.release();
+    
+    console.log('✅ 원격 데이터베이스 연결 성공');
+    return pool;
+    
+  } catch (error) {
+    console.log('❌ 원격 데이터베이스 연결 실패:', error.message);
+    
+    try {
+      // 로컬 데이터베이스로 폴백
+      console.log('🔄 로컬 데이터베이스로 폴백 중...');
+      if (pool) {
+        await pool.end();
+      }
+      
+      pool = mysql.createPool(localConfig);
+      
+      // 연결 테스트
+      const connection = await pool.getConnection();
+      await connection.ping();
+      connection.release();
+      
+      console.log('✅ 로컬 데이터베이스 연결 성공');
+      return pool;
+      
+    } catch (localError) {
+      console.error('💥 로컬 데이터베이스 연결도 실패:', localError.message);
+      throw new Error('모든 데이터베이스 연결 실패');
+    }
+  }
+}
+
+// 데이터베이스 풀 가져오기 함수
+async function getPool() {
+  if (!pool) {
+    await initializeDatabase();
+  }
+  return pool;
+}
+
+module.exports = { getPool, initializeDatabase };
