@@ -1,102 +1,167 @@
-const jwt = require('jsonwebtoken');
+const jwtUtils = require('../utils/jwt');
 const User = require('../models/User');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
-
-const auth = async (req, res, next) => {
+/**
+ * JWT 토큰 인증 미들웨어
+ * Authorization 헤더의 Bearer 토큰을 검증하고 사용자 정보를 req.user에 추가
+ */
+const authMiddleware = async (req, res, next) => {
     try {
-        const token = req.header('Authorization')?.replace('Bearer ', '');
+        // 1. Authorization 헤더에서 토큰 추출
+        const authHeader = req.headers.authorization;
         
-        if (!token) {
+        if (!authHeader) {
             return res.status(401).json({
-                error: '인증 토큰이 필요합니다.'
+                success: false,
+                message: '접근 권한이 없습니다. 토큰이 필요합니다.',
+                error: 'NO_TOKEN'
             });
         }
-        
-        const decoded = jwt.verify(token, JWT_SECRET);
-        
-        const user = await User.findById(decoded.user_id);
+
+        // Bearer 토큰 형식 확인 및 추출
+        const tokenParts = authHeader.split(' ');
+        if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
+            return res.status(401).json({
+                success: false,
+                message: '토큰 형식이 올바르지 않습니다. Bearer 토큰을 사용해주세요.',
+                error: 'INVALID_TOKEN_FORMAT'
+            });
+        }
+
+        const token = tokenParts[1];
+
+        // 2. JWT 토큰 검증
+        let decoded;
+        try {
+            decoded = jwtUtils.verifyToken(token);
+        } catch (error) {
+            // jwtUtils에서 던진 에러 메시지 활용
+            let errorCode = 'INVALID_TOKEN';
+            if (error.message.includes('만료')) {
+                errorCode = 'TOKEN_EXPIRED';
+            } else if (error.message.includes('유효하지 않은')) {
+                errorCode = 'INVALID_TOKEN';
+            }
+
+            return res.status(401).json({
+                success: false,
+                message: error.message,
+                error: errorCode
+            });
+        }
+
+        // 3. 토큰에서 사용자 ID 추출 및 사용자 정보 조회
+        const userId = decoded.userId || decoded.id;
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: '토큰에 사용자 정보가 없습니다.',
+                error: 'INVALID_TOKEN_PAYLOAD'
+            });
+        }
+
+        // 데이터베이스에서 사용자 확인
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(401).json({
-                error: '유효하지 않은 토큰입니다.'
+                success: false,
+                message: '존재하지 않는 사용자입니다.',
+                error: 'USER_NOT_FOUND'
             });
         }
-        
-        req.user = {
-            user_id: user.user_id,
-            username: user.username,
-            email: user.email,
-            nickname: user.nickname
-        };
-        
+
+        // 4. req.user에 사용자 정보 추가 (비밀번호 제외)
+        const { password_hash, ...userWithoutPassword } = user;
+        req.user = userWithoutPassword;
+        req.token = token;
+
         next();
-        
+
     } catch (error) {
-        console.error('인증 오류:', error);
-        
-        if (error.name === 'JsonWebTokenError') {
-            return res.status(401).json({
-                error: '유효하지 않은 토큰입니다.'
-            });
-        }
-        
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({
-                error: '토큰이 만료되었습니다.'
-            });
-        }
-        
-        res.status(500).json({
-            error: '인증 처리 중 오류가 발생했습니다.'
+        console.error('Auth middleware error:', error);
+        return res.status(500).json({
+            success: false,
+            message: '인증 처리 중 서버 오류가 발생했습니다.',
+            error: 'INTERNAL_SERVER_ERROR'
         });
     }
 };
 
-const generateToken = (user) => {
-    return jwt.sign(
-        {
-            user_id: user.user_id,
-            username: user.username,
-            email: user.email
-        },
-        JWT_SECRET,
-        {
-            expiresIn: '7d'
-        }
-    );
-};
-
-const optionalAuth = async (req, res, next) => {
+/**
+ * 옵셔널 인증 미들웨어
+ * 토큰이 있으면 인증하고, 없어도 다음 미들웨어로 진행
+ * 공개 API에서 로그인 상태에 따라 다른 응답을 제공할 때 사용
+ */
+const optionalAuthMiddleware = async (req, res, next) => {
     try {
-        const token = req.header('Authorization')?.replace('Bearer ', '');
+        const authHeader = req.headers.authorization;
         
-        if (!token) {
+        // 토큰이 없으면 그냥 다음으로 진행
+        if (!authHeader) {
             req.user = null;
             return next();
         }
-        
-        const decoded = jwt.verify(token, JWT_SECRET);
-        const user = await User.findById(decoded.user_id);
-        
-        if (user) {
-            req.user = {
-                user_id: user.user_id,
-                username: user.username,
-                email: user.email,
-                nickname: user.nickname
-            };
+
+        // 토큰이 있으면 검증 시도
+        const tokenParts = authHeader.split(' ');
+        if (tokenParts.length === 2 && tokenParts[0] === 'Bearer') {
+            const token = tokenParts[1];
+            
+            try {
+                const decoded = jwtUtils.verifyToken(token);
+                const userId = decoded.userId || decoded.id;
+                
+                if (userId) {
+                    const user = await User.findById(userId);
+                    if (user) {
+                        const { password_hash, ...userWithoutPassword } = user;
+                        req.user = userWithoutPassword;
+                        req.token = token;
+                    }
+                }
+            } catch (error) {
+                // 토큰 오류가 있어도 그냥 진행 (옵셔널이므로)
+                req.user = null;
+            }
         } else {
             req.user = null;
         }
-        
+
         next();
-        
+
     } catch (error) {
+        console.error('Optional auth middleware error:', error);
         req.user = null;
         next();
     }
 };
 
-module.exports = auth;
-module.exports.generateToken = generateToken;
-module.exports.optionalAuth = optionalAuth;
+/**
+ * 관리자 권한 확인 미들웨어
+ * authMiddleware 이후에 사용해야 함
+ */
+const adminMiddleware = (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({
+            success: false,
+            message: '인증이 필요합니다.',
+            error: 'NO_AUTH'
+        });
+    }
+
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({
+            success: false,
+            message: '관리자 권한이 필요합니다.',
+            error: 'INSUFFICIENT_PERMISSIONS'
+        });
+    }
+
+    next();
+};
+
+module.exports = {
+    authMiddleware,
+    optionalAuthMiddleware,
+    adminMiddleware
+};

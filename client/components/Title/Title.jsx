@@ -48,7 +48,7 @@ const Title = () => {
         <nav className={styles["nav"]}>
             <ol>
                 <li>
-                    <Link to="https://www.animals.or.kr/support/intro"><img src="../images/nav_icon_info.png" alt="info"/></Link>
+                    <Link to="/intro" onClick={() => window.scrollTo(0, 0)}><img src="../images/nav_icon_info.png" alt="info"/></Link>
                     소개
                 </li>
                 <li><Link to="https://www.animals.or.kr/support/intro"><img src="../images/nav_icon_donate.png" alt="info"/>

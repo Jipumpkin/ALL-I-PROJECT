@@ -1,0 +1,245 @@
+/* MakerResult.module.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
+
+.body {
+  font-family: "Inter", sans-serif;
+  background-color: #f7fafc;
+  padding: 1rem;
+}
+
+.resultContainer {
+  max-width: 28rem;
+  margin: auto;
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.resultHeader {
+  background: transparent;
+  color: #1f2937;
+  padding: 0 0 1.5rem 0;
+  text-align: center;
+  position: relative;
+}
+
+.backButton {
+  position: absolute;
+  top: -1.5rem;
+  left: -1.5rem;
+  background: #f3f4f6;
+  border: 2px solid #e5e7eb;
+  color: #374151;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.backButton:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.resultTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+}
+
+.resultSubtitle {
+  font-size: 1.25rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+
+.resultImageContainer {
+  width: 100%;
+  height: 12rem;
+  background-color: #e2e8f0;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #6b7280;
+  font-weight: 700;
+  border: 2px dashed #d1d5db;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.resultImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.resultImage:hover {
+  transform: scale(1.02);
+}
+
+.resultInfoSection {
+  margin-bottom: 1.5rem;
+}
+
+.infoTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.infoTableContainer {
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  background: white;
+}
+
+.infoTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.infoTable thead {
+  background: #f9fafb;
+}
+
+.infoTable thead tr {
+  border: none;
+}
+
+.tableHeader {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tableCellKey {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #1f2937;
+  font-weight: 600;
+  width: 33.333333%;
+  border-right: 1px solid #e5e7eb;
+}
+
+.tableCellValue {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #4b5563;
+  width: 66.666667%;
+}
+
+.infoTable tbody tr:not(:last-child) {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.resultActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.actionButton {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.actionButton.primary {
+  background-color: #f97316;
+  color: white;
+}
+
+.actionButton.primary:hover {
+  background-color: #ea580c;
+  transform: translateY(-1px);
+}
+
+.actionButton.secondary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.actionButton.secondary:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.actionButton.tertiary {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+}
+
+.actionButton.tertiary:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .body {
+    padding: 0.5rem;
+  }
+  
+  .resultContainer {
+    max-width: 100%;
+    padding: 1rem;
+  }
+  
+  .resultHeader {
+    padding: 0 0 1rem 0;
+  }
+  
+  .backButton {
+    top: -1rem;
+    left: -1rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  .resultTitle {
+    font-size: 1.5rem;
+  }
+  
+  .resultSubtitle {
+    font-size: 1rem;
+  }
+  
+  .resultImageContainer {
+    height: 10rem;
+  }
+  
+  .actionButton {
+    padding: 0.875rem;
+    font-size: 0.875rem;
+  }
+}

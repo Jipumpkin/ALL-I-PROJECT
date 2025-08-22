@@ -3,31 +3,26 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 84px - 5vh);
-  background-color: #f0f2f5;
+  min-height: calc(100vh - 120px);
+  background-color: white;
+  padding: 20px;
 }
 
 .login-box {
   display: flex;
   flex-direction: column;
   background-color: white;
-  border-radius: 0;
-  box-shadow: none;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  width: 100vw;
-  height: 100vh;
-  max-width: 900px;
   width: 100%;
+  max-width: 450px;
 }
 
 
 
 .login-form {
-  flex: 1;
-  padding: 48px;
-  min-height: 500px;
+  padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -36,7 +31,8 @@
 h2 {
   margin-bottom: 24px;
   font-size: 24px;
-  color: #1c1e21;
+  color: var(--color-text-primary);
+  text-align: center;
 }
 
 .input-group {
@@ -47,32 +43,40 @@ h2 {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #606770;
+  color: var(--color-text-secondary);
 }
 
 .input-group input {
   width: 100%;
   padding: 12px;
-  border: 1px solid #dddfe2;
-  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
   font-size: 16px;
+  box-sizing: border-box;
+  transition: var(--transition-fast);
+}
+
+.input-group input:focus {
+  border-color: var(--color-primary);
+  outline: none;
 }
 
 .login-button {
   width: 100%;
   padding: 12px;
-  background-color: #F89C1E;
+  background-color: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--border-radius-md);
   font-size: 18px;
   font-weight: 600;
   cursor: pointer;
   margin-top: 8px;
+  transition: var(--transition-fast);
 }
 
-.login-button:hover {
-  background-color: #F89C1E;
+.login-button:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
 }
 
 .login-links {
@@ -80,14 +84,31 @@ h2 {
   justify-content: space-between;
   gap: 50px;
   margin-top: 16px;
+  font-size: 14px;
 }
 
 .login-links a {
-  color: #555;
+  color: var(--color-primary);
   text-decoration: none;
   font-size: 14px;
+  transition: var(--transition-fast);
 }
 
 .login-links a:hover {
   text-decoration: underline;
+}
+
+.error-message {
+  background-color: #fee;
+  color: #c33;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  border: 1px solid #fcc;
+}
+
+.login-button:disabled {
+  background-color: var(--color-secondary-light);
+  cursor: not-allowed;
 }

@@ -66,14 +66,14 @@ AUTHOR=$(git log -1 --pretty=%an $COMMIT_HASH)
 DATE=$(git log -1 --pretty=%ad --date=short $COMMIT_HASH)
 BRANCH_INFO=$(git log -1 --pretty=%D $COMMIT_HASH)
 
-# 변경된 파일들과 통계
-CHANGED_FILES=$(git show --name-only --pretty="" $COMMIT_HASH)
-FILE_STATS=$(git show --stat $COMMIT_HASH | head -n -1)  # 마지막 요약 줄 제외
+# 변경된 파일들과 통계 (개인 파일 제외)
+CHANGED_FILES=$(git show --name-only --pretty="" $COMMIT_HASH | grep -v "^CLAUDE\.md$" || true)
+FILE_STATS=$(git show --stat $COMMIT_HASH | head -n -1 | grep -v "CLAUDE\.md" || true)
 
-# 파일 상태별 분류
-ADDED_FILES=$(git show --name-status --pretty="" $COMMIT_HASH | grep "^A" | cut -f2- || true)
-MODIFIED_FILES=$(git show --name-status --pretty="" $COMMIT_HASH | grep "^M" | cut -f2- || true)
-DELETED_FILES=$(git show --name-status --pretty="" $COMMIT_HASH | grep "^D" | cut -f2- || true)
+# 파일 상태별 분류 (개인 파일 제외)
+ADDED_FILES=$(git show --name-status --pretty="" $COMMIT_HASH | grep "^A" | cut -f2- | grep -v "^CLAUDE\.md$" || true)
+MODIFIED_FILES=$(git show --name-status --pretty="" $COMMIT_HASH | grep "^M" | cut -f2- | grep -v "^CLAUDE\.md$" || true)
+DELETED_FILES=$(git show --name-status --pretty="" $COMMIT_HASH | grep "^D" | cut -f2- | grep -v "^CLAUDE\.md$" || true)
 
 # 기능명 정리 (특수문자 제거, 한글 안전 처리)
 CLEAN_FEATURE_NAME=$(echo "$FEATURE_NAME" | sed 's/[^a-zA-Z0-9가-힣_-]/-/g' | sed 's/--*/-/g' | sed 's/^-\|-$//g')
