@@ -1,6 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
 import styles from './ShelterMap.module.css';
+import Loading from '../Loading/Loading';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
 
 const ShelterMap = () => {
   const [map, setMap] = useState(null);
@@ -616,8 +618,18 @@ const ShelterMap = () => {
   return (
     <div className={styles['map-container']}>
       <h2>내 주변 유기동물 보호소</h2>
-      {isLoading && <p>지도를 로딩 중입니다...</p>}
-      {error && <p style={{color: 'red'}}>오류: {error}</p>}
+      {isLoading && <Loading message="지도를 로딩 중입니다..." />}
+      {error && (
+        <ErrorMessage 
+          message={error} 
+          type="error" 
+          onRetry={() => {
+            setError(null);
+            setIsLoading(true);
+            window.location.reload();
+          }}
+        />
+      )}
       <div id="map" className={styles.map}></div>
       {shelters.length > 0 && (
         <div>

@@ -56,15 +56,25 @@ input[type="password"] {
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-md);
     box-sizing: border-box;
-    transition: var(--transition-fast);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 16px;
+    transform: translateY(0);
 }
 
 input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus {
-    border-color: var(--color-primary);
+    border-color: #ff7849;
     outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 120, 73, 0.1);
+    transform: translateY(-1px);
+}
+
+input[type="text"]:hover:not(:focus),
+input[type="email"]:hover:not(:focus),
+input[type="password"]:hover:not(:focus) {
+    border-color: #cbd5e0;
+    transform: translateY(-1px);
 }
 
 /* Button styles */

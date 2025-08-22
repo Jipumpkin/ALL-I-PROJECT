@@ -100,10 +100,40 @@ img {
   color: #fff;
   font-weight: 600;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(0);
 }
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
 .btn:hover {
   background: #e5653f;
   border-color: #e5653f;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 120, 73, 0.3);
+}
+
+.btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn:active {
+  transform: translateY(0);
+  transition: transform 0.1s;
 }
 .btnOutline {
   background: #fff;
@@ -112,6 +142,8 @@ img {
 }
 .btnOutline:hover {
   background: #fff5f3;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 120, 73, 0.15);
 }
 .btnGhost {
   background: transparent;
@@ -245,11 +277,31 @@ img {
   border-radius: 16px;
   padding: 14px;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
+
+.featureCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 120, 73, 0.1) 0%, rgba(255, 120, 73, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
 .featureCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(255, 120, 73, 0.15);
+  border-color: #ff7849;
+}
+
+.featureCard:hover::before {
+  opacity: 1;
 }
 .featureCardHead {
   display: flex;
