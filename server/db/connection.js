@@ -8,13 +8,11 @@ const dbConfig = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: parseInt(process.env.DB_PORT, 10),
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 };
 
-async function getConnection() {
-    if (!dbConfig.host || !dbConfig.user || !dbConfig.password || !dbConfig.database) {
-        throw new Error('💥 오류: DB 환경 변수가 설정되지 않았습니다.');
-    }
-    return await mysql.createConnection(dbConfig);
-}
+const pool = mysql.createPool(dbConfig);
 
-module.exports = { getConnection };
+module.exports = pool;

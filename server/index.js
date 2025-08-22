@@ -44,6 +44,7 @@ app.post('/api/register', (req, res) => {
 });
 
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/animals', require('./routes/animalRoutes'));
 
 // TODO: 추후 추가 예정
 // app.use('/api/animals', require('./routes/animalRoutes'));

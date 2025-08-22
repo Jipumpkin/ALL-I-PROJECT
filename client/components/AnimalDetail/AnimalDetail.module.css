@@ -1,85 +1,106 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
   max-width: 800px;
-  margin: 20px auto;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .profileSection {
+  display: flex;
+  justify-content: center;
   margin-bottom: 20px;
 }
 
 .profileImage {
-  width: 250px;
-  height: 250px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
   object-fit: cover;
-  border-radius: 50%; /* 프로필처럼 보이도록 원형으로 */
-  border: 3px solid #ddd;
 }
 
-.infoSection {
+.infoWrapper {
+  position: relative;
+}
+
+.infoWrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 120px; /* Same as the width of .infoLabel */
+  width: 1px;
+  background-color: #eee;
+}
+
+.infoTable {
   width: 100%;
-  max-width: 500px;
-  margin-bottom: 30px;
-  text-align: left; /* 정보 왼쪽 정렬 */
+  margin-top: 20px;
 }
 
-.infoSection p {
-  font-size: 1.1em;
-  margin: 8px 0;
-  line-height: 1.5;
+.tableTitle {
+  margin-bottom: 10px;
+  font-size: 1.2em;
 }
 
-.infoSection strong {
+.infoRow {
+  display: flex;
+  padding: 10px 0;
+}
+
+.infoLabel {
+  width: 120px;
+  font-weight: bold;
+  padding-right: 10px;
+  flex-shrink: 0;
   color: #555;
-  margin-right: 5px;
+}
+
+.infoValue {
+  flex-grow: 1;
+  padding-left: 15px;
+  color: #333;
+  display: flex; /* Add this */
+  justify-content: space-between; /* Add this */
+  align-items: center; /* Add this */
+}
+
+.shortcutButton {
+  width: 24px; /* Adjust size as needed */
+  height: 24px; /* Adjust size as needed */
+  font-size: 16px; /* Adjust icon size as needed */
+  border: none; /* Remove border */
+  border-radius: 3px;
+  text-decoration: none;
+  color: white; /* Icon color */
+  background-color: #28a745; /* Green color */
+  margin-left: 10px;
+  display: flex; /* Add flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+}
+
+.shortcutButton:hover {
+  background-color: #218838; /* Darker green on hover */
 }
 
 .divider {
-  width: 80%;
-  border: none;
-  border-top: 1px solid #eee; /* 옅은 색 실선 */
-  margin: 20px 0;
-}
-
-.shelterInfoSection {
-  width: 100%;
-  max-width: 500px;
-  margin-bottom: 30px;
-  text-align: left;
-  padding: 15px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  background-color: #fff;
-}
-
-.shelterInfoSection h3 {
-  text-align: center;
-  margin-top: 0;
-  color: #333;
-}
-
-.shelterInfoSection p {
-  font-size: 1em;
-  margin: 5px 0;
+  margin: 30px 0;
+  border: 0;
+  border-top: 1px solid #ddd;
 }
 
 .uploadButton {
-  padding: 12px 25px;
-  font-size: 1.1em;
-  background-color: #4CAF50;
+  display: block;
+  width: 100%;
+  padding: 15px;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-size: 1.1em;
+  margin-top: 20px;
 }
 
 .uploadButton:hover {
-  background-color: #45a049;
+  background-color: #0056b3;
 }
