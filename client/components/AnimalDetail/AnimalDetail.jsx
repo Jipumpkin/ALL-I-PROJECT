@@ -26,7 +26,7 @@ const AnimalDetail = () => {
   }, [id]);
 
   const handleImageUploadClick = () => {
-    navigate('/image-uploader');
+    navigate('/maker');
   };
 
   if (loading) {
