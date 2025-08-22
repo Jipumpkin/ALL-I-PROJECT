@@ -1,0 +1,126 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import styles from './AnimalDetail.module.css';
+
+const AnimalDetail = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [animal, setAnimal] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAnimal = async () => {
+      try {
+        const response = await axios.get(`/api/animals/${id}`);
+        setAnimal(response.data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnimal();
+  }, [id]);
+
+  const handleImageUploadClick = () => {
+    navigate('/image-uploader');
+  };
+
+  if (loading) {
+    return <div className={styles.container}><p>로딩 중...</p></div>;
+  }
+
+  if (error) {
+    return <div className={styles.container}><p>오류 발생: {error.message}</p></div>;
+  }
+
+  if (!animal) {
+    return <div className={styles.container}><p>동물 정보를 찾을 수 없습니다.</p></div>;
+  }
+
+  const genderMap = {
+    male: '수컷',
+    female: '암컷',
+    unknown: '불명'
+  };
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.profileSection}>
+        <img src={animal.image_url} alt={animal.species} className={styles.profileImage} />
+      </div>
+
+      <div className={styles.infoWrapper}>
+        <div className={styles.infoTable}>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>품종</div>
+            <div className={styles.infoValue}>{animal.species}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>성별</div>
+            <div className={styles.infoValue}>{genderMap[animal.gender] || '정보 없음'}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>나이</div>
+            <div className={styles.infoValue}>{animal.age}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>색상</div>
+            <div className={styles.infoValue}>{animal.colorCd || '정보 없음'}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>특이사항</div>
+            <div className={styles.infoValue}>{animal.specialMark || '없음'}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>구조 지역</div>
+            <div className={styles.infoValue}>{animal.region}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>구조 일자</div>
+            <div className={styles.infoValue}>{animal.rescued_at}</div>
+          </div>
+        </div>
+
+        <hr className={styles.divider} />
+
+        <div className={styles.infoTable}>
+          <h3 className={styles.tableTitle}>보호소 정보</h3>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>보호소 이름</div>
+            <div className={styles.infoValue}>
+              {animal.shelter_name || '정보 없음'}
+              {animal.shelter_name && (
+                <a 
+                  href={`https://www.google.com/search?q=${encodeURIComponent(animal.shelter_name)}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={styles.shortcutButton}
+                >
+                  &#x2197; {/* Replace "바로가기" with the arrow icon */}
+                </a>
+              )}
+            </div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>주소</div>
+            <div className={styles.infoValue}>{animal.shelter_address || '정보 없음'}</div>
+          </div>
+          <div className={styles.infoRow}>
+            <div className={styles.infoLabel}>연락처</div>
+            <div className={styles.infoValue}>{animal.shelter_contact_number || '정보 없음'}</div>
+          </div>
+        </div>
+      </div>
+
+      <button className={styles.uploadButton}>
+        이미지 합성
+      </button>
+    </div>
+  );
+};
+
+export default AnimalDetail;

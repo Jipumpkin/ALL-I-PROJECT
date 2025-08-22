@@ -17,3 +17,9 @@ build/
 
 # Claude Code 개인 설정 파일. 개발자별로 다른 내용을 가질 수 있으므로 개인 관리
 CLAUDE.md
+
+# Gemini 개인 설정 파일
+GEMINI.md
+
+# 발표 및 문서 자료
+presentation/
