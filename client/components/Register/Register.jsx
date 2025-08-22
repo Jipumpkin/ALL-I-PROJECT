@@ -10,7 +10,7 @@ const Register = () => {
   const { login } = useAuth();
   
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: '',
     confirmPassword: '',
     name: '',
@@ -22,12 +22,35 @@ const Register = () => {
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [passwordMatch, setPasswordMatch] = useState(null); // null, true, false
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+
+    // 비밀번호 확인 실시간 검증
+    if (name === 'confirmPassword') {
+      if (value === '') {
+        setPasswordMatch(null);
+      } else if (value === formData.password) {
+        setPasswordMatch(true);
+      } else {
+        setPasswordMatch(false);
+      }
+    }
+    
+    if (name === 'password') {
+      if (formData.confirmPassword === '') {
+        setPasswordMatch(null);
+      } else if (value === formData.confirmPassword) {
+        setPasswordMatch(true);
+      } else {
+        setPasswordMatch(false);
+      }
+    }
   };
 
   const registerHandler = async (e) => {
@@ -43,8 +66,8 @@ const Register = () => {
     }
 
     // 필수 필드 검증
-    if (!formData.username || !formData.password || !formData.name) {
-      setError('아이디, 비밀번호, 이름은 필수 입력 항목입니다.');
+    if (!formData.email || !formData.password || !formData.name) {
+      setError('이메일, 비밀번호, 이름은 필수 입력 항목입니다.');
       setIsLoading(false);
       return;
     }
@@ -52,7 +75,8 @@ const Register = () => {
     try {
       // API 요청 데이터 구성
       const requestData = {
-        username: formData.username,
+        username: formData.email.split('@')[0], // 이메일에서 username 생성
+        email: formData.email,
         password: formData.password,
         nickname: formData.name, // name을 nickname으로 매핑
         phone_number: formData.phone || null,
@@ -90,7 +114,7 @@ const Register = () => {
   return (
     <div className={styles["register-container"]}>
       <h2>회원가입</h2>
-      <h4 style={{ color: "skyblue", textAlign: "center" }}>
+      <h4 style={{ color: "var(--color-text-secondary)", textAlign: "center" }}>
         우리가족이 되어주세요!
       </h4>
 
@@ -98,13 +122,14 @@ const Register = () => {
         {error && <div className={styles["error-message"]}>{error}</div>}
         
         <div className={styles["form-group"]}>
-          <label htmlFor="username">아이디</label>
+          <label htmlFor="email">이메일</label>
           <input 
-            type="text" 
-            id="username" 
-            name="username" 
-            value={formData.username}
+            type="email" 
+            id="email" 
+            name="email" 
+            value={formData.email}
             onChange={handleChange}
+            placeholder="이메일을 입력해주세요"
             required
           />
         </div>
@@ -127,8 +152,19 @@ const Register = () => {
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
+            className={passwordMatch === false ? styles["input-error"] : passwordMatch === true ? styles["input-success"] : ""}
             required
           />
+          {passwordMatch === false && (
+            <div className={styles["password-mismatch"]}>
+              비밀번호가 일치하지 않습니다.
+            </div>
+          )}
+          {passwordMatch === true && (
+            <div className={styles["password-match"]}>
+              비밀번호가 일치합니다.
+            </div>
+          )}
         </div>
         <div className={styles["form-group"]}>
           <label htmlFor="name">이름</label>
