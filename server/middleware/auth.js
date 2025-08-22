@@ -1,5 +1,6 @@
 const jwtUtils = require('../utils/jwt');
 const User = require('../models/User');
+const { initializeDatabase } = require('../config/database');
 
 /**
  * JWT 토큰 인증 미들웨어
@@ -60,13 +61,19 @@ const authMiddleware = async (req, res, next) => {
             });
         }
 
+        // 데이터베이스 초기화 확인
+        await initializeDatabase();
+        
         // 데이터베이스에서 사용자 확인
+        console.log('🔍 Auth middleware - Looking for user with ID:', userId);
         const user = await User.findById(userId);
+        console.log('🔍 Auth middleware - Found user:', user ? 'YES' : 'NO');
         if (!user) {
-            return res.status(401).json({
+            console.log('🔍 Auth middleware - User not found in database');
+            return res.status(404).json({
                 success: false,
                 message: '존재하지 않는 사용자입니다.',
-                error: 'USER_NOT_FOUND'
+                error: 'User not found'
             });
         }
 
