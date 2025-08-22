@@ -14,12 +14,25 @@ class User {
     }
 
     static async create(userData) {
-        const { username, email, password_hash, nickname, gender, phone_number } = userData;
+        console.log('🔍 User.create userData:', userData);
+        
         const query = `
             INSERT INTO users (username, email, password_hash, nickname, gender, phone_number)
             VALUES (?, ?, ?, ?, ?, ?)
         `;
-        const [result] = await db.execute(query, [username, email, password_hash, nickname, gender, phone_number]);
+        
+        const params = [
+            userData.username,
+            userData.email,
+            userData.password_hash,
+            userData.nickname || null,
+            userData.gender || null,
+            userData.phone_number || null
+        ];
+        
+        console.log('🔍 SQL parameters:', params);
+        
+        const [result] = await db.execute(query, params);
         return this.findById(result.insertId);
     }
 
@@ -52,6 +65,7 @@ class User {
     }
 
     static async createWithValidation(userData) {
+        console.log('🔍 User.createWithValidation userData:', userData);
         const { username, email, password_hash, nickname, gender, phone_number } = userData;
         
         // 이메일 중복 체크
@@ -60,6 +74,7 @@ class User {
             throw new Error('이미 존재하는 이메일입니다.');
         }
 
+        console.log('🔍 Email validation passed, calling create...');
         // 사용자 생성
         return await this.create(userData);
     }

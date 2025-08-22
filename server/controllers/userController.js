@@ -62,6 +62,7 @@ const userController = {
     register: async (req, res) => {
         try {
             const { username, email, password, nickname, gender, phone_number } = req.body;
+            console.log('🔍 register 함수 입력 데이터:', { username, email, password: password ? '***' : undefined, nickname, gender, phone_number });
 
             // 필수 입력값 검증
             if (!username || !email || !password) {
@@ -106,8 +107,8 @@ const userController = {
                 email,
                 password_hash: hashedPassword,
                 nickname: nickname || username,
-                gender,
-                phone_number
+                gender: gender || null,
+                phone_number: phone_number || null
             };
 
             const newUser = await User.createWithValidation(userData);

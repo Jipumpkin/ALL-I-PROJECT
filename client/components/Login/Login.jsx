@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +36,7 @@ const Login = () => {
       });
 
       if (response.data.success) {
-        login(response.data.user);
+        login(response.data.data.user, response.data.data.tokens);
         // 보호된 페이지에서 온 경우 원래 페이지로, 아니면 메인으로
         const from = location.state?.from?.pathname || '/';
         navigate(from, { replace: true });
@@ -63,12 +63,12 @@ const Login = () => {
           <form onSubmit={handleSubmit}>
             {error && <div className={styles["error-message"]}>{error}</div>}
             <div className={styles["input-group"]}>
-              <label htmlFor="username">아이디</label>
+              <label htmlFor="email">이메일</label>
               <input 
-                type="text" 
-                id="username" 
-                name="username" 
-                value={formData.username}
+                type="email" 
+                id="email" 
+                name="email" 
+                value={formData.email}
                 onChange={handleChange}
                 required
               />
