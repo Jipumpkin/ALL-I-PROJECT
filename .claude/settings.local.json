@@ -4,7 +4,10 @@
       "Bash(git add:*)",
       "Bash(powershell:*)",
       "Bash(curl:*)",
-      "Bash(node:*)"
+      "WebFetch(domain:platform.openai.com)",
+      "WebSearch",
+      "Bash(git stash:*)",
+      "Bash(git fetch:*)"
     ],
     "deny": [],
     "ask": []
