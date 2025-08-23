@@ -1,6 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
 import styles from './ShelterMap.module.css';
+import Loading from '../Loading/Loading';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
 
 const ShelterMap = () => {
   const [map, setMap] = useState(null);
@@ -10,54 +12,65 @@ const ShelterMap = () => {
   const [shelters, setShelters] = useState([]);
 
   useEffect(() => {
+    const loadKakaoScript = () => {
+      return new Promise((resolve, reject) => {
+        if (window.kakao && window.kakao.maps) {
+          resolve();
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_API_KEY}&libraries=services,clusterer,drawing&autoload=false`;
+        script.onload = () => {
+          window.kakao.maps.load(() => {
+            resolve();
+          });
+        };
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    };
+
     let retryCount = 0;
     const maxRetries = 50; // 5초 동안 재시도
 
     const initKakaoMap = () => {
-      // 카카오 지도 API 스크립트가 로드되었는지 확인
-      if (window.kakao && window.kakao.maps) {
+      loadKakaoScript().then(() => {
         try {
-          window.kakao.maps.load(() => {
-            console.log("카카오 지도 API 로드 완료");
-            setIsLoading(false);
-            setError(null);
+          console.log("카카오 지도 API 로드 완료");
+          setIsLoading(false);
+          setError(null);
             
-            // 1. 사용자의 현재 위치 가져오기
-            if (navigator.geolocation) {
-              navigator.geolocation.getCurrentPosition(
-                (position) => {
-                  const lat = position.coords.latitude;
-                  const lng = position.coords.longitude;
-                  setUserLocation({ lat, lng });
-                  initializeMap(lat, lng);
-                },
-                (error) => {
-                  console.error("Geolocation error: ", error);
-                  // 위치를 가져올 수 없을 경우 기본 위치(서울시청)로 지도를 초기화합니다.
-                  initializeMap(37.5665, 126.9780);
-                }
-              );
-            } else {
-              console.error("Geolocation is not supported by this browser.");
-              // Geolocation을 지원하지 않을 경우 기본 위치로 지도를 초기화합니다.
-              initializeMap(37.5665, 126.9780);
-            }
-          });
+          // 1. 사용자의 현재 위치 가져오기
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                setUserLocation({ lat, lng });
+                initializeMap(lat, lng);
+              },
+              (error) => {
+                console.error("Geolocation error: ", error);
+                // 위치를 가져올 수 없을 경우 기본 위치(서울시청)로 지도를 초기화합니다.
+                initializeMap(37.5665, 126.9780);
+              }
+            );
+          } else {
+            console.error("Geolocation is not supported by this browser.");
+            // Geolocation을 지원하지 않을 경우 기본 위치로 지도를 초기화합니다.
+            initializeMap(37.5665, 126.9780);
+          }
         } catch (apiError) {
           console.error("카카오 API 로드 오류:", apiError);
           setError("카카오 지도 API 로드에 실패했습니다. API 키를 확인해주세요.");
           setIsLoading(false);
         }
-      } else {
-        retryCount++;
-        if (retryCount < maxRetries) {
-          // 카카오 지도 API가 아직 로드되지 않은 경우 재시도
-          setTimeout(initKakaoMap, 100);
-        } else {
-          setError("카카오 지도 API를 로드할 수 없습니다. 네트워크 연결을 확인해주세요.");
-          setIsLoading(false);
-        }
-      }
+      }).catch((error) => {
+        console.error("스크립트 로드 실패:", error);
+        setError("지도를 불러올 수 없습니다. 네트워크를 확인해주세요.");
+        setIsLoading(false);
+      });
     };
 
     initKakaoMap();
@@ -616,8 +629,18 @@ const ShelterMap = () => {
   return (
     <div className={styles['map-container']}>
       <h2>내 주변 유기동물 보호소</h2>
-      {isLoading && <p>지도를 로딩 중입니다...</p>}
-      {error && <p style={{color: 'red'}}>오류: {error}</p>}
+      {isLoading && <Loading message="지도를 로딩 중입니다..." />}
+      {error && (
+        <ErrorMessage 
+          message={error} 
+          type="error" 
+          onRetry={() => {
+            setError(null);
+            setIsLoading(true);
+            window.location.reload();
+          }}
+        />
+      )}
       <div id="map" className={styles.map}></div>
       {shelters.length > 0 && (
         <div>

@@ -351,4 +351,355 @@
   }
 }
 
-/* Remove duplicate - already handled above */
+/* 새로운 스타일 추가 */
+.errorMessage {
+  background: #ffebee;
+  color: #c62828;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-lg);
+  border-left: 4px solid #e53935;
+  font-size: var(--font-size-sm);
+}
+
+.successMessage {
+  background: #e8f5e8;
+  color: #2e7d32;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-lg);
+  border-left: 4px solid #4caf50;
+  font-size: var(--font-size-sm);
+}
+
+.readonlySection {
+  background: rgba(var(--color-primary-rgb), 0.05);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.2);
+}
+
+.editableSection {
+  background: white;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  border: 2px solid var(--color-primary);
+}
+
+.editableSection h4 {
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-lg);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+}
+
+.infoItem label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+  display: block;
+  font-size: var(--font-size-sm);
+}
+
+.infoItem span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.editInput {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  transition: var(--transition-fast);
+  margin: 0;
+}
+
+.editInput:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.editSelect {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  background: white;
+  transition: var(--transition-fast);
+}
+
+.editSelect:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+/* 모달 스타일 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: white;
+  padding: var(--spacing-3xl);
+  border-radius: var(--border-radius-xl);
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modalContent h3 {
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-lg);
+  font-size: var(--font-size-lg);
+  text-align: center;
+  font-weight: var(--font-weight-bold);
+}
+
+.modalContent p {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+  line-height: var(--line-height-relaxed);
+}
+
+.warning {
+  color: #e53935 !important;
+  font-weight: var(--font-weight-semibold);
+  background: #ffebee;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  border-left: 4px solid #e53935;
+  text-align: left !important;
+}
+
+.passwordInput {
+  margin: var(--spacing-xl) 0;
+}
+
+.passwordInput label {
+  display: block;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+.modalButtons {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+}
+
+.confirmDeleteButton {
+  background: #e53935;
+  color: white;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  flex: 1;
+  transition: var(--transition-fast);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirmDeleteButton:hover:not(:disabled) {
+  background: #c62828;
+  transform: translateY(-1px);
+}
+
+.confirmDeleteButton:disabled {
+  background: var(--color-border);
+  cursor: not-allowed;
+}
+
+/* 반응형 스타일 개선 */
+@media (max-width: 768px) {
+  .infoItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+  
+  .infoItem strong {
+    min-width: auto;
+    margin-right: 0;
+  }
+  
+  .editButtons {
+    flex-direction: column;
+  }
+  
+  .saveButton, .cancelButton {
+    width: 100%;
+  }
+  
+  .modalContent {
+    padding: var(--spacing-2xl);
+  }
+  
+  .modalButtons {
+    flex-direction: column;
+  }
+}
+
+/* 사진 관련 스타일 */
+.photoSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-left: var(--spacing-md);
+}
+
+.currentPhoto {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.profileImage {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--border-radius-lg);
+  object-fit: cover;
+  border: 2px solid var(--color-primary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.profileImage:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+.changePhotoButton, .addPhotoButton {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-weight: var(--font-weight-medium);
+}
+
+.changePhotoButton:hover, .addPhotoButton:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.noPhoto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  align-items: flex-start;
+}
+
+.noPhoto span {
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+/* 이미지 모달 스타일 */
+.currentImagePreview {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.previewImage {
+  width: 150px;
+  height: 150px;
+  border-radius: var(--border-radius-lg);
+  object-fit: cover;
+  border: 2px solid var(--color-primary);
+  margin-top: var(--spacing-sm);
+}
+
+.imageOptions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.fileUploadLabel {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-align: center;
+  border: none;
+  display: inline-block;
+}
+
+.fileUploadLabel:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.defaultImageButton {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--color-secondary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.defaultImageButton:hover {
+  background-color: var(--color-secondary-hover);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .photoSection {
+    margin-left: 0;
+    margin-top: var(--spacing-sm);
+  }
+  
+  .currentPhoto {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .profileImage {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .previewImage {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .imageOptions {
+    gap: var(--spacing-sm);
+  }
+}

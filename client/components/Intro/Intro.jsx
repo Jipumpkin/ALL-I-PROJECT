@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./Intro.module.css";
+import ScrollAnimation from "../ScrollAnimation/ScrollAnimation";
 
 // 간단한 인라인 SVG 아이콘들 (외부 라이브러리 의존 제거)
 const IconShower = (props) => (
@@ -144,8 +145,18 @@ export default function PawPawIntro() {
               산책하며 <strong>현실적인 돌봄 루틴</strong>을 확인해 보세요.
             </p>
             <div className={styles.heroCta}>
-              <button className={styles.btn} onClick={() => window.location.href = '/adoption-apply'}>입양 신청하기</button>
-              <button className={`${styles.btn} ${styles.btnOutline}`} onClick={() => window.location.href = '/shelter-map'}>
+              <button 
+                className={styles.btn} 
+                onClick={() => window.location.href = '/adoption-apply'}
+                aria-label="동물 입양 신청 페이지로 이동"
+              >
+                입양 신청하기
+              </button>
+              <button 
+                className={`${styles.btn} ${styles.btnOutline}`} 
+                onClick={() => window.location.href = '/shelter-map'}
+                aria-label="내 주변 동물보호소 지도 페이지로 이동"
+              >
                 내 근처 센터
               </button>
             </div>
@@ -168,28 +179,31 @@ export default function PawPawIntro() {
       </section>
 
       {/* Features */}
-      <section
-        id="features"
-        className={`${styles.container} ${styles.features}`}
-      >
-        <div className={styles.sectionHead}>
-          <h2>하루 시뮬레이션</h2>
-        </div>
-        <div className={styles.grid4}>
-          {features.map((f) => (
-            <FeatureCard
-              key={f.title}
-              icon={f.icon}
-              title={f.title}
-              desc={f.desc}
-              tag={f.tag}
-            />
-          ))}
-        </div>
-        <p className={styles.note}>
-          ※ 각 버튼은 실제 기능 페이지로 연결될 수 있도록 라우팅을 연결하세요.
-        </p>
-      </section>
+      <ScrollAnimation animation="fadeInUp">
+        <section
+          id="features"
+          className={`${styles.container} ${styles.features}`}
+        >
+          <div className={styles.sectionHead}>
+            <h2>하루 시뮬레이션</h2>
+          </div>
+          <div className={styles.grid4}>
+            {features.map((f, index) => (
+              <ScrollAnimation key={f.title} animation="scaleIn" delay={index * 100}>
+                <FeatureCard
+                  icon={f.icon}
+                  title={f.title}
+                  desc={f.desc}
+                  tag={f.tag}
+                />
+              </ScrollAnimation>
+            ))}
+          </div>
+          <p className={styles.note}>
+            ※ 각 버튼은 실제 기능 페이지로 연결될 수 있도록 라우팅을 연결하세요.
+          </p>
+        </section>
+      </ScrollAnimation>
 
       {/* Steps */}
       <section id="how" className={`${styles.container} ${styles.steps}`}>
@@ -231,7 +245,16 @@ export default function PawPawIntro() {
           </div>
           <div className={styles.mergeVisual}>
             <div className={styles.mergeCard}>
-              <img src="" alt="메이커 영상 넣기" />
+              <video 
+                controls 
+                autoPlay 
+                muted 
+                loop
+                style={{width: '100%', height: 'auto', borderRadius: '16px'}}
+              >
+                <source src="/videos/maker-demo.mp4" type="video/mp4" />
+                메이커 데모 영상
+              </video>
               <span className={`${styles.badge} ${styles.badgeSoft}`}>
                
               </span>

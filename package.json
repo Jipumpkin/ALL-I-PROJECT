@@ -1,5 +1,21 @@
 {
+  "name": "all-i-project-root",
+  "version": "1.0.0",
+  "description": "ALL-I-PROJECT Monorepo",
+  "main": "index.js",
+  "scripts": {
+    "start:server": "npm start --prefix server",
+    "start:client": "npm run dev --prefix client",
+    "dev": "concurrently \"npm:start:server\" \"npm:start:client\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "react-icons": "^5.5.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
   }
 }

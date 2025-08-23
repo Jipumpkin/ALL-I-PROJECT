@@ -4,8 +4,17 @@
   padding: 20px;
 }
 
+/* --- 필터들을 감싸는 컨테이너 (새로 추가) --- */
+.filterContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
 .filterButtons {
-  margin-bottom: 20px;
   display: flex;
   gap: 10px;
 }
@@ -13,16 +22,34 @@
 .filterButtons button {
   padding: 10px 20px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 20px;
   cursor: pointer;
+  background-color: white;
+  transition: all 0.2s ease-in-out;
+}
+
+.filterButtons button:hover {
   background-color: #f0f0f0;
+  transform: translateY(-2px);
 }
 
 .filterButtons button.active {
-  background-color: #007bff;
+  background-color: #3498db;
   color: white;
-  border-color: #007bff;
+  border-color: #3498db;
+  font-weight: bold;
 }
+
+/* --- 보호소 필터 드롭다운 스타일 (새로 추가) --- */
+.shelterFilter select {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  min-width: 200px; /* 드롭다운의 최소 너비 */
+}
+
+/* -------------------------------------- */
 
 .animalGrid {
   display: grid;
@@ -34,25 +61,30 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
-  min-height: 304px; /* Adjusted for consistent card height with all content */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  background-color: white;
+  position: relative;
 }
 
 .animalCard:hover {
   transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0,0,0,0.1);
 }
+
 
 .animalCardLink {
   text-decoration: none;
   color: inherit;
   display: block;
+  position: relative;
 }
 
 .animalImage {
   width: 100%;
   height: 200px;
   object-fit: cover;
+  border-bottom: 1px solid #eee;
 }
 
 .animalInfo {
@@ -60,26 +92,35 @@
 }
 
 .animalInfo p {
-  margin: 0 0 5px 0;
+  margin: 0 0 8px 0;
   font-size: 14px;
 }
 
-.pagination {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  gap: 5px;
+.animalInfo p:last-child {
+  margin-bottom: 0;
 }
 
-.pagination button {
-  padding: 5px 10px;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-  cursor: pointer;
+.noResults {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  color: #777;
+  font-size: 16px;
 }
 
-.pagination button.active {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
+@media (max-width: 768px) {
+  .animalGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .filterContainer {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
+
+@media (max-width: 480px) {
+  .animalGrid {
+    grid-template-columns: 1fr;
+  }
+}
+

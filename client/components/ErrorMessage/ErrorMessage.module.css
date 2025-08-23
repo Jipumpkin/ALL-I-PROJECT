@@ -1,0 +1,63 @@
+.errorContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+  border-left: 4px solid;
+}
+
+.error {
+  background-color: #fef2f2;
+  border-left-color: #ef4444;
+  color: #b91c1c;
+}
+
+.warning {
+  background-color: #fffbeb;
+  border-left-color: #f59e0b;
+  color: #d97706;
+}
+
+.info {
+  background-color: #eff6ff;
+  border-left-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.success {
+  background-color: #f0fdf4;
+  border-left-color: #22c55e;
+  color: #15803d;
+}
+
+.icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.content {
+  flex: 1;
+}
+
+.message {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.retryButton {
+  background-color: #ff7849;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.retryButton:hover {
+  background-color: #e5653f;
+}

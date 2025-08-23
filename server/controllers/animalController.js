@@ -1,99 +1,114 @@
-const pool = require('../db/connection');
+// ✅ db/connection.js에서 내보낸 pool 객체를 구조 분해 할당으로 가져옵니다.
+const { pool } = require('../db/connection');
 
+// --- 1. 동물 목록 조회 (필터링, 페이지네이션) ---
 const getAnimals = async (req, res) => {
-  console.log('Received request for /api/animals');
-  console.log('Query params:', req.query);
+    const { filter, page = 1, shelter_id } = req.query;
+    const limit = 12;
+    const offset = (page - 1) * limit;
 
-  const { filter, page = 1 } = req.query; // Revert to original
-  const limit = 12;
-  const offset = (page - 1) * limit;
+    const whereClauses = [];
+    const queryParams = [];
 
-  let whereClause = ''; // Revert to original
-  const params = [];
-
-  if (filter && filter !== 'all') {
-    if (filter === 'dog') {
-      whereClause = 'WHERE species LIKE ?';
-      params.push('%개%');
-    } else if (filter === 'cat') {
-      whereClause = 'WHERE species LIKE ?';
-      params.push('%고양이%');
-    } else if (filter === 'other') {
-      whereClause = 'WHERE species NOT LIKE ? AND species NOT LIKE ?';
-      params.push('%개%');
-      params.push('%고양이%');
+    // 카테고리 필터
+    if (filter && filter !== 'all') {
+        if (filter === 'dog') {
+            whereClauses.push('species LIKE ?');
+            queryParams.push('%개%');
+        } else if (filter === 'cat') {
+            whereClauses.push('species LIKE ?');
+            queryParams.push('%고양이%');
+        } else if (filter === 'other') {
+            whereClauses.push('species NOT LIKE ? AND species NOT LIKE ?');
+            queryParams.push('%개%');
+            queryParams.push('%고양이%');
+        }
     }
-  }
+    // 보호소 필터
+    if (shelter_id && shelter_id !== 'all') {
+        // 테이블 별칭 'a'를 사용하여 shelter_id를 명확히 지정
+        whereClauses.push('a.shelter_id = ?');
+        queryParams.push(shelter_id);
+    }
 
-  try {
-    // Get total count for pagination
-    const countQuery = `SELECT COUNT(*) as count FROM animals ${whereClause}`; // Revert to original
-    console.log('Count query:', countQuery, params);
-    const [countRows] = await pool.query(countQuery, params);
-    const totalAnimals = countRows[0].count;
-    const totalPages = Math.ceil(totalAnimals / limit);
+    const whereQuery = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+    
+    try {
+        const countQuery = `SELECT COUNT(*) as count FROM animals a ${whereQuery}`;
+        const [countRows] = await pool.query(countQuery, queryParams);
+        const totalAnimals = countRows[0].count;
+        const totalPages = Math.ceil(totalAnimals / limit);
 
-    // Get animals for the current page
-    const animalsQuery = `
-      SELECT * FROM animals
-      ${whereClause}
-      ORDER BY created_at DESC
-      LIMIT ? OFFSET ?
-    `; // Revert to original
-    console.log('Animals query:', animalsQuery, [...params, limit, offset]);
-    const [animals] = await pool.query(animalsQuery, [...params, limit, offset]);
-
-    res.json({ animals, totalPages });
-  } catch (error) {
-    console.error('Error fetching animals:', error);
-    res.status(500).json({ error: 'Internal server error', details: error.message });
-  }
+        // 정렬 기준을 rescued_at(구조일)으로 변경하여 최신순으로 표시
+        const animalsQuery = `SELECT * FROM animals a ${whereQuery} ORDER BY rescued_at DESC LIMIT ? OFFSET ?`;
+        const finalParams = [...queryParams, limit, offset];
+        const [animals] = await pool.query(animalsQuery, finalParams);
+        
+        res.json({ animals, totalPages });
+    } catch (error) {
+        console.error('Error fetching animals:', error);
+        res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
 };
 
+// --- 2. 모든 보호소 목록 조회 ---
+const getAllShelters = async (req, res) => {
+    try {
+        const query = 'SELECT shelter_id, shelter_name FROM shelters ORDER BY shelter_name ASC';
+        const [shelters] = await pool.query(query);
+        res.json(shelters);
+    } catch (error) {
+        console.error('Error fetching shelters:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// --- 3. 특정 ID의 동물 상세 정보 조회 (로직 구현) ---
 const getAnimalById = async (req, res) => {
-  const { id } = req.params;
+    const { id } = req.params;
+    try {
+        const query = `
+            SELECT 
+                a.*, 
+                s.shelter_name, 
+                s.address as shelter_address, 
+                s.contact_number as shelter_contact_number
+            FROM animals a
+            LEFT JOIN shelters s ON a.shelter_id = s.shelter_id
+            WHERE a.animal_id = ?
+        `;
+        const [rows] = await pool.query(query, [id]);
 
-  try {
-    const query = `
-      SELECT 
-        a.*, 
-        s.shelter_name, 
-        s.address as shelter_address, 
-        s.contact_number as shelter_contact_number 
-      FROM animals a
-      LEFT JOIN shelters s ON a.shelter_id = s.shelter_id
-      WHERE a.animal_id = ?
-    `;
-    const [rows] = await pool.query(query, [id]);
-
-    if (rows.length === 0) {
-      return res.status(404).json({ error: 'Animal not found' });
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Animal not found' });
+        }
+        res.json(rows[0]);
+    } catch (error) {
+        console.error(`Error fetching animal with id ${id}:`, error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-
-    res.json(rows[0]);
-  } catch (error) {
-    console.error(`Error fetching animal with id ${id}:`, error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
 };
 
+// --- 4. 가장 오래된 동물 조회 (로직 수정) ---
 const getOldestAnimals = async (req, res) => {
-  try {
-    const query = `
-      SELECT * FROM animals
-      ORDER BY created_at ASC
-      LIMIT 12
-    `;
-    const [animals] = await pool.query(query);
-    res.json({ animals });
-  } catch (error) {
-    console.error('Error fetching oldest animals:', error);
-    res.status(500).json({ error: 'Internal server error', details: error.message });
-  }
+    try {
+        const query = `
+            SELECT * FROM animals
+            ORDER BY rescued_at ASC  -- ✅ 정렬 기준을 'rescued_at' (실제 구조일)로 수정
+            LIMIT 12
+        `;
+        const [animals] = await pool.query(query);
+        // 다른 API와 응답 형식을 통일 (totalPages 포함)
+        res.json({ animals: animals, totalPages: 1 });
+    } catch (error) {
+        console.error('Error fetching oldest animals:', error);
+        res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
 };
 
 module.exports = {
-  getAnimals,
-  getAnimalById,
-  getOldestAnimals,
+    getAnimals,
+    getAllShelters,
+    getAnimalById,
+    getOldestAnimals,
 };
