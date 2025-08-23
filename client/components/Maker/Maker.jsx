@@ -90,6 +90,23 @@ const Maker = () => {
     unknown: '불명'
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return '정보 없음';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return dateString;
+      }
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateString;
+    }
+  };
+
   return (
     <div className={styles.mainContainer}>
 
@@ -185,7 +202,7 @@ const Maker = () => {
           <table className={styles.infoTable}>
             <tbody>
               <tr>
-                <td className={styles.tableCellKey}>나이</td>
+                <td className={styles.tableCellKey}>출생년도</td>
                 <td className={styles.tableCellValue}>{animal.age}</td>
               </tr>
               <tr>
@@ -194,7 +211,7 @@ const Maker = () => {
               </tr>
               <tr>
                 <td className={styles.tableCellKey}>보호 시작날짜</td>
-                <td className={styles.tableCellValue}>{animal.rescued_at}</td>
+                <td className={styles.tableCellValue}>{formatDate(animal.rescued_at)}</td>
               </tr>
               <tr>
                 <td className={styles.tableCellKey}>특이사항</td>

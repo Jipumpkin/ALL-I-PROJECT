@@ -1,5 +1,5 @@
 .container {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -47,11 +47,12 @@
 }
 
 .infoLabel {
-  width: 120px;
+  width: 140px;
   font-weight: bold;
   padding-right: 10px;
   flex-shrink: 0;
   color: #555;
+  white-space: nowrap;
 }
 
 .infoValue {

@@ -61,6 +61,24 @@ const AnimalDetail = () => {
     unknown: '불명'
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return '정보 없음';
+    try {
+      const date = new Date(dateString);
+      // Check if the date is valid
+      if (isNaN(date.getTime())) {
+        return dateString; // Return original string if date is invalid
+      }
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateString; // Return original string in case of an error
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.profileSection}>
@@ -78,7 +96,7 @@ const AnimalDetail = () => {
             <div className={styles.infoValue}>{genderMap[animal.gender] || '정보 없음'}</div>
           </div>
           <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>나이</div>
+            <div className={styles.infoLabel}>출생년도</div>
             <div className={styles.infoValue}>{animal.age}</div>
           </div>
           <div className={styles.infoRow}>
@@ -95,7 +113,7 @@ const AnimalDetail = () => {
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>구조 일자</div>
-            <div className={styles.infoValue}>{animal.rescued_at}</div>
+            <div className={styles.infoValue}>{formatDate(animal.rescued_at)}</div>
           </div>
         </div>
 
