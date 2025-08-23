@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../src/context/AuthContext';
 import styles from './Maker.module.css';
 
 const Maker = () => {
@@ -8,11 +9,33 @@ const Maker = () => {
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [buttonStyle, setButtonStyle] = useState({});
+  const [userRegistrationImage, setUserRegistrationImage] = useState(null);
   const imageContainerRef = useRef(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   // 표에서 동물 이름 가져오기
   const petName = '몽이';
+
+  // 사용자 등록 이미지 가져오기
+  const fetchUserRegistrationImage = async () => {
+    // user.id 또는 user.user_id 확인
+    const userId = user?.id || user?.user_id;
+    if (userId) {
+      try {
+        const response = await fetch(`http://localhost:3003/api/users/${userId}/images`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.data.length > 0) {
+            // 가장 최근에 업로드한 이미지 사용
+            setUserRegistrationImage(data.data[0].image_url);
+          }
+        }
+      } catch (error) {
+        console.error('사용자 이미지 가져오기 실패:', error);
+      }
+    }
+  };
 
   useEffect(() => {
     const observer = new ResizeObserver(entries => {
@@ -29,12 +52,15 @@ const Maker = () => {
       observer.observe(imageContainerRef.current);
     }
 
+    // 컴포넌트 마운트 시 사용자 등록 이미지 가져오기
+    fetchUserRegistrationImage();
+
     return () => {
       if (imageContainerRef.current) {
         observer.unobserve(imageContainerRef.current);
       }
     };
-  }, []);
+  }, [user]);
 
   // Function to handle image change
   const handleImageChange = (url) => {
@@ -130,9 +156,17 @@ const Maker = () => {
             <h3 className={styles.modalTitle}>프로필 이미지 변경</h3>
             <button
               className={`${styles.modalOptionButton} ${styles.primary}`}
-              onClick={() => handleImageChange("https://placehold.co/400x400/FF5733/FFFFFF?text=Saved+Image")}
+              onClick={() => {
+                if (userRegistrationImage) {
+                  handleImageChange(userRegistrationImage);
+                } else {
+                  alert('회원가입 시 등록한 이미지가 없습니다.');
+                }
+              }}
+              disabled={!userRegistrationImage}
             >
               회원가입 시 넣은 이미지
+              {!userRegistrationImage && ' (없음)'}
             </button>
             <label className={`${styles.modalOptionButton} ${styles.secondary}`}>
               새로운 이미지 넣기

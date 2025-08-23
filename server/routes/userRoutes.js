@@ -27,6 +27,12 @@ router.put('/profile', authMiddleware, userController.updateUserProfile);
 // 회원탈퇴 (인증 필요)
 router.delete('/account', authMiddleware, userController.deleteAccount);
 
+// 사용자 등록 이미지 조회
+router.get('/:userId/images', userController.getUserImages);
+
+// 사용자 이미지 추가
+router.post('/:userId/images', userController.addUserImage);
+
 // 테스트 라우트
 router.get('/test-route', (req, res) => {
     res.json({ message: 'Test route working' });

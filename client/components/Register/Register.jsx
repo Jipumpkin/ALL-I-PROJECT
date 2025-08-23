@@ -112,7 +112,17 @@ const Register = () => {
       });
 
       if (response.data.success) {
-        // 회원가입 성공 시 자동 로그인
+        // 회원가입 성공 시 mock 이미지 데이터 추가
+        const userId = response.data.data.user.id;
+        try {
+          await axios.post(`http://localhost:3003/api/users/${userId}/images`, {
+            image_url: 'https://placehold.co/400x400/FF5733/FFFFFF?text=User+House+Image'
+          });
+        } catch (imageError) {
+          console.error('사용자 이미지 추가 실패:', imageError);
+        }
+        
+        // 자동 로그인
         login(response.data.data.user, response.data.data.tokens);
         navigate('/');
       } else {
@@ -246,7 +256,6 @@ const Register = () => {
             <option value="">선택해주세요</option>
             <option value="male">남성</option>
             <option value="female">여성</option>
-            <option value="other">기타</option>
           </select>
         </div>
 

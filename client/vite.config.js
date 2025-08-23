@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5174,
+    strictPort: true,
     proxy: {
       // 로컬 백엔드 서버를 위한 프록시 설정
       '/api': {

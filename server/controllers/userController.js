@@ -779,6 +779,81 @@ const userController = {
                 error: error.message
             });
         }
+    },
+
+    /**
+     * 사용자 등록 이미지 조회
+     * GET /api/users/:userId/images
+     */
+    getUserImages: async (req, res) => {
+        try {
+            const { userId } = req.params;
+            
+            // user_images 테이블에서 사용자의 이미지들 조회
+            const db = require('../utils/db');
+            const [rows] = await db.execute(
+                'SELECT image_id, image_url, uploaded_at FROM user_images WHERE user_id = ? ORDER BY uploaded_at DESC',
+                [userId]
+            );
+
+            res.json({
+                success: true,
+                message: '사용자 이미지 조회 성공',
+                data: rows
+            });
+
+        } catch (error) {
+            console.error('Get user images error:', error);
+            res.status(500).json({
+                success: false,
+                message: '사용자 이미지 조회 중 오류가 발생했습니다.',
+                error: error.message
+            });
+        }
+    },
+
+    /**
+     * 사용자 이미지 추가
+     * POST /api/users/:userId/images
+     * Body: { image_url }
+     */
+    addUserImage: async (req, res) => {
+        try {
+            const { userId } = req.params;
+            const { image_url } = req.body;
+
+            if (!image_url) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'image_url이 필요합니다.'
+                });
+            }
+
+            // user_images 테이블에 이미지 추가
+            const db = require('../utils/db');
+            const [result] = await db.execute(
+                'INSERT INTO user_images (user_id, image_url) VALUES (?, ?)',
+                [userId, image_url]
+            );
+
+            res.json({
+                success: true,
+                message: '사용자 이미지 추가 성공',
+                data: {
+                    image_id: result.insertId,
+                    user_id: userId,
+                    image_url: image_url
+                }
+            });
+
+        } catch (error) {
+            console.error('Add user image error:', error);
+            res.status(500).json({
+                success: false,
+                message: '사용자 이미지 추가 중 오류가 발생했습니다.',
+                error: error.message
+            });
+        }
     }
 };
 

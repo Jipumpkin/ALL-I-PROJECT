@@ -18,6 +18,8 @@ const MyAccount = () => {
     phone_number: '',
     gender: ''
   });
+  const [userImages, setUserImages] = useState([]);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -26,8 +28,55 @@ const MyAccount = () => {
         phone_number: user.phone_number || '',
         gender: user.gender || ''
       });
+      fetchUserImages();
     }
   }, [user]);
+
+  // 사용자 이미지 불러오기
+  const fetchUserImages = async () => {
+    const userId = user?.id || user?.user_id;
+    if (userId) {
+      try {
+        const response = await axios.get(`/api/users/${userId}/images`);
+        if (response.data.success) {
+          setUserImages(response.data.data);
+        }
+      } catch (error) {
+        console.error('사용자 이미지 조회 실패:', error);
+      }
+    }
+  };
+
+  // 이미지 업데이트
+  const handleImageUpdate = async (imageUrl) => {
+    const userId = user?.id || user?.user_id;
+    if (userId) {
+      try {
+        await axios.post(`/api/users/${userId}/images`, {
+          image_url: imageUrl
+        });
+        fetchUserImages(); // 이미지 목록 새로고침
+        setShowImageModal(false);
+        setSuccess('이미지가 성공적으로 업데이트되었습니다.');
+        setTimeout(() => setSuccess(''), 3000);
+      } catch (error) {
+        setError('이미지 업데이트 중 오류가 발생했습니다.');
+        setTimeout(() => setError(''), 5000);
+      }
+    }
+  };
+
+  // 파일 업로드 핸들러
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        handleImageUpdate(event.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -207,7 +256,6 @@ const MyAccount = () => {
                     <option value="">선택하지 않음</option>
                     <option value="male">남성</option>
                     <option value="female">여성</option>
-                    <option value="other">기타</option>
                   </select>
                 </div>
                 <div className={styles.editButtons}>
@@ -242,6 +290,37 @@ const MyAccount = () => {
                      user.gender === 'other' ? '기타' : '설정되지 않음'}
                   </span>
                 </div>
+                <div className={styles.infoItem}>
+                  <strong>등록 사진:</strong>
+                  <div className={styles.photoSection}>
+                    {userImages.length > 0 ? (
+                      <div className={styles.currentPhoto}>
+                        <img 
+                          src={userImages[0].image_url} 
+                          alt="사용자 등록 사진" 
+                          className={styles.profileImage}
+                          onClick={() => setShowImageModal(true)}
+                        />
+                        <button 
+                          onClick={() => setShowImageModal(true)}
+                          className={styles.changePhotoButton}
+                        >
+                          사진 변경
+                        </button>
+                      </div>
+                    ) : (
+                      <div className={styles.noPhoto}>
+                        <span>등록된 사진이 없습니다</span>
+                        <button 
+                          onClick={() => setShowImageModal(true)}
+                          className={styles.addPhotoButton}
+                        >
+                          사진 추가
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </>
             )}
           </div>
@@ -250,11 +329,9 @@ const MyAccount = () => {
         <div className={styles.menuSection}>
           <h3>메뉴</h3>
           <div className={styles.menuButtons}>
-            {!isEditing && (
-              <button className={styles.menuButton} onClick={handleEditClick}>
-                내 정보 수정
-              </button>
-            )}
+            <button className={styles.menuButton} onClick={handleEditClick}>
+              내 정보 수정
+            </button>
             <button className={styles.menuButton} onClick={handleAdoptionHistory}>
               입양 신청 내역
             </button>
@@ -304,6 +381,53 @@ const MyAccount = () => {
                 disabled={loading}
               >
                 취소
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 이미지 수정 모달 */}
+      {showImageModal && (
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <h3>프로필 사진 변경</h3>
+            {userImages.length > 0 && (
+              <div className={styles.currentImagePreview}>
+                <p>현재 이미지:</p>
+                <img 
+                  src={userImages[0].image_url} 
+                  alt="현재 사진" 
+                  className={styles.previewImage}
+                />
+              </div>
+            )}
+            
+            <div className={styles.imageOptions}>
+              <label className={styles.fileUploadLabel}>
+                새 이미지 업로드
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleFileUpload}
+                  style={{ display: 'none' }}
+                />
+              </label>
+              
+              <button 
+                onClick={() => handleImageUpdate('https://placehold.co/400x400/33A3FF/FFFFFF?text=Default+Image')}
+                className={styles.defaultImageButton}
+              >
+                기본 이미지로 변경
+              </button>
+            </div>
+
+            <div className={styles.modalButtons}>
+              <button 
+                onClick={() => setShowImageModal(false)}
+                className={styles.cancelButton}
+              >
+                닫기
               </button>
             </div>
           </div>

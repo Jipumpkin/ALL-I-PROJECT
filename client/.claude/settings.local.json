@@ -1,11 +1,12 @@
 {
   "permissions": {
-    "additionalDirectories": [
-      "C:\\Users\\SAMSUNG\\Desktop\\project\\ALL-I-PROJECT\\server"
-    ],
     "allow": [
       "Bash(npm install)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(npm start)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\SAMSUNG\\Desktop\\project\\ALL-I-PROJECT\\server"
     ]
   }
 }
