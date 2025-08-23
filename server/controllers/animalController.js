@@ -72,7 +72,7 @@ const getAnimalById = async (req, res) => {
                 a.*, 
                 s.shelter_name, 
                 s.address as shelter_address, 
-                s.contact_number as shelter_contact
+                s.contact_number as shelter_contact_number
             FROM animals a
             LEFT JOIN shelters s ON a.shelter_id = s.shelter_id
             WHERE a.animal_id = ?

@@ -139,3 +139,36 @@
 .submit-btn:hover {
   background-color: #2563eb;
 }
+
+.animal-info-section {
+  background-color: #f3f4f6;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.section-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #374151;
+  margin: 0 0 15px 0;
+}
+
+.animal-details {
+  display: flex;
+  align-items: center;
+}
+
+.animal-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-right: 20px;
+}
+
+.animal-species {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #1f2937;
+}
