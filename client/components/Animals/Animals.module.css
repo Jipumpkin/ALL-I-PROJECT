@@ -64,6 +64,7 @@
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
   transition: transform 0.2s, box-shadow 0.2s;
   background-color: white;
+  position: relative;
 }
 
 .animalCard:hover {
@@ -71,10 +72,12 @@
   box-shadow: 0 8px 12px rgba(0,0,0,0.1);
 }
 
+
 .animalCardLink {
   text-decoration: none;
   color: inherit;
   display: block;
+  position: relative;
 }
 
 .animalImage {
@@ -120,3 +123,4 @@
     grid-template-columns: 1fr;
   }
 }
+

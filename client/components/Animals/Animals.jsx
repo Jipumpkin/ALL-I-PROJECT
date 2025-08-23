@@ -114,7 +114,7 @@ const Animals = () => {
                     <div className={styles.animalGrid}>
                         {animals.length > 0 ? animals.map((animal) => (
                             <div key={animal.animal_id} className={styles.animalCard}>
-                                <Link to={`/animal/${animal.animal_id}`} className={styles.animalCardLink}>
+                                <Link to={`/maker?animalId=${animal.animal_id}`} className={styles.animalCardLink}>
                                     <img src={animal.image_url} alt={animal.species} className={styles.animalImage} onError={(e) => { e.target.src = '/images/unknown_animal.png'; }} />
                                     <div className={styles.animalInfo}>
                                         <p><strong>품종:</strong> {animal.species}</p>
