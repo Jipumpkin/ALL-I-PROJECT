@@ -1,5 +1,5 @@
 .container {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -47,11 +47,12 @@
 }
 
 .infoLabel {
-  width: 120px;
+  width: 140px;
   font-weight: bold;
   padding-right: 10px;
   flex-shrink: 0;
   color: #555;
+  white-space: nowrap;
 }
 
 .infoValue {
@@ -88,9 +89,15 @@
   border-top: 1px solid #ddd;
 }
 
-.uploadButton {
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.actionButton {
   display: block;
-  width: 100%;
+  width: 48%;
   padding: 15px;
   background-color: #007bff;
   color: white;
@@ -98,9 +105,9 @@
   border-radius: 5px;
   cursor: pointer;
   font-size: 1.1em;
-  margin-top: 20px;
+  text-align: center;
 }
 
-.uploadButton:hover {
+.actionButton:hover {
   background-color: #0056b3;
 }

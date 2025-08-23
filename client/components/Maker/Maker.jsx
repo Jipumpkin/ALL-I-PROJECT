@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './Maker.module.css';
 
 const Maker = () => {
@@ -9,10 +9,10 @@ const Maker = () => {
   const [loadingMessage, setLoadingMessage] = useState('');
   const [buttonStyle, setButtonStyle] = useState({});
   const imageContainerRef = useRef(null);
+  const timerRef = useRef(null);
   const navigate = useNavigate();
-
-  // 표에서 동물 이름 가져오기
-  const petName = '몽이';
+  const location = useLocation();
+  const animal = location.state?.animal;
 
   useEffect(() => {
     const observer = new ResizeObserver(entries => {
@@ -32,6 +32,9 @@ const Maker = () => {
     return () => {
       if (imageContainerRef.current) {
         observer.unobserve(imageContainerRef.current);
+      }
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
       }
     };
   }, []);
@@ -56,35 +59,52 @@ const Maker = () => {
 
   // 아이콘 클릭 핸들러
   const handleIconClick = (action) => {
-    let message = '';
-    switch (action) {
-      case 'food':
-        message = `${petName}\n밥 먹는 중\n조금만 기다려주세요!`;
-        break;
-      case 'shower':
-        message = `${petName}\n목욕 하는 중\n조금만 기다려주세요!`;
-        break;
-      case 'grooming':
-        message = `${petName}\n미용 하는 중\n조금만 기다려주세요!`;
-        break;
-      default:
-        message = '처리 중입니다...';
-    }
+    let message = '처리 중입니다...\n조금만 기다려주세요!';
     
     setLoadingMessage(message);
     setShowLoadingModal(true);
     
     // 3초 후 로딩 모달 닫고 결과 페이지로 이동
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       setShowLoadingModal(false);
       // URL 파라미터로 데이터 전달
       const params = new URLSearchParams({
         action: action,
-        petName: petName,
+        petName: animal?.species || '유기동물',
         resultImage: "https://placehold.co/600x600/f97316/FFFFFF?text=Result+Image"
       });
       navigate(`/maker/result?${params.toString()}`);
     }, 3000);
+  };
+
+  const handleCancelLoading = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    setShowLoadingModal(false);
+  };
+
+  const genderMap = {
+    male: '수컷',
+    female: '암컷',
+    unknown: '불명'
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '정보 없음';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return dateString;
+      }
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateString;
+    }
   };
 
   return (
@@ -92,7 +112,11 @@ const Maker = () => {
 
       {/* 선택한 유기동물 이미지 영역 */}
       <div className={styles.petImagePlaceholder}>
-        선택한 유기동물 이미지
+        {animal ? (
+          <img src={animal.image_url} alt={animal.species} className={styles.petImage} />
+        ) : (
+          '선택한 유기동물 이미지'
+        )}
       </div>
 
       {/* 아이콘 버튼 3개 */}
@@ -100,11 +124,11 @@ const Maker = () => {
         <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('food')}>
           <img src="/images/Bob.png" alt="dog icon" style={{ width: '95%', height: '95%', objectFit: 'contain' }} />
         </button>
-        <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('shower')}>
+        <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('shower')}> 
           <img src="/images/ShowerBut.png" alt="shower icon"
           style={{width:"95%", height:"95%", objectFit:"contain"}}/>
         </button>
-        <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('grooming')}>
+        <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('grooming')}> 
           <img src="/images/pretty.png" alt="grooming icon"
           style={{width:"95%", height:"95%", objectFit:"contain"}} />
         </button>
@@ -157,7 +181,7 @@ const Maker = () => {
           <div className={styles.loadingModal}>
             <button 
               className={styles.loadingCloseButton} 
-              onClick={() => setShowLoadingModal(false)}
+              onClick={handleCancelLoading}
             >
               ×
             </button>
@@ -174,39 +198,35 @@ const Maker = () => {
 
       {/* 유기동물 정보 테이블 */}
       <div className={styles.infoTableContainer}>
-        <table className={styles.infoTable}>
-          <thead>
-            <tr>
-              <th className={styles.tableHeader}>목록</th>
-              <th className={styles.tableHeader}>내용</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className={styles.tableCellKey}>이름</td>
-              <td className={styles.tableCellValue}>몽이</td>
-            </tr>
-            <tr>
-              <td className={styles.tableCellKey}>나이</td>
-              <td className={styles.tableCellValue}>2살</td>
-            </tr>
-            <tr>
-              <td className={styles.tableCellKey}>성별</td>
-              <td className={styles.tableCellValue}>수컷</td>
-            </tr>
-            <tr>
-              <td className={styles.tableCellKey}>보호 시작날짜</td>
-              <td className={styles.tableCellValue}>2023-01-15</td>
-            </tr>
-            <tr>
-              <td className={styles.tableCellKey}>특이사항</td>
-              <td className={styles.tableCellValue}>사람을 잘 따르며 활발함.</td>
-            </tr>
-          </tbody>
-        </table>
+        {animal ? (
+          <table className={styles.infoTable}>
+            <tbody>
+              <tr>
+                <td className={styles.tableCellKey}>출생년도</td>
+                <td className={styles.tableCellValue}>{animal.age}</td>
+              </tr>
+              <tr>
+                <td className={styles.tableCellKey}>성별</td>
+                <td className={styles.tableCellValue}>{genderMap[animal.gender] || '정보 없음'}</td>
+              </tr>
+              <tr>
+                <td className={styles.tableCellKey}>보호 시작날짜</td>
+                <td className={styles.tableCellValue}>{formatDate(animal.rescued_at)}</td>
+              </tr>
+              <tr>
+                <td className={styles.tableCellKey}>특이사항</td>
+                <td className={styles.tableCellValue}>{animal.specialMark || '없음'}</td>
+              </tr>
+            </tbody>
+          </table>
+        ) : (
+          <p>표시할 동물 정보가 없습니다.</p>
+        )}
       </div>
     </div>
   );
 };
+
+
 
 export default Maker;

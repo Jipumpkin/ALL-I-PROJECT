@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './AdoptionApply.module.css';
 
 const AdoptionApply = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const animal = location.state?.animal;
+
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -14,6 +17,21 @@ const AdoptionApply = () => {
     animalType: ''
   });
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (animal) {
+      let animalType = '';
+      if (animal.species.includes('개')) {
+        animalType = 'dog';
+      } else if (animal.species.includes('고양이')) {
+        animalType = 'cat';
+      }
+      setFormData(prev => ({
+        ...prev,
+        animalType: animalType
+      }));
+    }
+  }, [animal]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -47,10 +65,17 @@ const AdoptionApply = () => {
     <div className={styles["adoption-container"]}>
       <div className={styles["header"]}>
         <h2 className={styles["adoption-title"]}>입양 신청하기</h2>
-        {/* <button onClick={() => navigate('/')} className={styles["back-button"]}>
-          홈으로 돌아가기
-        </button> */}
       </div>
+
+      {animal && (
+        <div className={styles["animal-info-section"]}>
+          <h3 className={styles["section-title"]}>입양 신청 동물 정보</h3>
+          <div className={styles["animal-details"]}>
+            <img src={animal.image_url} alt={animal.species} className={styles["animal-image"]} />
+            <p className={styles["animal-species"]}>{animal.species}</p>
+          </div>
+        </div>
+      )}
 
       <div className={styles["adoption-info"]}>
         <p className={styles["info-title"]}>입양 신청 전 안내사항</p>
