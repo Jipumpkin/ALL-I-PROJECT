@@ -63,6 +63,16 @@
     width: 100%;
     height: 200px;
     object-fit: cover;
+    object-position: center 25%; /* 동물 얼굴/상체 포커스 */
+    border-radius: 12px;
+    margin-bottom: 8px;
+    filter: brightness(1.1) contrast(1.05) saturate(1.1);
+    transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.animal-image:hover {
+    filter: brightness(1.15) contrast(1.1) saturate(1.15);
+    transform: scale(1.02);
 }
 
 .animal-info {

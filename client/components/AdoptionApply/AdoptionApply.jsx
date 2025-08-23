@@ -147,7 +147,7 @@ const AdoptionApply = () => {
             <option value="">선택해주세요</option>
             <option value="dog">강아지</option>
             <option value="cat">고양이</option>
-            <option value="both">상관없음</option>
+            <option value="other">기타</option>
           </select>
           {errors.animalType && <p className={styles["error"]}>{errors.animalType}</p>}
         </div>

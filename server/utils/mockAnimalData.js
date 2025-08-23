@@ -7,7 +7,7 @@ const mockAnimals = [
         age: 2021,
         gender: 'male',
         region: '서울특별시',
-        image_url: '/images/dog1.jpg',
+        image_url: '/images/hoochoo1.jpeg',
         shelter_id: 1,
         rescued_at: '2023-01-15',
         status: 'available'
@@ -18,7 +18,7 @@ const mockAnimals = [
         age: 2020,
         gender: 'female',
         region: '경기도',
-        image_url: '/images/dog2.jpg',
+        image_url: '/images/poster1.jpg',
         shelter_id: 1,
         rescued_at: '2023-02-20',
         status: 'available'
@@ -29,7 +29,7 @@ const mockAnimals = [
         age: 2022,
         gender: 'male',
         region: '부산광역시',
-        image_url: '/images/cat1.jpg',
+        image_url: '/images/poster2.jpg',
         shelter_id: 2,
         rescued_at: '2023-03-10',
         status: 'available'
@@ -40,7 +40,7 @@ const mockAnimals = [
         age: 2021,
         gender: 'female',
         region: '인천광역시',
-        image_url: '/images/cat2.jpg',
+        image_url: '/images/poster4.jpg',
         shelter_id: 2,
         rescued_at: '2023-04-05',
         status: 'available'
@@ -51,7 +51,7 @@ const mockAnimals = [
         age: 2019,
         gender: 'male',
         region: '대구광역시',
-        image_url: '/images/dog3.jpg',
+        image_url: '/images/poster5.jpg',
         shelter_id: 3,
         rescued_at: '2023-05-12',
         status: 'available'
@@ -62,7 +62,7 @@ const mockAnimals = [
         age: 2023,
         gender: 'unknown',
         region: '광주광역시',
-        image_url: '/images/rabbit1.jpg',
+        image_url: '/images/poster6.jpg',
         shelter_id: 3,
         rescued_at: '2023-06-18',
         status: 'available'

@@ -15,7 +15,7 @@ export const escapeHtml = (text) => {
     '/': '&#x2F;',
   };
   
-  return text.replace(/[&<>"'\/]/g, (s) => map[s]);
+  return text.replace(/[&<>"'/]/g, (s) => map[s]);
 };
 
 // 스크립트 태그 제거

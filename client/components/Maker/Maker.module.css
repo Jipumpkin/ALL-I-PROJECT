@@ -1,6 +1,100 @@
 /* Maker.module.css */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
 
+/* AnimalDetail 스타일 추가 */
+.infoWrapper {
+  position: relative;
+}
+
+.infoWrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 120px;
+  width: 1px;
+  background-color: #eee;
+}
+
+.tableTitle {
+  margin-bottom: 10px;
+  font-size: 1.2em;
+  color: #333;
+  font-weight: 600;
+}
+
+.infoRow {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.infoRow:last-child {
+  border-bottom: none;
+}
+
+.infoLabel {
+  width: 140px;
+  font-weight: bold;
+  padding-right: 10px;
+  flex-shrink: 0;
+  color: #555;
+  white-space: nowrap;
+}
+
+.infoValue {
+  flex-grow: 1;
+  padding-left: 15px;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.shortcutButton {
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 3px;
+  text-decoration: none;
+  color: white;
+  background-color: #28a745;
+  margin-left: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.shortcutButton:hover {
+  background-color: #218838;
+}
+
+.divider {
+  margin: 30px 0;
+  border: 0;
+  border-top: 1px solid #ddd;
+}
+
+.noAnimalSelected {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.noAnimalSelected p {
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+.placeholderText {
+  font-size: 16px;
+  color: #888;
+  font-weight: 500;
+}
+
 .body {
   font-family: "Inter", sans-serif;
   background-color: #f7fafc;

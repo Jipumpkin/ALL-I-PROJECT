@@ -116,8 +116,10 @@
   border-top: 1px solid #e5e7eb;
 }
 
-.cancel-btn , .submit-btn {
-  display: inline-block !important;
+.cancel-btn, .submit-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   flex: 1 !important;
   padding: 12px 24px !important;
   border: none !important;
@@ -134,7 +136,6 @@
 .cancel-btn:hover {
   background-color: #4b5563;
 }
-
 
 .submit-btn:hover {
   background-color: #2563eb;

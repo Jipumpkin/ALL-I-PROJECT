@@ -5,7 +5,6 @@ import Loading from '../Loading/Loading';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 
 const ShelterMap = () => {
-  const [map, setMap] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,10 +28,7 @@ const ShelterMap = () => {
         script.onerror = reject;
         document.head.appendChild(script);
       });
-    };
-
-    let retryCount = 0;
-    const maxRetries = 50; // 5초 동안 재시도
+    }; // 5초 동안 재시도
 
     const initKakaoMap = () => {
       loadKakaoScript().then(() => {
