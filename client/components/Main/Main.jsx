@@ -57,13 +57,13 @@ const Main = () => {
                   <ScrollAnimation 
                     key={animal.animal_id} 
                     animation="scaleIn" 
-                    delay={index * 100} // 100ms씩 지연되어 순차적으로 나타남
+                    delay={index * 100}
                   >
                     <div className={styles['animal-card']}>
                       <Link to={`/animal/${animal.animal_id}`} className={styles['animal-card-link']}>
                         <img src={animal.image_url} alt={animal.species} className={styles['animal-image']} />
                         <div className={styles['animal-info']}>
-                            <p><strong>품종:</strong> {animal.species}</p>
+                          <p><strong>품종:</strong> {animal.species}</p>
                           <p><strong>생년:</strong> {animal.age}</p>
                           <p><strong>성별:</strong> {genderMap[animal.gender] || '정보 없음'}</p>
                           <p><strong>구조지역:</strong> {animal.region}</p>
