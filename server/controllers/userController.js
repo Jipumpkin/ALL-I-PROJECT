@@ -803,7 +803,8 @@ const userController = {
             const { userId } = req.params;
             
             // user_images 테이블에서 사용자의 이미지들 조회
-            const db = require('../utils/db');
+            const { getPool } = require('../config/database');
+            const db = await getPool();
             const [rows] = await db.execute(
                 'SELECT image_id, image_url, uploaded_at FROM user_images WHERE user_id = ? ORDER BY uploaded_at DESC',
                 [userId]
@@ -843,7 +844,8 @@ const userController = {
             }
 
             // user_images 테이블에 이미지 추가
-            const db = require('../utils/db');
+            const { getPool } = require('../config/database');
+            const db = await getPool();
             const [result] = await db.execute(
                 'INSERT INTO user_images (user_id, image_url) VALUES (?, ?)',
                 [userId, image_url]

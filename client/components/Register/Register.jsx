@@ -23,6 +23,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const [isUsernameChecked, setIsUsernameChecked] = useState(false);
   const [usernameCheckMessage, setUsernameCheckMessage] = useState('');
+  const [uploadedImages, setUploadedImages] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -112,14 +113,26 @@ const Register = () => {
       });
 
       if (response.data.success) {
-        // 회원가입 성공 시 mock 이미지 데이터 추가
+        // 회원가입 성공 시 실제 업로드된 이미지 데이터 추가
         const userId = response.data.data.user.id;
-        try {
-          await axios.post(`http://localhost:3003/api/users/${userId}/images`, {
-            image_url: 'https://placehold.co/400x400/FF5733/FFFFFF?text=User+House+Image'
-          });
-        } catch (imageError) {
-          console.error('사용자 이미지 추가 실패:', imageError);
+        if (uploadedImages.length > 0) {
+          try {
+            // 첫 번째 업로드된 이미지 사용
+            await axios.post(`http://localhost:3003/api/users/${userId}/images`, {
+              image_url: uploadedImages[0].src
+            });
+          } catch (imageError) {
+            console.error('사용자 이미지 추가 실패:', imageError);
+          }
+        } else {
+          // 이미지가 없으면 기본 이미지 사용
+          try {
+            await axios.post(`http://localhost:3003/api/users/${userId}/images`, {
+              image_url: 'https://placehold.co/400x400/FF5733/FFFFFF?text=User+House+Image'
+            });
+          } catch (imageError) {
+            console.error('사용자 이미지 추가 실패:', imageError);
+          }
         }
         
         // 자동 로그인
@@ -275,7 +288,7 @@ const Register = () => {
         {/* 사용자 집 이미지 (이미지합성용) */}
         <div className={styles["form-group"]}>
           <label>사용자 집 이미지 (이미지합성용)</label>
-          <ImageUploader />
+          <ImageUploader onImagesChange={setUploadedImages} />
         </div>
 
         <button 
