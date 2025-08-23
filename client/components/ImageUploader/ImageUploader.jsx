@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import styles from './ImageUploader.module.css'; // 아래 CSS 파일을 import
 
-const ImageUploader = () => {
+const ImageUploader = ({ onImagesChange }) => {
   const [images, setImages] = useState([]); // { id, src }
   const dropRef = useRef(null);
 
@@ -15,7 +15,14 @@ const ImageUploader = () => {
       return { id, src: id };
     });
 
-    setImages((prev) => [...prev, ...newImages]);
+    setImages((prev) => {
+      const updatedImages = [...prev, ...newImages];
+      // 부모 컴포넌트에 이미지 변경 알림
+      if (onImagesChange) {
+        onImagesChange(updatedImages);
+      }
+      return updatedImages;
+    });
   };
 
   const handleFileChange = (e) => {
@@ -42,7 +49,14 @@ const ImageUploader = () => {
   };
 
   const handleRemove = (id) => {
-    setImages((prev) => prev.filter((img) => img.id !== id));
+    setImages((prev) => {
+      const updatedImages = prev.filter((img) => img.id !== id);
+      // 부모 컴포넌트에 이미지 변경 알림
+      if (onImagesChange) {
+        onImagesChange(updatedImages);
+      }
+      return updatedImages;
+    });
     URL.revokeObjectURL(id);
   };
 

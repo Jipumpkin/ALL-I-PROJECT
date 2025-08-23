@@ -4,7 +4,9 @@ const hashUtils = require('./hash');
 class MockDatabase {
     constructor() {
         this.users = [];
+        this.userImages = []; // 사용자 이미지 저장
         this.nextId = 1;
+        this.nextImageId = 1;
         this.initializeUsers();
     }
 
@@ -126,6 +128,40 @@ class MockDatabase {
     // ID로 사용자 찾기
     async findById(id) {
         return this.users.find(user => user.user_id === parseInt(id));
+    }
+
+    // === 사용자 이미지 관련 기능 ===
+    
+    // 사용자 이미지 추가
+    async addUserImage(userId, imageUrl) {
+        const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        const newImage = {
+            image_id: this.nextImageId++,
+            user_id: parseInt(userId),
+            image_url: imageUrl,
+            uploaded_at: now
+        };
+        this.userImages.push(newImage);
+        console.log(`📷 New image added for user ${userId}: ${imageUrl}`);
+        return newImage;
+    }
+
+    // 사용자 이미지 조회
+    async getUserImages(userId) {
+        return this.userImages
+            .filter(image => image.user_id === parseInt(userId))
+            .sort((a, b) => new Date(b.uploaded_at) - new Date(a.uploaded_at)); // 최신순
+    }
+
+    // 사용자 이미지 삭제
+    async deleteUserImage(imageId) {
+        const index = this.userImages.findIndex(image => image.image_id === parseInt(imageId));
+        if (index > -1) {
+            const deletedImage = this.userImages.splice(index, 1)[0];
+            console.log(`🗑️ Image deleted: ${deletedImage.image_url}`);
+            return deletedImage;
+        }
+        return null;
     }
 }
 
