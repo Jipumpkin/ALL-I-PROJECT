@@ -23,6 +23,7 @@ const MyAccount = () => {
 
   useEffect(() => {
     if (user) {
+      console.log('현재 사용자 정보:', user);
       setEditedUser({
         nickname: user.nickname || '',
         phone_number: user.phone_number || '',
@@ -95,9 +96,12 @@ const MyAccount = () => {
 
       const response = await axios.put('/api/users/profile', editedUser);
       
+      console.log('프로필 업데이트 응답:', response.data);
+      
       if (response.data.success) {
         setSuccess('프로필이 성공적으로 수정되었습니다.');
         // AuthContext의 user 정보 업데이트
+        console.log('업데이트할 사용자 정보:', response.data.data.profile);
         updateUser(response.data.data.profile);
         setIsEditing(false);
         
