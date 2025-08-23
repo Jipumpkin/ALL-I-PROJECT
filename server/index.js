@@ -78,7 +78,8 @@ const server = app.listen(PORT, async () => {
     try {
         await syncAnimalData();
     } catch (err) {
-        console.error('💥 초기 데이터 동기화 실패:', err);
+        console.error('💥 동기화 중 오류 발생:', err.message);
+        console.log('⚠️ 데이터베이스 연결 없이 서버 계속 실행');
     }
 
     // 🕒 매일 자정(00:00)에 데이터 동기화 실행

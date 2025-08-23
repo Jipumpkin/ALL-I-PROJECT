@@ -802,18 +802,14 @@ const userController = {
         try {
             const { userId } = req.params;
             
-            // user_images 테이블에서 사용자의 이미지들 조회
-            const { getPool } = require('../config/database');
-            const db = await getPool();
-            const [rows] = await db.execute(
-                'SELECT image_id, image_url, uploaded_at FROM user_images WHERE user_id = ? ORDER BY uploaded_at DESC',
-                [userId]
-            );
+            // Mock Database에서 사용자 이미지 조회
+            const mockDB = require('../utils/mockDatabase');
+            const images = await mockDB.getUserImages(userId);
 
             res.json({
                 success: true,
                 message: '사용자 이미지 조회 성공',
-                data: rows
+                data: images
             });
 
         } catch (error) {
@@ -843,21 +839,18 @@ const userController = {
                 });
             }
 
-            // user_images 테이블에 이미지 추가
-            const { getPool } = require('../config/database');
-            const db = await getPool();
-            const [result] = await db.execute(
-                'INSERT INTO user_images (user_id, image_url) VALUES (?, ?)',
-                [userId, image_url]
-            );
+            // Mock Database에 이미지 추가
+            const mockDB = require('../utils/mockDatabase');
+            const newImage = await mockDB.addUserImage(userId, image_url);
 
             res.json({
                 success: true,
                 message: '사용자 이미지 추가 성공',
                 data: {
-                    image_id: result.insertId,
-                    user_id: userId,
-                    image_url: image_url
+                    image_id: newImage.image_id,
+                    user_id: newImage.user_id,
+                    image_url: newImage.image_url,
+                    uploaded_at: newImage.uploaded_at
                 }
             });
 
