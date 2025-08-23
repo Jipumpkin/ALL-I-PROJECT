@@ -3,7 +3,7 @@
 const https = require('https');
 const url = require('url');
 const mysql = require('mysql2/promise');
-const pool = require('../db/connection');
+const { pool } = require('../db/connection');
 
 // --- API 호출 및 데이터베이스 저장 함수 ---
 async function syncAnimalData() {
@@ -95,6 +95,14 @@ async function syncAnimalData() {
         specialMark: item.specialMark ? item.specialMark.trim() : '특이사항 없음',
         popfile1: item.popfile1 && item.popfile1.startsWith('http') ? item.popfile1 : placeholderImage,
       };
+      
+      // 🔍 디버깅: 이미지 URL 확인
+      if (items.indexOf(item) < 3) { // 처음 3개만 로그 출력
+        console.log(`🖼️ 이미지 URL 처리 (${item.desertionNo}):`);
+        console.log(`   원본: ${item.popfile1}`);
+        console.log(`   처리결과: ${cleanedItem.popfile1}`);
+        console.log(`   HTTP 시작?: ${item.popfile1 && item.popfile1.startsWith('http')}`);
+      }
 
       return {
         animal_ext_id: cleanedItem.desertionNo,
@@ -147,7 +155,12 @@ async function syncAnimalData() {
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
           species = VALUES(species), gender = VALUES(gender), age = VALUES(age),
-          image_url = VALUES(image_url), shelter_id = VALUES(shelter_id), status = VALUES(status),
+          image_url = CASE 
+            WHEN VALUES(image_url) LIKE 'http%' THEN VALUES(image_url)
+            WHEN image_url LIKE 'http%' THEN image_url
+            ELSE VALUES(image_url)
+          END,
+          shelter_id = VALUES(shelter_id), status = VALUES(status),
           region = VALUES(region), rescued_at = VALUES(rescued_at), colorCd = VALUES(colorCd),
           specialMark = VALUES(specialMark)`,
         [

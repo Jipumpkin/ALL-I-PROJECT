@@ -1,15 +1,15 @@
-const db = require('../config/database');
+const { pool } = require('../db/connection');
 
 class Animal {
     static async findOldest() {
         const query = `
             SELECT animal_id, species, gender, age, image_url, region, rescued_at
             FROM animals 
-            WHERE status = 'available' -- 蹂댄몄 臾 以
-            ORDER BY rescued_at ASC -- 援ъ“쇱 媛 ㅻ 쇰
-            LIMIT 3 -- 3留由щ 議고
+            WHERE status = 'available' -- 보호중인 동물만
+            ORDER BY rescued_at ASC -- 구조일 가장 오래된
+            LIMIT 3 -- 3마리만 조회
         `;
-        const [rows] = await db.execute(query);
+        const [rows] = await pool.execute(query);
         return rows;
     }
 
@@ -20,7 +20,7 @@ class Animal {
             ORDER BY rescued_at DESC
             LIMIT 12
         `;
-        const [rows] = await db.execute(query);
+        const [rows] = await pool.execute(query);
         return rows;
     }
 
@@ -31,13 +31,13 @@ class Animal {
             ORDER BY RAND()
             LIMIT ${parseInt(limit, 10)}
         `;
-        const [rows] = await db.execute(query);
+        const [rows] = await pool.execute(query);
         return rows;
     }
 
     static async findAll() {
         const query = 'SELECT * FROM animals';
-        const [rows] = await db.execute(query);
+        const [rows] = await pool.execute(query);
         return rows;
     }
 
@@ -55,7 +55,7 @@ class Animal {
             WHERE
                 a.animal_id = ?
         `;
-        const [rows] = await db.execute(query, [id]);
+        const [rows] = await pool.execute(query, [id]);
         return rows[0];
     }
 
@@ -65,7 +65,7 @@ class Animal {
             INSERT INTO animals (species, gender, age, image_url, shelter_id, status, region, rescued_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `;
-        const [result] = await db.execute(query, [species, gender, age, image_url, shelter_id, status, region, rescued_at]);
+        const [result] = await pool.execute(query, [species, gender, age, image_url, shelter_id, status, region, rescued_at]);
         return this.findById(result.insertId);
     }
 
@@ -76,13 +76,13 @@ class Animal {
             SET species = ?, gender = ?, age = ?, image_url = ?, shelter_id = ?, status = ?, region = ?, rescued_at = ?, updated_at = CURRENT_TIMESTAMP
             WHERE animal_id = ?
         `;
-        await db.execute(query, [species, gender, age, image_url, shelter_id, status, region, rescued_at, id]);
+        await pool.execute(query, [species, gender, age, image_url, shelter_id, status, region, rescued_at, id]);
         return this.findById(id);
     }
 
     static async delete(id) {
         const query = 'DELETE FROM animals WHERE animal_id = ?';
-        await db.execute(query, [id]);
+        await pool.execute(query, [id]);
     }
 }
 

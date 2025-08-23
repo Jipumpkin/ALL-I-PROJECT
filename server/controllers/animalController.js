@@ -10,6 +10,10 @@ const getAnimals = async (req, res) => {
     const whereClauses = [];
     const queryParams = [];
 
+    // 🖼️ 유효한 이미지가 있는 동물들만 조회
+    whereClauses.push('image_url LIKE ?');
+    queryParams.push('http%');
+
     // 카테고리 필터
     if (filter && filter !== 'all') {
         if (filter === 'dog') {
@@ -26,22 +30,23 @@ const getAnimals = async (req, res) => {
     }
     // 보호소 필터
     if (shelter_id && shelter_id !== 'all') {
-        // 테이블 별칭 'a'를 사용하여 shelter_id를 명확히 지정
-        whereClauses.push('a.shelter_id = ?');
+        whereClauses.push('shelter_id = ?');
         queryParams.push(shelter_id);
     }
 
     const whereQuery = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
     
-    try {
-        const countQuery = `SELECT COUNT(*) as count FROM animals a ${whereQuery}`;
+    try {        
+        // 유효한 이미지가 있는 동물들의 전체 개수 조회
+        const countQuery = `SELECT COUNT(*) as count FROM animals ${whereQuery}`;
         const [countRows] = await pool.query(countQuery, queryParams);
         const totalAnimals = countRows[0].count;
         const totalPages = Math.ceil(totalAnimals / limit);
 
-        // 정렬 기준을 rescued_at(구조일)으로 변경하여 최신순으로 표시
-        const animalsQuery = `SELECT * FROM animals a ${whereQuery} ORDER BY rescued_at DESC LIMIT ? OFFSET ?`;
+        // 유효한 이미지가 있는 동물들을 랜덤하게 조회
+        const animalsQuery = `SELECT * FROM animals ${whereQuery} ORDER BY RAND() LIMIT ? OFFSET ?`;
         const finalParams = [...queryParams, limit, offset];
+        
         const [animals] = await pool.query(animalsQuery, finalParams);
         
         res.json({ animals, totalPages });
