@@ -27,11 +27,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
-      <div className={styles['footer-bottom']}>
-        <p className={styles['footer-message']}>
-          💝 입양은 구매가 아닌 새로운 가족을 만나는 일입니다
-        </p>
-      </div>
+     
     </footer>
   );
 };

@@ -6,11 +6,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      // 로컬 백엔드 서버를 위한 프록시 설정
       '/api': {
-        target: 'https://apis.data.go.kr',
+        target: 'http://localhost:3307', // 로컬 백엔드 서버 주소
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/api/, ''),
-        // secure: false,  // HTTPS 무시할 때만
+        rewrite: (path) => path, // 경로를 그대로 전달
       },
       '/cdn': {
         target: 'https://cdn.jsdelivr.net/', // 실제 CDN 도메인

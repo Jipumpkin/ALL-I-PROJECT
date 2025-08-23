@@ -1,7 +1,11 @@
+// server/index.js
+
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config();
+
+const { syncAnimalData } = require('./services/animalSync'); // services 파일의 함수를 불러옵니다.
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -40,6 +44,7 @@ app.post('/api/register', (req, res) => {
 });
 
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/animals', require('./routes/animalRoutes'));
 
 // TODO: 추후 추가 예정
 // app.use('/api/animals', require('./routes/animalRoutes'));
@@ -58,7 +63,7 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
     console.log('📍 등록된 라우트:');
     console.log('   - GET  /api/test');
@@ -67,6 +72,13 @@ const server = app.listen(PORT, () => {
     console.log('   - /api/users/* (userRoutes)');
     console.log(`🌐 서버 주소: http://localhost:${PORT}`);
     console.log('✅ 서버가 정상적으로 시작되었습니다!');
+
+    // 🚀 서버 시작과 동시에 데이터 동기화 함수를 호출합니다.
+    try {
+        await syncAnimalData();
+    } catch (err) {
+        console.error('💥 초기 데이터 동기화 실패:', err);
+    }
 });
 
 server.on('error', (error) => {
