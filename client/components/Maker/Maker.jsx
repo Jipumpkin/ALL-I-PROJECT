@@ -176,7 +176,7 @@ const Maker = () => {
     unknown: '불명'
   };
 
-  const formatDate = (dateString) => {
+  const formatDetailedDate = (dateString) => {
     if (!dateString) return '정보 없음';
     try {
       const date = new Date(dateString);
@@ -345,7 +345,7 @@ const Maker = () => {
             <tr>
               <td className={styles.tableCellKey}>구조 일자</td>
               <td className={styles.tableCellValue}>
-                {selectedAnimal ? formatDate(selectedAnimal.rescued_at) : '-'}
+                {selectedAnimal ? formatDetailedDate(selectedAnimal.rescued_at) : '-'}
               </td>
             </tr>
           </tbody>

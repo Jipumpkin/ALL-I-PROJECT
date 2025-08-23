@@ -39,14 +39,15 @@ app.listen(PORT, async () => {
     console.log(`✅ 서버가 ${PORT}번 포트에서 정상적으로 시작되었습니다!`);
     console.log(`🌐 서버 주소: http://localhost:${PORT}`);
 
-    try {
-        console.log('🚀 서버 시작과 함께 데이터 동기화를 시작합니다...');
-        // pool 객체를 전달합니다.
-        await syncAnimalData(pool); 
-    } catch (err) {
-        console.error('💥 동기화 중 오류 발생:', err.message);
-        console.log('⚠️ 데이터베이스 연결 없이 서버 계속 실행');
-    }
+    // 자동 데이터 동기화 비활성화 (필요시 주석 해제)
+    // try {
+    //     console.log('🚀 서버 시작과 함께 데이터 동기화를 시작합니다...');
+    //     // pool 객체를 전달합니다.
+    //     await syncAnimalData(pool); 
+    // } catch (err) {
+    //     console.error('💥 동기화 중 오류 발생:', err.message);
+    //     console.log('⚠️ 데이터베이스 연결 없이 서버 계속 실행');
+    // }
 
     cron.schedule('0 0 * * *', async () => {
         console.log('🔄 정기 데이터 동기화 시작...');

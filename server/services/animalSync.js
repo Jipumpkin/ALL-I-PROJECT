@@ -69,7 +69,7 @@ async function syncAnimalData() {
     console.log(`✅ API에서 ${items.length}건의 데이터를 성공적으로 가져왔습니다.`);
 
     console.log('🔌 데이터베이스에 연결 중...');
-    connection = await pool.getPool();
+    connection = await pool.getConnection();
     console.log('✅ 데이터베이스 연결 성공!');
 
     await connection.beginTransaction();
