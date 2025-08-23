@@ -3,7 +3,7 @@
 const https = require('https');
 const url = require('url');
 const mysql = require('mysql2/promise');
-const { getConnection } = require('../db/connection');
+const { getPool } = require('../config/database');
 
 // --- API 호출 및 데이터베이스 저장 함수 ---
 async function syncAnimalData() {
@@ -68,7 +68,8 @@ async function syncAnimalData() {
     console.log(`✅ API에서 ${items.length}건의 데이터를 성공적으로 가져왔습니다.`);
 
     console.log('🔌 데이터베이스에 연결 중...');
-    connection = await getConnection();
+    const pool = await getPool();
+    connection = await pool.getConnection();
     console.log('✅ 데이터베이스 연결 성공!');
 
     await connection.beginTransaction();

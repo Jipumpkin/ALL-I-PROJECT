@@ -12,8 +12,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ charset: 'utf-8' }));
+app.use(bodyParser.urlencoded({ extended: true, charset: 'utf-8' }));
 
 // 테스트 라우트
 app.get('/api/test', (req, res) => {

@@ -4,7 +4,9 @@
       "Bash(git add:*)",
       "Bash(powershell:*)",
       "Bash(curl:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(mysql:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []
