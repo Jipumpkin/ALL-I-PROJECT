@@ -10,7 +10,7 @@ export default defineConfig({
     proxy: {
       // 로컬 백엔드 서버를 위한 프록시 설정
       '/api': {
-        target: 'http://localhost:3307', // 로컬 백엔드 서버 주소
+        target: 'http://localhost:3003', // 로컬 백엔드 서버 주소
         changeOrigin: true,
         rewrite: (path) => path, // 경로를 그대로 전달
       },

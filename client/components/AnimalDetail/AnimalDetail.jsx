@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './AnimalDetail.module.css';
+import { useAuth } from '../../src/context/AuthContext';
 
 const AnimalDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const auth = useAuth();
   const [animal, setAnimal] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,8 +27,20 @@ const AnimalDetail = () => {
     fetchAnimal();
   }, [id]);
 
-  const handleImageUploadClick = () => {
-    navigate('/image-uploader');
+  const handleMakerClick = () => {
+    if (auth.isAuthenticated()) {
+      navigate('/maker');
+    } else {
+      navigate('/login');
+    }
+  };
+
+  const handleAdoptionApplyClick = () => {
+    if (auth.isAuthenticated()) {
+      navigate(`/adoption-apply`, { state: { animal: animal } });
+    } else {
+      navigate('/login');
+    }
   };
 
   if (loading) {
@@ -116,9 +130,14 @@ const AnimalDetail = () => {
         </div>
       </div>
 
-      <button className={styles.uploadButton}>
-        이미지 합성
-      </button>
+      <div className={styles.buttonContainer}>
+        <button className={styles.actionButton} onClick={handleMakerClick}>
+          이미지 합성
+        </button>
+        <button className={styles.actionButton} onClick={handleAdoptionApplyClick}>
+          입양 신청하기
+        </button>
+      </div>
     </div>
   );
 };
