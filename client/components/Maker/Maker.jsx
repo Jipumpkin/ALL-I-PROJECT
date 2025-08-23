@@ -13,6 +13,7 @@ const Maker = () => {
   const [userRegistrationImage, setUserRegistrationImage] = useState(null);
   const [selectedAnimal, setSelectedAnimal] = useState(null);
   const imageContainerRef = useRef(null);
+  const timerRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -36,7 +37,6 @@ const Maker = () => {
       }
     }
   };
-
 
   // 성별 매핑 함수
   const getGenderText = (gender) => {
@@ -100,6 +100,9 @@ const Maker = () => {
       if (imageContainerRef.current) {
         observer.unobserve(imageContainerRef.current);
       }
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
     };
   }, [user, location]);
 
@@ -120,7 +123,6 @@ const Maker = () => {
       reader.readAsDataURL(file);
     }
   };
-
 
   // 아이콘 클릭 핸들러
   const handleIconClick = (action) => {
@@ -149,7 +151,7 @@ const Maker = () => {
     setShowLoadingModal(true);
     
     // 3초 후 로딩 모달 닫고 결과 페이지로 이동
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       setShowLoadingModal(false);
       // URL 파라미터로 데이터 전달
       const params = new URLSearchParams({
@@ -159,6 +161,13 @@ const Maker = () => {
       });
       navigate(`/maker/result?${params.toString()}`);
     }, 3000);
+  };
+
+  const handleCancelLoading = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    setShowLoadingModal(false);
   };
 
   return (
@@ -185,11 +194,11 @@ const Maker = () => {
         <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('food')}>
           <img src="/images/Bob.png" alt="dog icon" style={{ width: '95%', height: '95%', objectFit: 'contain' }} />
         </button>
-        <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('shower')}>
+        <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('shower')}> 
           <img src="/images/ShowerBut.png" alt="shower icon"
           style={{width:"95%", height:"95%", objectFit:"contain"}}/>
         </button>
-        <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('grooming')}>
+        <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('grooming')}> 
           <img src="/images/pretty.png" alt="grooming icon"
           style={{width:"95%", height:"95%", objectFit:"contain"}} />
         </button>
@@ -250,7 +259,7 @@ const Maker = () => {
           <div className={styles.loadingModal}>
             <button 
               className={styles.loadingCloseButton} 
-              onClick={() => setShowLoadingModal(false)}
+              onClick={handleCancelLoading}
             >
               ×
             </button>
@@ -263,7 +272,6 @@ const Maker = () => {
           </div>
         </div>
       )}
-
 
       {/* 유기동물 정보 테이블 */}
       <div className={styles.infoTableContainer}>
