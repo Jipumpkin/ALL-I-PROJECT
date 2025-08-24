@@ -1,7 +1,6 @@
 const User = require('../models/User');
 const jwtUtils = require('../utils/jwt');
 const hashUtils = require('../utils/hash');
-const mockDB = require('../utils/mockDatabase');
 
 const userController = {
     getAllUsers: async (req, res) => {

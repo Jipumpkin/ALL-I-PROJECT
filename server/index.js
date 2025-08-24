@@ -6,14 +6,21 @@ const bodyParser = require('body-parser');
 const cron = require('node-cron');
 require('dotenv').config();
 
+// Sequelize 초기화
+const { initializeDatabase } = require('./models');
+
 const { syncAnimalData } = require('./services/animalSync'); // services 파일의 함수를 불러옵니다.
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3005;
 
 app.use(cors());
 app.use(bodyParser.json({ charset: 'utf-8' }));
 app.use(bodyParser.urlencoded({ extended: true, charset: 'utf-8' }));
+
+// 미들웨어 적용
+const { apiLogger, errorHandler, notFoundHandler } = require('./middleware');
+app.use(apiLogger);
 
 // 테스트 라우트
 app.get('/api/test', (req, res) => {
@@ -21,31 +28,25 @@ app.get('/api/test', (req, res) => {
     res.json({ message: 'Mock API 테스트 성공!' });
 });
 
-// Mock API 라우트 (프론트엔드 호환용) - 먼저 정의  
-const userController = require('./controllers/userController');
-console.log('📋 userController 함수들:', Object.keys(userController));
+// Mock API 라우트 (프론트엔드 호환용) - 새로운 컨트롤러 사용  
+const AuthController = require('./controllers/auth/AuthController');
 
 app.post('/api/login', (req, res) => {
     console.log('🔍 /api/login 요청 받음 (실제 DB):', req.body);
-    if (userController.login) {
-        userController.login(req, res);
-    } else {
-        console.error('❌ login 함수를 찾을 수 없습니다.');
-        res.status(500).json({ error: 'login 함수를 찾을 수 없습니다.' });
-    }
+    AuthController.login(req, res);
 });
 
 app.post('/api/register', (req, res) => {
     console.log('🔍 /api/register 요청 받음 (실제 DB):', req.body);
-    if (userController.register) {
-        userController.register(req, res);
-    } else {
-        res.status(500).json({ error: 'register 함수를 찾을 수 없습니다.' });
-    }
+    AuthController.register(req, res);
 });
 
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/animals', require('./routes/animalRoutes'));
+
+// 404 및 에러 핸들러 (라우트 뒤에 배치)
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 // TODO: 추후 추가 예정
 // app.use('/api/animals', require('./routes/animalRoutes'));
@@ -65,6 +66,14 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 const server = app.listen(PORT, async () => {
+    // Sequelize 데이터베이스 초기화
+    try {
+        await initializeDatabase();
+        console.log('🎉 Sequelize 데이터베이스 초기화 완료');
+    } catch (error) {
+        console.error('💥 Sequelize 데이터베이스 초기화 실패:', error.message);
+    }
+
     console.log(`Server is running on port ${PORT}`);
     console.log('📍 등록된 라우트:');
     console.log('   - GET  /api/test');
