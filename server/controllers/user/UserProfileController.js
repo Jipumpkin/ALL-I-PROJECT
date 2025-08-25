@@ -17,7 +17,9 @@ const UserProfileController = {
             res.json({
                 success: true,
                 message: '사용자 프로필을 성공적으로 조회했습니다.',
-                user: userProfile
+                data: {
+                    profile: userProfile
+                }
             });
 
         } catch (error) {
@@ -52,7 +54,7 @@ const UserProfileController = {
             console.log('🔍 updateUserProfile - body:', { nickname, gender, phone_number, current_password: current_password ? '***' : undefined, new_password: new_password ? '***' : undefined });
 
             // 현재 사용자 정보 조회
-            const user = await User.findById(userId);
+            const user = await User.findByPk(userId);
             if (!user) {
                 return res.status(404).json({
                     success: false,
@@ -110,7 +112,7 @@ const UserProfileController = {
             }
 
             // 업데이트된 사용자 정보 조회
-            const updatedUser = await User.findById(userId);
+            const updatedUser = await User.findByPk(userId);
             
             const userProfile = {
                 id: updatedUser.user_id,
@@ -125,7 +127,9 @@ const UserProfileController = {
             res.json({
                 success: true,
                 message: '프로필이 성공적으로 업데이트되었습니다.',
-                user: userProfile
+                data: {
+                    profile: userProfile
+                }
             });
 
         } catch (error) {
@@ -159,7 +163,7 @@ const UserProfileController = {
             }
 
             // 현재 사용자 정보 조회
-            const user = await User.findById(userId);
+            const user = await User.findByPk(userId);
             if (!user) {
                 return res.status(404).json({
                     success: false,

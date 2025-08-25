@@ -20,13 +20,50 @@ const AuthController = {
 
         } catch (error) {
             console.error('Register error:', error);
+            console.error('Error details:', {
+                message: error.message,
+                code: error.code,
+                sql: error.sql,
+                stack: error.stack
+            });
             
-            // 이메일 중복 에러 처리
+            // Sequelize 유니크 제약조건 에러 처리
+            if (error.name === 'SequelizeUniqueConstraintError') {
+                const field = error.errors[0].path;
+                if (field === 'email') {
+                    return res.status(409).json({
+                        success: false,
+                        message: '이미 사용 중인 이메일입니다.',
+                        errors: { email: '다른 이메일 주소를 사용해주세요.' }
+                    });
+                } else if (field === 'username') {
+                    return res.status(409).json({
+                        success: false,
+                        message: '이미 사용 중인 사용자명입니다.',
+                        errors: { username: '다른 사용자명을 선택해주세요.' }
+                    });
+                }
+            }
+            
+            // MySQL 중복 에러 처리 (레거시)
             if (error.code === 'ER_DUP_ENTRY') {
                 return res.status(409).json({
                     success: false,
                     message: '이미 사용 중인 이메일입니다.',
                     errors: { email: '다른 이메일 주소를 사용해주세요.' }
+                });
+            }
+
+            // Sequelize 검증 에러 처리
+            if (error.name === 'SequelizeValidationError') {
+                const errors = {};
+                error.errors.forEach(err => {
+                    errors[err.path] = err.message;
+                });
+                return res.status(400).json({
+                    success: false,
+                    message: '입력 데이터가 올바르지 않습니다.',
+                    errors
                 });
             }
 
@@ -88,7 +125,7 @@ const AuthController = {
 
             if (!isAvailable) {
                 return res.json({
-                    success: false,
+                    success: true,
                     available: false,
                     message: '이미 사용 중인 사용자명입니다.',
                     errors: { username: '다른 사용자명을 선택해주세요.' }
@@ -106,6 +143,54 @@ const AuthController = {
             res.status(500).json({
                 success: false,
                 message: '사용자명 확인 중 오류가 발생했습니다.',
+                error: error.message
+            });
+        }
+    },
+
+    /**
+     * 아이디 찾기 (닉네임 또는 이메일로 찾기)
+     * POST /api/users/auth/find-id
+     */
+    findId: async (req, res) => {
+        try {
+            const { searchType, searchValue, name, phone } = req.body;
+            console.log('🔍 findId 함수 입력 데이터:', { searchType, searchValue, name, phone: phone ? '***' : undefined });
+
+            // searchType에 따라 다른 검색 로직 실행
+            let result;
+            if (searchType === 'email') {
+                result = await UserService.findIdByEmail(searchValue, name, phone);
+            } else if (searchType === 'nickname') {
+                result = await UserService.findIdByNickname(searchValue, name, phone);
+            } else {
+                return res.status(400).json({
+                    success: false,
+                    message: '잘못된 검색 유형입니다.'
+                });
+            }
+
+            if (!result) {
+                return res.status(404).json({
+                    success: false,
+                    message: '일치하는 사용자 정보를 찾을 수 없습니다.'
+                });
+            }
+
+            res.json({
+                success: true,
+                message: '아이디를 찾았습니다.',
+                data: {
+                    username: result.username,
+                    email: result.email.substring(0, 3) + '***@' + result.email.split('@')[1]
+                }
+            });
+
+        } catch (error) {
+            console.error('Find ID error:', error);
+            res.status(500).json({
+                success: false,
+                message: '아이디 찾기 중 오류가 발생했습니다.',
                 error: error.message
             });
         }

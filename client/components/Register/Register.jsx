@@ -24,18 +24,132 @@ const Register = () => {
   const [isUsernameChecked, setIsUsernameChecked] = useState(false);
   const [usernameCheckMessage, setUsernameCheckMessage] = useState('');
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [showEmailSuggestions, setShowEmailSuggestions] = useState(false);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0);
+  
+  // 자주 사용되는 이메일 도메인
+  const emailDomains = [
+    'naver.com',
+    'gmail.com',
+    'daum.net',
+    'hanmail.net',
+    'kakao.com',
+    'yahoo.com',
+    'outlook.com',
+    'hotmail.com'
+  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let processedValue = value;
+    
+    // 연락처 필드 처리
+    if (name === 'phone') {
+      processedValue = value.replace(/[^0-9-]/g, '');
+    }
+    
     setFormData({
       ...formData,
-      [name]: value
+      [name]: processedValue
     });
     
     // username이 변경되면 중복체크 초기화
     if (name === 'username') {
       setIsUsernameChecked(false);
       setUsernameCheckMessage('');
+    }
+    
+    // 이메일 필드 처리 - @ 입력 시 도메인 제안 표시
+    if (name === 'email') {
+      if (value.includes('@') && !value.includes('.')) {
+        setShowEmailSuggestions(true);
+        setSelectedSuggestionIndex(0); // 첫 번째 옵션을 기본 선택
+      } else {
+        setShowEmailSuggestions(false);
+        setSelectedSuggestionIndex(0);
+      }
+    }
+  };
+
+
+  // 연락처 유효성 검사 함수
+  const validatePhoneNumber = (phone) => {
+    if (!phone) return false;
+    
+    // 한국 휴대폰 번호 패턴 (010, 011, 016, 017, 018, 019)
+    const phoneRegex = /^01[0-9]-?\d{3,4}-?\d{4}$/;
+    
+    // 숫자만 추출하여 길이 검사
+    const digitsOnly = phone.replace(/[^0-9]/g, '');
+    
+    // 11자리 숫자여야 함
+    if (digitsOnly.length !== 11) {
+      return false;
+    }
+    
+    // 010으로 시작하는지 확인
+    if (!digitsOnly.startsWith('010') && 
+        !digitsOnly.startsWith('011') && 
+        !digitsOnly.startsWith('016') && 
+        !digitsOnly.startsWith('017') && 
+        !digitsOnly.startsWith('018') && 
+        !digitsOnly.startsWith('019')) {
+      return false;
+    }
+    
+    return phoneRegex.test(phone);
+  };
+
+  // 이메일 도메인 선택 함수
+  const handleEmailDomainSelect = (domain) => {
+    const atIndex = formData.email.indexOf('@');
+    if (atIndex !== -1) {
+      const localPart = formData.email.substring(0, atIndex + 1);
+      setFormData({
+        ...formData,
+        email: localPart + domain
+      });
+    }
+    setShowEmailSuggestions(false);
+    setSelectedSuggestionIndex(0);
+  };
+
+  // 이메일 필드 포커스 아웃 시 제안 숨김
+  const handleEmailBlur = () => {
+    setTimeout(() => {
+      setShowEmailSuggestions(false);
+      setSelectedSuggestionIndex(0);
+    }, 200);
+  };
+
+  // 이메일 필드 키보드 이벤트 처리
+  const handleEmailKeyDown = (e) => {
+    if (!showEmailSuggestions) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+      case 'Tab':
+        e.preventDefault();
+        setSelectedSuggestionIndex(prev => 
+          prev < emailDomains.length - 1 ? prev + 1 : 0
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedSuggestionIndex(prev => 
+          prev > 0 ? prev - 1 : emailDomains.length - 1
+        );
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedSuggestionIndex >= 0 && selectedSuggestionIndex < emailDomains.length) {
+          handleEmailDomainSelect(emailDomains[selectedSuggestionIndex]);
+        }
+        break;
+      case 'Escape':
+        setShowEmailSuggestions(false);
+        setSelectedSuggestionIndex(0);
+        break;
     }
   };
 
@@ -88,8 +202,15 @@ const Register = () => {
     }
 
     // 필수 필드 검증
-    if (!formData.username || !formData.password || !formData.email || !formData.nickname) {
-      setError('아이디, 비밀번호, 이메일, 닉네임은 필수 입력 항목입니다.');
+    if (!formData.username || !formData.password || !formData.email || !formData.nickname || !formData.phone) {
+      setError('아이디, 비밀번호, 이메일, 닉네임, 연락처는 필수 입력 항목입니다.');
+      setIsLoading(false);
+      return;
+    }
+
+    // 연락처 유효성 검사
+    if (!validatePhoneNumber(formData.phone)) {
+      setError('올바른 연락처 형식을 입력해주세요 (예: 010-1234-5678 또는 01012345678)');
       setIsLoading(false);
       return;
     }
@@ -106,18 +227,18 @@ const Register = () => {
         phone_number: formData.phone || null
       };
 
-      const response = await axios.post('http://localhost:3003/api/users/auth/register', requestData, {
+      const response = await axios.post('http://localhost:3003/api/register', requestData, {
         headers: {
           'Content-Type': 'application/json',
         }
       });
 
       if (response.data.success) {
-        // 회원가입 성공 시 실제 업로드된 이미지 데이터 추가
-        const userId = response.data.data.user.id;
+        // 회원가입 성공 시 사용자 집 이미지를 프로필 이미지로 저장
+        const userId = response.data.user.id;
+        
         if (uploadedImages.length > 0) {
           try {
-            // 첫 번째 업로드된 이미지 사용
             await axios.post(`http://localhost:3003/api/users/${userId}/images`, {
               image_url: uploadedImages[0].src
             });
@@ -136,7 +257,7 @@ const Register = () => {
         }
         
         // 자동 로그인
-        login(response.data.data.user, response.data.data.tokens);
+        login(response.data.user, response.data.tokens);
         navigate('/');
       } else {
         setError(response.data.message || '회원가입에 실패했습니다.');
@@ -232,15 +353,40 @@ const Register = () => {
         {/* 이메일 */}
         <div className={styles["form-group"]}>
           <label htmlFor="email">이메일 *</label>
-          <input 
-            type="email" 
-            id="email" 
-            name="email" 
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="이메일을 입력해주세요"
-            required
-          />
+          <div className={styles["email-container"]}>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              value={formData.email}
+              onChange={handleChange}
+              onBlur={handleEmailBlur}
+              onKeyDown={handleEmailKeyDown}
+              placeholder="예: user@naver.com"
+              required
+              autoComplete="off"
+            />
+            {showEmailSuggestions && (
+              <div className={styles["email-suggestions"]}>
+                {emailDomains.map((domain, index) => {
+                  const atIndex = formData.email.indexOf('@');
+                  const localPart = atIndex !== -1 ? formData.email.substring(0, atIndex + 1) : formData.email + '@';
+                  return (
+                    <div 
+                      key={domain}
+                      className={`${styles["suggestion-item"]} ${
+                        index === selectedSuggestionIndex ? styles["selected"] : ''
+                      }`}
+                      onClick={() => handleEmailDomainSelect(domain)}
+                      onMouseEnter={() => setSelectedSuggestionIndex(index)}
+                    >
+                      {localPart}{domain}
+                    </div>
+                  );
+                })
+              </div>
+            )}
+          </div>
         </div>
 
         {/* 닉네임 */}
@@ -274,7 +420,7 @@ const Register = () => {
 
         {/* 연락처 */}
         <div className={styles["form-group"]}>
-          <label htmlFor="phone">연락처</label>
+          <label htmlFor="phone">연락처 *</label>
           <input
             type="tel"
             id="phone"
@@ -282,12 +428,14 @@ const Register = () => {
             value={formData.phone}
             onChange={handleChange}
             placeholder="연락처를 입력해주세요 (예: 010-1234-5678)"
+            required
           />
         </div>
 
-        {/* 사용자 집 이미지 (이미지합성용) */}
+
+        {/* 사용자 집 이미지 (프로필 이미지) */}
         <div className={styles["form-group"]}>
-          <label>사용자 집 이미지 (이미지합성용)</label>
+          <label>사용자 집 이미지 (프로필 이미지로도 사용됩니다)</label>
           <ImageUploader onImagesChange={setUploadedImages} />
         </div>
 

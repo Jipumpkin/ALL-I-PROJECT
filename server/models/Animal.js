@@ -66,25 +66,25 @@ module.exports = (sequelize) => {
     createdAt: 'created_at',
     updatedAt: 'updated_at',
     
-    // 인덱스 설정
-    indexes: [
-      {
-        fields: ['shelter_id']
-      },
-      {
-        fields: ['status']
-      },
-      {
-        fields: ['region']
-      },
-      {
-        fields: ['rescued_at']
-      },
-      {
-        unique: true,
-        fields: ['ext_id']
-      }
-    ]
+    // 인덱스 설정 (기존 DB에 인덱스가 있어 임시 주석)
+    // indexes: [
+    //   {
+    //     fields: ['shelter_id']
+    //   },
+    //   {
+    //     fields: ['status']
+    //   },
+    //   {
+    //     fields: ['region']
+    //   },
+    //   {
+    //     fields: ['rescued_at']
+    //   },
+    //   {
+    //     unique: true,
+    //     fields: ['ext_id']
+    //   }
+    // ]
   });
 
   // 관계 설정
