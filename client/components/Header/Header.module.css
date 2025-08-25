@@ -20,9 +20,7 @@
 }
 
 .header a:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: var(--border-radius-sm);
+  outline: none;
 }
 
 .logo-container {

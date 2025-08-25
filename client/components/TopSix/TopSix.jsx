@@ -30,11 +30,11 @@ const TopSix = () => {
     }
   };
 
-  const genderMap = {
-    male: '수컷',
-    female: '암컷',
-    unknown: '불명'
-  };
+  // const genderMap = {
+  //   male: '수컷',
+  //   female: '암컷',
+  //   unknown: '불명'
+  // };
 
   if (loading) return <p>Loading oldest animals...</p>;
   if (error) return <p>Error loading oldest animals: {error.message}</p>;

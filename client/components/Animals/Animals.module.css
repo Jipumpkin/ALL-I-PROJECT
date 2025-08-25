@@ -45,6 +45,8 @@
   display: flex;
   gap: 10px;
   align-items: center;
+  margin-top: 20px;
+  margin-bottom: 30px;
 }
 
 .shelterFilter select {
@@ -61,6 +63,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+  margin-top: 20px;
 }
 
 .animalCard {
@@ -70,6 +73,7 @@
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
   transition: transform 0.2s, box-shadow 0.2s;
   background-color: white;
+  position: relative;
 }
 
 .animalCard:hover {
@@ -77,17 +81,28 @@
   box-shadow: 0 8px 12px rgba(0,0,0,0.1);
 }
 
+
 .animalCardLink {
   text-decoration: none;
   color: inherit;
   display: block;
+  position: relative;
 }
 
 .animalImage {
   width: 100%;
   height: 200px;
   object-fit: cover;
-  border-bottom: 1px solid #eee;
+  object-position: center 25%; /* 동물 얼굴/상체가 보이도록 상단 포커스 */
+  border-radius: 12px;
+  margin-bottom: 8px;
+  filter: brightness(1.1) contrast(1.05) saturate(1.1);
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.animalImage:hover {
+  filter: brightness(1.15) contrast(1.1) saturate(1.15);
+  transform: scale(1.02);
 }
 
 .animalInfo {

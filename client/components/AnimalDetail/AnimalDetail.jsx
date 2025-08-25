@@ -11,6 +11,7 @@ const AnimalDetail = () => {
   const [animal, setAnimal] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   useEffect(() => {
     const fetchAnimal = async () => {
@@ -29,7 +30,7 @@ const AnimalDetail = () => {
 
   const handleMakerClick = () => {
     if (auth.isAuthenticated()) {
-      navigate('/maker', { state: { animal: animal } });
+      navigate(`/maker?animalId=${animal.id}`, { state: { animal: animal } });
     } else {
       navigate('/login');
     }
@@ -82,7 +83,14 @@ const AnimalDetail = () => {
   return (
     <div className={styles.container}>
       <div className={styles.profileSection}>
-        <img src={animal.image_url} alt={animal.species} className={styles.animalImage} onError={(e) => { e.target.src = '/images/unknown_animal.png'; }} />
+        <img 
+          src={animal.image_url} 
+          alt={animal.species} 
+          className={styles.profileImage}
+          onClick={() => setShowImageModal(true)}
+          style={{ cursor: 'pointer' }}
+          onError={(e) => { e.target.src = '/images/unknown_animal.png'; }}
+        />
       </div>
 
       <div className={styles.infoWrapper}>
@@ -156,6 +164,29 @@ const AnimalDetail = () => {
           입양 신청하기
         </button>
       </div>
+
+      {/* 이미지 모달 */}
+      {showImageModal && (
+        <div className={styles.imageModalOverlay} onClick={() => setShowImageModal(false)}>
+          <div className={styles.imageModalContent} onClick={(e) => e.stopPropagation()}>
+            <button 
+              className={styles.imageModalClose}
+              onClick={() => setShowImageModal(false)}
+            >
+              ×
+            </button>
+            <img 
+              src={animal.image_url} 
+              alt={animal.species}
+              className={styles.imageModalImage}
+            />
+            <div className={styles.imageModalInfo}>
+              <p><strong>{animal.species}</strong></p>
+              <p>원본 이미지를 보고 계십니다</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
