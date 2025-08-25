@@ -172,3 +172,26 @@
   font-weight: 500;
   color: #1f2937;
 }
+
+
+
+.pdf-btn {
+  display: inline-block !important;
+  flex: 1 !important;
+  padding: 12px 24px !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+  min-width: 120px !important;
+  height: 48px !important;
+  box-sizing: border-box !important;
+  background-color: #10b981;
+  color: white;
+}
+
+.pdf-btn:hover {
+  background-color: #059669;
+}
