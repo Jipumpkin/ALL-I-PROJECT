@@ -1,7 +1,6 @@
 const User = require('../models/User');
 const jwtUtils = require('../utils/jwt');
 const hashUtils = require('../utils/hash');
-const mockDB = require('../utils/mockDatabase');
 
 const userController = {
     getAllUsers: async (req, res) => {
@@ -132,8 +131,6 @@ const userController = {
                         username: newUser.username,
                         email: newUser.email,
                         nickname: newUser.nickname,
-                        gender: newUser.gender,
-                        phone_number: newUser.phone_number,
                         created_at: newUser.created_at
                     },
                     tokens: {
@@ -175,30 +172,30 @@ const userController = {
     /**
      * 로그인 API
      * POST /api/users/auth/login
-     * Body: { email, password }
+     * Body: { username, password }
      */
     login: async (req, res) => {
         try {
-            const { email, password } = req.body;
+            const { username, password } = req.body;
 
             // 필수 입력값 검증
-            if (!email || !password) {
+            if (!username || !password) {
                 return res.status(400).json({
                     success: false,
-                    message: 'email과 password는 필수 입력값입니다.',
+                    message: 'username과 password는 필수 입력값입니다.',
                     errors: {
-                        email: !email ? 'email이 필요합니다.' : null,
+                        username: !username ? 'username이 필요합니다.' : null,
                         password: !password ? 'password가 필요합니다.' : null
                     }
                 });
             }
 
-            // email로 사용자 검색
-            const user = await User.findByEmail(email);
+            // username으로 사용자 검색
+            const user = await User.findByUsername(username);
             if (!user) {
                 return res.status(401).json({
                     success: false,
-                    message: '이메일 또는 비밀번호가 올바르지 않습니다.',
+                    message: '사용자명 또는 비밀번호가 올바르지 않습니다.',
                     errors: { auth: '로그인 정보를 확인해주세요.' }
                 });
             }
@@ -232,8 +229,6 @@ const userController = {
                         username: user.username,
                         email: user.email,
                         nickname: user.nickname,
-                        gender: user.gender,
-                        phone_number: user.phone_number,
                         created_at: user.created_at
                     },
                     tokens: {
@@ -312,19 +307,15 @@ const userController = {
             res.json({
                 success: true,
                 message: '로그인이 성공적으로 완료되었습니다.',
-                data: {
-                    user: {
-                        id: user.user_id,
-                        username: user.username,
-                        email: user.email,
-                        nickname: user.nickname,
-                        gender: user.gender,
-                        phone_number: user.phone_number
-                    },
-                    tokens: {
-                        accessToken,
-                        refreshToken
-                    }
+                user: {
+                    id: user.user_id,
+                    username: user.username,
+                    email: user.email,
+                    nickname: user.nickname
+                },
+                tokens: {
+                    accessToken,
+                    refreshToken
                 }
             });
 
@@ -345,7 +336,7 @@ const userController = {
      */
     mockRegister: async (req, res) => {
         try {
-            const { username, email, password, nickname, gender, phone_number } = req.body;
+            const { username, email, password, nickname, phone_number } = req.body;
 
             // 필수 입력값 검증
             if (!username || !password) {
@@ -394,7 +385,6 @@ const userController = {
                 email: userEmail,
                 password_hash: hashedPassword,
                 nickname: nickname || username,
-                gender: gender || null,
                 phone_number: phone_number || null
             };
 
@@ -413,19 +403,15 @@ const userController = {
             res.status(201).json({
                 success: true,
                 message: '회원가입이 성공적으로 완료되었습니다.',
-                data: {
-                    user: {
-                        id: newUser.user_id,
-                        username: newUser.username,
-                        email: newUser.email,
-                        nickname: newUser.nickname,
-                        gender: newUser.gender,
-                        phone_number: newUser.phone_number
-                    },
-                    tokens: {
-                        accessToken,
-                        refreshToken
-                    }
+                user: {
+                    id: newUser.user_id,
+                    username: newUser.username,
+                    email: newUser.email,
+                    nickname: newUser.nickname
+                },
+                tokens: {
+                    accessToken,
+                    refreshToken
                 }
             });
 
@@ -789,76 +775,6 @@ const userController = {
             res.status(500).json({
                 success: false,
                 message: '회원탈퇴 처리 중 오류가 발생했습니다.',
-                error: error.message
-            });
-        }
-    },
-
-    /**
-     * 사용자 등록 이미지 조회
-     * GET /api/users/:userId/images
-     */
-    getUserImages: async (req, res) => {
-        try {
-            const { userId } = req.params;
-            
-            // Mock Database에서 사용자 이미지 조회
-            const mockDB = require('../utils/mockDatabase');
-            const images = await mockDB.getUserImages(userId);
-
-            res.json({
-                success: true,
-                message: '사용자 이미지 조회 성공',
-                data: images
-            });
-
-        } catch (error) {
-            console.error('Get user images error:', error);
-            res.status(500).json({
-                success: false,
-                message: '사용자 이미지 조회 중 오류가 발생했습니다.',
-                error: error.message
-            });
-        }
-    },
-
-    /**
-     * 사용자 이미지 추가
-     * POST /api/users/:userId/images
-     * Body: { image_url }
-     */
-    addUserImage: async (req, res) => {
-        try {
-            const { userId } = req.params;
-            const { image_url } = req.body;
-
-            if (!image_url) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'image_url이 필요합니다.'
-                });
-            }
-
-            // Mock Database에 이미지 추가
-            const mockDB = require('../utils/mockDatabase');
-            const newImage = await mockDB.addUserImage(userId, image_url);
-
-            res.json({
-                success: true,
-                message: '사용자 이미지 추가 성공',
-                data: {
-                    image_id: newImage.image_id,
-                    user_id: newImage.user_id,
-                    image_url: newImage.image_url,
-                    uploaded_at: newImage.uploaded_at
-                }
-            });
-
-        } catch (error) {
-            console.error('Add user image error:', error);
-            res.status(500).json({
-                success: false,
-                message: '사용자 이미지 추가 중 오류가 발생했습니다.',
                 error: error.message
             });
         }

@@ -7,7 +7,6 @@ const express = require('express');
 const cors = require('cors');
 const cron = require('node-cron');
 const path = require('path');
-require('dotenv').config();
 
 // dotenv가 실행된 후에 db connection을 가져옵니다.
 const { pool } = require('./db/connection'); 

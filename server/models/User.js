@@ -1,173 +1,193 @@
-const { getPool } = require('../config/database');
+const { DataTypes } = require('sequelize');
 
-class User {
-    static async findAll() {
-        const db = await getPool();
-        const query = 'SELECT * FROM users';
-        const [rows] = await db.execute(query);
-        return rows;
+module.exports = (sequelize) => {
+  const User = sequelize.define('User', {
+    user_id: {
+      type: DataTypes.BIGINT.UNSIGNED,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    username: {
+      type: DataTypes.STRING(50),
+      allowNull: false
+    },
+    email: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      unique: true
+    },
+    password_hash: {
+      type: DataTypes.STRING(255),
+      allowNull: false
+    },
+    nickname: {
+      type: DataTypes.STRING(50),
+      allowNull: true
+    },
+    gender: {
+      type: DataTypes.ENUM('male', 'female', 'other', 'unknown'),
+      defaultValue: 'unknown'
+    },
+    phone_number: {
+      type: DataTypes.STRING(20),
+      allowNull: true
+    },
+    last_login_at: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
+  }, {
+    tableName: 'users',
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    
+    // 인덱스 설정
+    indexes: [
+      {
+        unique: true,
+        fields: ['email']
+      },
+      {
+        fields: ['username']
+      }
+    ]
+  });
 
-    static async findById(id) {
-        const query = 'SELECT * FROM users WHERE user_id = ?';
-        const db = await getPool();
-        const [rows] = await db.execute(query, [id]);
-        return rows[0];
+  // 관계 설정
+  User.associate = (models) => {
+    // User -> UserImages (1:N)
+    User.hasMany(models.UserImage, {
+      foreignKey: 'user_id',
+      as: 'images',
+      onDelete: 'CASCADE'
+    });
+
+    // User -> Prompts (1:N)
+    User.hasMany(models.Prompt, {
+      foreignKey: 'user_id',
+      as: 'prompts',
+      onDelete: 'CASCADE'
+    });
+
+    // User -> GeneratedImages (1:N)
+    User.hasMany(models.GeneratedImage, {
+      foreignKey: 'user_id',
+      as: 'generatedImages',
+      onDelete: 'CASCADE'
+    });
+  };
+
+  // 클래스 메소드들 (기존 Raw SQL 메소드를 Sequelize로 변환)
+  
+  /**
+   * 모든 사용자 조회
+   */
+  User.findAllUsers = async function() {
+    return await this.findAll({
+      attributes: { exclude: ['password_hash'] }
+    });
+  };
+
+  /**
+   * ID로 사용자 조회
+   */
+  User.findByPk = async function(id) {
+    return await this.findByPk(id, {
+      attributes: { exclude: ['password_hash'] }
+    });
+  };
+
+  /**
+   * Username 또는 Email로 사용자 검색 (로그인용)
+   */
+  User.findByUsernameOrEmail = async function(identifier) {
+    return await this.findOne({
+      where: {
+        [sequelize.Sequelize.Op.or]: [
+          { username: identifier },
+          { email: identifier }
+        ]
+      }
+    });
+  };
+
+  /**
+   * Username으로 사용자 검색 (중복 체크용)
+   */
+  User.findByUsername = async function(username) {
+    return await this.findOne({
+      where: { username }
+    });
+  };
+
+  /**
+   * 사용자 생성
+   */
+  User.createUser = async function(userData) {
+    const user = await this.create(userData);
+    // 비밀번호 제외하고 반환
+    const { password_hash, ...userWithoutPassword } = user.toJSON();
+    return userWithoutPassword;
+  };
+
+  /**
+   * 사용자 프로필 업데이트
+   */
+  User.updateProfile = async function(userId, updateData) {
+    const [affectedRows] = await this.update(updateData, {
+      where: { user_id: userId }
+    });
+    
+    if (affectedRows > 0) {
+      return await this.findByPk(userId);
     }
+    return null;
+  };
 
-    static async create(userData) {
-        console.log('🔍 User.create userData:', userData);
-        
-        const query = `
-            INSERT INTO users (username, email, password_hash, nickname, gender, phone_number)
-            VALUES (?, ?, ?, ?, ?, ?)
-        `;
-        
-        const params = [
-            userData.username,
-            userData.email,
-            userData.password_hash,
-            userData.nickname || null,
-            userData.gender || null,
-            userData.phone_number || null
-        ];
-        
-        console.log('🔍 SQL parameters:', params);
-        
-        const db = await getPool();
-        const [result] = await db.execute(query, params);
-        return this.findById(result.insertId);
-    }
+  /**
+   * 비밀번호 업데이트
+   */
+  User.updatePassword = async function(userId, newPasswordHash) {
+    const [affectedRows] = await this.update(
+      { password_hash: newPasswordHash },
+      { where: { user_id: userId } }
+    );
+    return affectedRows > 0;
+  };
 
-    static async update(id, userData) {
-        const { username, email, nickname, gender, phone_number } = userData;
-        const query = `
-            UPDATE users 
-            SET username = ?, email = ?, nickname = ?, gender = ?, phone_number = ?, updated_at = CURRENT_TIMESTAMP
-            WHERE user_id = ?
-        `;
-        const db = await getPool();
-        await db.execute(query, [username, email, nickname, gender, phone_number, id]);
-        return this.findById(id);
-    }
+  /**
+   * 마지막 로그인 시간 업데이트
+   */
+  User.updateLastLogin = async function(userId) {
+    const [affectedRows] = await this.update(
+      { last_login_at: new Date() },
+      { where: { user_id: userId } }
+    );
+    return affectedRows > 0;
+  };
 
-    static async delete(id) {
-        const query = 'DELETE FROM users WHERE user_id = ?';
-        const db = await getPool();
-        await db.execute(query, [id]);
-    }
+  /**
+   * 회원 탈퇴 (실제로는 soft delete 또는 상태 변경)
+   */
+  User.deleteAccount = async function(userId) {
+    // 실제 삭제 대신 다른 방법을 사용할 수 있음 (예: status 필드)
+    // 현재는 실제 삭제로 구현
+    const deletedRows = await this.destroy({
+      where: { user_id: userId }
+    });
+    return deletedRows > 0;
+  };
 
-    // 인증 관련 메서드들
-    static async findByEmail(email) {
-        const query = 'SELECT * FROM users WHERE email = ?';
-        const db = await getPool();
-        const [rows] = await db.execute(query, [email]);
-        return rows[0];
-    }
+  // 인스턴스 메소드들
 
-    static async findByUsername(username) {
-        const query = 'SELECT * FROM users WHERE username = ?';
-        const db = await getPool();
-        const [rows] = await db.execute(query, [username]);
-        return rows[0];
-    }
+  /**
+   * 비밀번호 제외 JSON 반환
+   */
+  User.prototype.toSafeJSON = function() {
+    const { password_hash, ...safeUser } = this.toJSON();
+    return safeUser;
+  };
 
-    static async checkEmailExists(email) {
-        const user = await this.findByEmail(email);
-        return !!user;
-    }
-
-    static async checkUsernameExists(username) {
-        const user = await this.findByUsername(username);
-        return !!user;
-    }
-
-    static async createWithValidation(userData) {
-        console.log('🔍 User.createWithValidation userData:', userData);
-        const { username, email, password_hash, nickname, gender, phone_number } = userData;
-        
-        // username 중복 체크
-        const usernameExists = await this.checkUsernameExists(username);
-        if (usernameExists) {
-            throw new Error('이미 존재하는 사용자명입니다.');
-        }
-        
-        // 이메일 중복 체크
-        const emailExists = await this.checkEmailExists(email);
-        if (emailExists) {
-            throw new Error('이미 존재하는 이메일입니다.');
-        }
-
-        console.log('🔍 Username and email validation passed, calling create...');
-        // 사용자 생성
-        return await this.create(userData);
-    }
-
-    /**
-     * 사용자 프로필 정보 업데이트 (닉네임, 연락처, 성별만 수정 가능)
-     * @param {number} userId - 사용자 ID
-     * @param {object} updateData - 업데이트할 데이터 { nickname?, phone_number?, gender? }
-     * @returns {object} 업데이트된 사용자 정보
-     */
-    static async updateProfile(userId, updateData) {
-        console.log('🔍 User.updateProfile userId:', userId, 'updateData:', updateData);
-        
-        // 업데이트 가능한 필드만 포함하도록 필터링
-        const allowedFields = ['nickname', 'phone_number', 'gender'];
-        const filteredData = {};
-        
-        allowedFields.forEach(field => {
-            if (updateData[field] !== undefined) {
-                filteredData[field] = updateData[field];
-            }
-        });
-
-        if (Object.keys(filteredData).length === 0) {
-            throw new Error('업데이트할 데이터가 없습니다.');
-        }
-
-        // 동적 쿼리 생성
-        const setClause = Object.keys(filteredData).map(field => `${field} = ?`).join(', ');
-        const query = `
-            UPDATE users 
-            SET ${setClause}, updated_at = CURRENT_TIMESTAMP
-            WHERE user_id = ?
-        `;
-        
-        const params = [...Object.values(filteredData), userId];
-        console.log('🔍 Update profile SQL:', query, 'params:', params);
-        
-        const db = await getPool();
-        const [result] = await db.execute(query, params);
-        
-        if (result.affectedRows === 0) {
-            throw new Error('사용자를 찾을 수 없습니다.');
-        }
-
-        return this.findById(userId);
-    }
-
-    /**
-     * 회원탈퇴 처리 (소프트 삭제)
-     * @param {number} userId - 탈퇴할 사용자 ID
-     * @returns {boolean} 삭제 성공 여부
-     */
-    static async deleteAccount(userId) {
-        console.log('🔍 User.deleteAccount userId:', userId);
-        
-        // 실제 삭제 대신 소프트 삭제 (deleted_at 컬럼이 있다면)
-        // 현재 스키마에서는 deleted_at이 없으므로 실제 삭제 수행
-        const query = 'DELETE FROM users WHERE user_id = ?';
-        const db = await getPool();
-        const [result] = await db.execute(query, [userId]);
-        
-        if (result.affectedRows === 0) {
-            throw new Error('사용자를 찾을 수 없습니다.');
-        }
-
-        console.log('🔍 User.deleteAccount 성공');
-        return true;
-    }
-}
-
-module.exports = User;
+  return User;
+};

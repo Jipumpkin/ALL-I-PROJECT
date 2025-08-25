@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from './Login.module.css';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../src/context/AuthContext';
-import axios from 'axios';
+import axios from '../../axios';
 import ScrollAnimation from '../ScrollAnimation/ScrollAnimation';
 
 const Login = () => {
