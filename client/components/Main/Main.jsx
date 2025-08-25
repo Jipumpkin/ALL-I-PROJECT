@@ -45,7 +45,7 @@ const Main = () => {
                 {animals.map((animal) => (
                   <div key={animal.animal_id} className={styles['animal-card']}>
                     <Link to={`/animal/${animal.animal_id}`} className={styles['animal-card-link']}>
-                      <img src={animal.image_url} alt={animal.species} className={styles['animal-image']} />
+                      <img src={animal.image_url} alt={animal.species} className={styles['animal-image']} onError={(e) => { e.target.src = '/images/unknown_animal.png'; }} />
                       <div className={styles['animal-info']}>
                         <p><strong>품종:</strong> {animal.species}</p>
                         <p><strong>출생년도:</strong> {animal.age}</p>

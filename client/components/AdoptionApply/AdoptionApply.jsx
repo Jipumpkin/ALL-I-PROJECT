@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './AdoptionApply.module.css';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const AdoptionApply = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const animal = location.state?.animal;
+  const pdfRef = useRef();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -14,7 +17,8 @@ const AdoptionApply = () => {
     address: '',
     experience: '',
     reason: '',
-    animalType: ''
+    animalType: '',
+    otherAnimalType: ''
   });
   const [errors, setErrors] = useState({});
 
@@ -25,6 +29,8 @@ const AdoptionApply = () => {
         animalType = 'dog';
       } else if (animal.species.includes('고양이')) {
         animalType = 'cat';
+      } else {
+        animalType = 'other';
       }
       setFormData(prev => ({
         ...prev,
@@ -51,6 +57,9 @@ const AdoptionApply = () => {
     if (!formData.address.trim()) newErrors.address = '주소를 입력해주세요.';
     if (!formData.reason.trim()) newErrors.reason = '입양 사유를 입력해주세요.';
     if (!formData.animalType) newErrors.animalType = '입양 희망 동물을 선택해주세요.';
+    if (formData.animalType === 'other' && !formData.otherAnimalType.trim()) {
+        newErrors.otherAnimalType = '기타 동물 종류를 입력해주세요.';
+    }
 
     setErrors(newErrors);
 
@@ -61,8 +70,42 @@ const AdoptionApply = () => {
     }
   };
 
+  const handleGeneratePdf = () => {
+    const input = pdfRef.current;
+    const buttons = input.querySelectorAll('.no-print');
+    buttons.forEach(btn => btn.style.display = 'none');
+
+    html2canvas(input, { scale: 2, useCORS: true }).then((canvas) => {
+      buttons.forEach(btn => btn.style.display = 'flex');
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      const ratio = canvasWidth / canvasHeight;
+
+      let newWidth = pdfWidth;
+      let newHeight = newWidth / ratio;
+
+      if (newHeight > pdfHeight) {
+          newHeight = pdfHeight;
+          newWidth = newHeight * ratio;
+      }
+
+      const x = (pdfWidth - newWidth) / 2;
+      const y = (pdfHeight - newHeight) / 2;
+
+      pdf.addImage(imgData, 'PNG', x, y, newWidth, newHeight);
+      pdf.save('adoption_application.pdf');
+    });
+  };
+
+  const genderMap = { male: '수컷', female: '암컷', unknown: '불명' };
+
   return (
-    <div className={styles["adoption-container"]}>
+    <div className={styles["adoption-container"]} ref={pdfRef}>
       <div className={styles["header"]}>
         <h2 className={styles["adoption-title"]}>입양 신청하기</h2>
       </div>
@@ -71,8 +114,18 @@ const AdoptionApply = () => {
         <div className={styles["animal-info-section"]}>
           <h3 className={styles["section-title"]}>입양 신청 동물 정보</h3>
           <div className={styles["animal-details"]}>
-            <img src={animal.image_url} alt={animal.species} className={styles["animal-image"]} />
-            <p className={styles["animal-species"]}>{animal.species}</p>
+              <img 
+                src={`/api/animals/image-proxy?url=${encodeURIComponent(animal.image_url)}`} 
+                alt={animal.species} 
+                className={styles["animal-image"]} 
+                onError={(e) => { e.target.src = '/images/unknown_animal.png'; }} 
+              />
+              <div>
+                  <p><strong>품종:</strong> {animal.species}</p>
+                  <p><strong>출생년도:</strong> {animal.age}</p>
+                  <p><strong>성별:</strong> {genderMap[animal.gender] || '정보 없음'}</p>
+                  <p><strong>구조지역:</strong> {animal.region}</p>
+              </div>
           </div>
         </div>
       )}
@@ -147,10 +200,25 @@ const AdoptionApply = () => {
             <option value="">선택해주세요</option>
             <option value="dog">강아지</option>
             <option value="cat">고양이</option>
-            <option value="both">상관없음</option>
+            <option value="other">기타</option>
           </select>
           {errors.animalType && <p className={styles["error"]}>{errors.animalType}</p>}
         </div>
+
+        {formData.animalType === 'other' && (
+            <div className={styles["input-group"]}>
+                <label htmlFor="otherAnimalType">기타 동물 종류 *</label>
+                <input
+                    type="text"
+                    id="otherAnimalType"
+                    name="otherAnimalType"
+                    value={formData.otherAnimalType}
+                    onChange={handleInputChange}
+                    placeholder="정확한 동물 종류를 입력해주세요."
+                />
+                {errors.otherAnimalType && <p className={styles["error"]}>{errors.otherAnimalType}</p>}
+            </div>
+        )}
 
         <div className={styles["input-group"]}>
           <label htmlFor="experience">반려동물 경험</label>
@@ -177,12 +245,15 @@ const AdoptionApply = () => {
           {errors.reason && <p className={styles["error"]}>{errors.reason}</p>}
         </div>
 
-        <div className={styles["button-actions"]}>
+        <div className={`${styles["button-actions"]} no-print`}>
           <button type="button" onClick={() => navigate('/')} className={styles["cancel-btn"]}>
             취소
           </button>
           <button type="submit" className={styles["submit-btn"]}>
             신청하기
+          </button>
+          <button type="button" onClick={handleGeneratePdf} className={styles["pdf-btn"]}>
+            pdf만들기
           </button>
         </div>
       </form>
