@@ -1,173 +1,90 @@
-const https = require('https');
-const url = require('url');
-const mysql = require('mysql2/promise');
+-- 사용자 테이블
+CREATE TABLE users (
+    user_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    nickname VARCHAR(50),
+    gender ENUM('male', 'female', 'other', 'unknown') DEFAULT 'unknown',
+    phone_number VARCHAR(20),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_login_at DATETIME
+);
 
-// --- 환경 변수 로드 ---
-const serviceKey = process.env.PUBLICDATA_API_KEY;
-const dbConfig = {
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: parseInt(process.env.DB_PORT, 10),
-};
+-- 사용자 이미지 테이블
+CREATE TABLE user_images (
+    image_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    image_url TEXT NOT NULL,
+    uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
 
-if (!serviceKey || !dbConfig.host || !dbConfig.user || !dbConfig.password || !dbConfig.database) {
-  console.error('💥 오류: 필수 환경 변수(API 키 또는 DB 정보)가 설정되지 않았습니다.');
-  process.exit(1);
-}
+-- 보호소 테이블
+CREATE TABLE shelters (
+    shelter_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    shelter_name VARCHAR(100),
+    email VARCHAR(100),
+    contact_number VARCHAR(20),
+    address VARCHAR(255),
+    region VARCHAR(100),
+    latitude DECIMAL(10, 8),
+    longitude DECIMAL(11, 8),
+    capacity INT DEFAULT 0,
+    current_animals INT DEFAULT 0,
+    facilities TEXT,
+    website VARCHAR(255),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 
-// --- API 호출 및 데이터베이스 저장 함수 ---
-async function syncAnimalData() {
-  console.log('🚀 데이터 동기화를 시작합니다...');
+-- 유기동물 테이블
+CREATE TABLE animals (
+    animal_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    species VARCHAR(50),
+    gender ENUM('male', 'female', 'unknown') DEFAULT 'unknown',
+    age VARCHAR(20),
+    image_url TEXT,
+    shelter_id BIGINT UNSIGNED,
+    status ENUM('available', 'adopted', 'pending') DEFAULT 'available',
+    region VARCHAR(100),
+    rescued_at DATE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (shelter_id) REFERENCES shelters(shelter_id) ON DELETE SET NULL
+);
 
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  const formattedDate = `${year}${month}${day}`;
+-- 프롬프트 테이블
+CREATE TABLE prompts (
+    prompt_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    original_prompt TEXT,
+    final_prompt TEXT,
+    image_id BIGINT UNSIGNED,
+    animal_id BIGINT UNSIGNED,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (image_id) REFERENCES user_images(image_id) ON DELETE SET NULL,
+    FOREIGN KEY (animal_id) REFERENCES animals(animal_id) ON DELETE SET NULL
+);
 
-  const apiUrl = 'https://apis.data.go.kr/1543061/abandonmentPublicService_v2/abandonmentPublic_v2';
-  const queryParams = {
-    serviceKey: serviceKey,
-    _type: 'json',
-    bgnde: formattedDate,
-    endde: formattedDate,
-    numOfRows: 1000,
-    pageNo: 1,
-  };
+-- 생성된 이미지 테이블
+CREATE TABLE generated_images (
+    generated_image_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    prompt_id BIGINT UNSIGNED NOT NULL,
+    image_url TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (prompt_id) REFERENCES prompts(prompt_id) ON DELETE CASCADE
+);
 
-  const parsedUrl = url.parse(apiUrl);
-  const pathWithQuery = `${parsedUrl.pathname}?${Object.keys(queryParams).map(key => `${key}=${encodeURIComponent(queryParams[key])}`).join('&')}`;
-
-  const options = {
-    hostname: parsedUrl.hostname,
-    path: pathWithQuery,
-    method: 'GET'
-  };
-
-  let connection;
-  try {
-    const data = await new Promise((resolve, reject) => {
-      const req = https.request(options, (res) => {
-        let rawData = '';
-        res.on('data', (chunk) => rawData += chunk);
-        res.on('end', () => {
-          try {
-            resolve(JSON.parse(rawData));
-          } catch (e) {
-            reject(new Error(`JSON 파싱 오류: ${e.message}`));
-          }
-        });
-      });
-
-      req.on('error', (e) => reject(new Error(`API 요청 오류: ${e.message}`)));
-      req.end();
-    });
-
-    const items = data.response.body.items.item || [];
-    if (items.length === 0) {
-      console.log('✅ 오늘 날짜의 유기동물 데이터가 없습니다.');
-      return;
-    }
-
-    console.log(`✅ API에서 ${items.length}건의 데이터를 성공적으로 가져왔습니다.`);
-
-    // --- 데이터베이스 연결 및 저장 ---
-    console.log('🔌 데이터베이스에 연결 중...');
-    connection = await mysql.createConnection(dbConfig);
-    console.log('✅ 데이터베이스 연결 성공!');
-
-    // 트랜잭션 시작 (데이터 무결성 보장)
-    await connection.beginTransaction();
-
-    const transformedData = items.map(item => {
-      // API 데이터와 DB 스키마 매핑
-      const genderMap = { 'M': 'male', 'F': 'female' };
-      const statusMap = { '보호중': 'available' };
-
-      return {
-        // ext_id는 API의 고유 번호(desertionNo)로 사용
-        animal_ext_id: item.desertionNo,
-        shelter_ext_id: item.careRegNo,
-        shelter_name: item.careNm,
-        shelter_address: item.careAddr,
-        animal_species: item.upKindNm,
-        animal_gender: genderMap[item.sexCd] || 'unknown',
-        animal_age: item.age.replace('(년생)', '').trim(),
-        animal_status: statusMap[item.processState] || 'available',
-        animal_region: item.orgNm,
-        animal_rescued_at: item.happenDt,
-        animal_colorCd: item.colorCd,
-        animal_specialMark: item.specialMark,
-        animal_image_url: item.popfile1,
-      };
-    });
-
-    for (const animal of transformedData) {
-      // 1. 보호소 데이터 upsert (INSERT...ON DUPLICATE KEY UPDATE)
-      const [shelterResult] = await connection.execute(
-        `INSERT INTO shelters (shelter_name, address, region, contact_number, email, ext_id)
-         VALUES (?, ?, ?, ?, ?, ?)
-         ON DUPLICATE KEY UPDATE
-         shelter_name=VALUES(shelter_name), address=VALUES(address), region=VALUES(region)`,
-        [
-          animal.shelter_name,
-          animal.shelter_address,
-          animal.animal_region,
-          item.careTel, // API에서 직접 가져옴
-          null, // email 필드는 API에 없어 null 처리
-          animal.shelter_ext_id
-        ]
-      );
-      
-      let shelterId;
-      // INSERT가 성공했으면 insertId를 사용하고, 아니면 기존 ID를 가져옴
-      if (shelterResult.insertId) {
-        shelterId = shelterResult.insertId;
-      } else {
-        const [rows] = await connection.execute(
-          'SELECT shelter_id FROM shelters WHERE ext_id = ?',
-          [animal.shelter_ext_id]
-        );
-        shelterId = rows[0].shelter_id;
-      }
-
-      // 2. 동물 데이터 upsert (INSERT...ON DUPLICATE KEY UPDATE)
-      const [animalResult] = await connection.execute(
-        `INSERT INTO animals (
-          species, gender, age, image_url, shelter_id, status, region, rescued_at, ext_id, colorCd, specialMark
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-          species = VALUES(species), gender = VALUES(gender), age = VALUES(age),
-          image_url = VALUES(image_url), shelter_id = VALUES(shelter_id), status = VALUES(status),
-          region = VALUES(region), rescued_at = VALUES(rescued_at), colorCd = VALUES(colorCd),
-          specialMark = VALUES(specialMark)`,
-        [
-          animal.animal_species, animal.animal_gender, animal.animal_age, animal.animal_image_url,
-          shelterId, animal.animal_status, animal.animal_region, animal.animal_rescued_at,
-          animal.animal_ext_id, animal.animal_colorCd, animal.animal_specialMark
-        ]
-      );
-      console.log(`➡️ 동물 데이터(ext_id: ${animal.animal_ext_id}) 저장 완료`);
-    }
-
-    // 트랜잭션 커밋
-    await connection.commit();
-    console.log('🎉 모든 데이터 동기화 완료!');
-
-  } catch (error) {
-    // 오류 발생 시 트랜잭션 롤백
-    if (connection) {
-      await connection.rollback();
-    }
-    console.error('💥 동기화 중 오류 발생:', error);
-  } finally {
-    if (connection) {
-      await connection.end();
-      console.log('🔌 데이터베이스 연결 종료.');
-    }
-  }
-}
-
-syncAnimalData();
+-- LLM 로그 테이블
+CREATE TABLE llm_logs (
+    log_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    request_type ENUM('gpt', 'dalle') NOT NULL,
+    cost DECIMAL(10,5),
+    result_id BIGINT UNSIGNED NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    -- 필요 시 result_type 컬럼 추가 가능
+);
