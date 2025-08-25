@@ -175,30 +175,30 @@ const userController = {
     /**
      * 로그인 API
      * POST /api/users/auth/login
-     * Body: { username, password }
+     * Body: { email, password }
      */
     login: async (req, res) => {
         try {
-            const { username, password } = req.body;
+            const { email, password } = req.body;
 
             // 필수 입력값 검증
-            if (!username || !password) {
+            if (!email || !password) {
                 return res.status(400).json({
                     success: false,
-                    message: 'username과 password는 필수 입력값입니다.',
+                    message: 'email과 password는 필수 입력값입니다.',
                     errors: {
-                        username: !username ? 'username이 필요합니다.' : null,
+                        email: !email ? 'email이 필요합니다.' : null,
                         password: !password ? 'password가 필요합니다.' : null
                     }
                 });
             }
 
-            // username으로 사용자 검색
-            const user = await User.findByUsername(username);
+            // email로 사용자 검색
+            const user = await User.findByEmail(email);
             if (!user) {
                 return res.status(401).json({
                     success: false,
-                    message: '사용자명 또는 비밀번호가 올바르지 않습니다.',
+                    message: '이메일 또는 비밀번호가 올바르지 않습니다.',
                     errors: { auth: '로그인 정보를 확인해주세요.' }
                 });
             }

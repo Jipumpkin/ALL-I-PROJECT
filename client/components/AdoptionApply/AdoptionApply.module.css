@@ -108,18 +108,23 @@
 }
 
 .button-actions {
-  display: flex;
-  gap: 15px;
-  justify-content: flex-end;
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
+  display: flex !important;
+  gap: 15px !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  margin-top: 30px !important;
+  padding-top: 20px !important;
+  border-top: 1px solid #e5e7eb !important;
 }
 
-.cancel-btn , .submit-btn {
-  display: inline-block !important;
+.button-actions .cancel-btn,
+.button-actions .submit-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   flex: 1 !important;
-  padding: 12px 24px !important;
+  padding: 0 !important;
+  margin: 0 !important;
   border: none !important;
   border-radius: 6px !important;
   font-size: 16px !important;
@@ -128,13 +133,23 @@
   transition: background-color 0.2s ease !important;
   min-width: 120px !important;
   height: 48px !important;
+  line-height: 48px !important;
   box-sizing: border-box !important;
+}
+
+.cancel-btn {
+  background-color: #6b7280;
+  color: white;
 }
 
 .cancel-btn:hover {
   background-color: #4b5563;
 }
 
+.submit-btn {
+  background-color: #3b82f6;
+  color: white;
+}
 
 .submit-btn:hover {
   background-color: #2563eb;

@@ -73,27 +73,30 @@ const Maker = () => {
     // 컴포넌트 마운트 시 사용자 등록 이미지 가져오기
     fetchUserRegistrationImage();
 
-    // URL 파라미터에서 선택된 동물 ID 확인
-    const searchParams = new URLSearchParams(location.search);
-    const animalId = searchParams.get('animalId');
-    
-    if (animalId) {
-      // 특정 동물 정보 가져오기
-      const fetchSelectedAnimal = async () => {
-        try {
-          const response = await api.get(`/api/animals/${animalId}`);
-          if (response.data) {
-            setSelectedAnimal(response.data);
-            // 선택된 동물의 이미지를 사용자 이미지로도 자동 설정
-            if (response.data.image_url) {
-              setUserImageUrl(response.data.image_url);
+    // 먼저 location.state에서 전달된 동물 정보 확인
+    if (location.state && location.state.animal) {
+      setSelectedAnimal(location.state.animal);
+      // 동물 이미지는 사용자 이미지 영역에 자동으로 설정하지 않음
+    } else {
+      // URL 파라미터에서 선택된 동물 ID 확인
+      const searchParams = new URLSearchParams(location.search);
+      const animalId = searchParams.get('animalId');
+      
+      if (animalId) {
+        // 특정 동물 정보 가져오기
+        const fetchSelectedAnimal = async () => {
+          try {
+            const response = await api.get(`/api/animals/${animalId}`);
+            if (response.data) {
+              setSelectedAnimal(response.data);
+              // URL 파라미터로 온 경우에만 동물 이미지를 사용자 영역에 설정하지 않음
             }
+          } catch (error) {
+            console.error('선택된 동물 정보 가져오기 실패:', error);
           }
-        } catch (error) {
-          console.error('선택된 동물 정보 가져오기 실패:', error);
-        }
-      };
-      fetchSelectedAnimal();
+        };
+        fetchSelectedAnimal();
+      }
     }
 
     return () => {
