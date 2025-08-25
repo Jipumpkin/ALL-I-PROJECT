@@ -13,7 +13,7 @@
 .profileImage {
   width: 100%;
   max-width: 42rem;
-  height: 12rem;
+  height: 24rem;
   border-radius: 1rem;
   object-fit: cover;
   object-position: center 30%; /* 동물 얼굴 포커스 */

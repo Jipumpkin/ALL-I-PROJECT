@@ -74,21 +74,21 @@ const Maker = () => {
     // 컴포넌트 마운트 시 사용자 등록 이미지 가져오기
     fetchUserRegistrationImage();
 
-    // URL 파라미터에서 선택된 동물 ID 확인
+    // URL 파라미터에서 선택된 동물 ID 확인 또는 location.state에서 animal 정보 확인
     const searchParams = new URLSearchParams(location.search);
     const animalId = searchParams.get('animalId');
+    const animalFromState = location.state?.animal;
     
-    if (animalId) {
+    if (animalFromState) {
+      // location.state로 전달된 동물 정보 사용 (더 빠름)
+      setSelectedAnimal(animalFromState);
+    } else if (animalId) {
       // 특정 동물 정보 가져오기
       const fetchSelectedAnimal = async () => {
         try {
           const response = await api.get(`/api/animals/${animalId}`);
           if (response.data) {
             setSelectedAnimal(response.data);
-            // 선택된 동물의 이미지를 사용자 이미지로도 자동 설정
-            if (response.data.image_url) {
-              setUserImageUrl(response.data.image_url);
-            }
           }
         } catch (error) {
           console.error('선택된 동물 정보 가져오기 실패:', error);
@@ -136,13 +136,13 @@ const Maker = () => {
     let message = '';
     switch (action) {
       case 'food':
-        message = `${petName}\n밥 먹는 중\n조금만 기다려주세요!`;
+        message = `밥 먹는 중\n조금만 기다려주세요!`;
         break;
       case 'shower':
-        message = `${petName}\n목욕 하는 중\n조금만 기다려주세요!`;
+        message = `목욕 하는 중\n조금만 기다려주세요!`;
         break;
       case 'grooming':
-        message = `${petName}\n미용 하는 중\n조금만 기다려주세요!`;
+        message = `미용 하는 중\n조금만 기다려주세요!`;
         break;
       default:
         message = '처리 중입니다...';
@@ -154,11 +154,22 @@ const Maker = () => {
     // 3초 후 로딩 모달 닫고 결과 페이지로 이동
     timerRef.current = setTimeout(() => {
       setShowLoadingModal(false);
-      // URL 파라미터로 데이터 전달
+      // URL 파라미터로 데이터 전달 (selectedAnimal 정보 포함)
       const params = new URLSearchParams({
         action: action,
         petName: petName,
-        resultImage: selectedAnimal.image_url || "https://placehold.co/600x600/f97316/FFFFFF?text=Result+Image"
+        resultImage: selectedAnimal.image_url || "https://placehold.co/600x600/f97316/FFFFFF?text=Result+Image",
+        // 동물 정보 추가
+        species: selectedAnimal.species || '',
+        gender: selectedAnimal.gender || '',
+        age: selectedAnimal.age || '',
+        colorCd: selectedAnimal.colorCd || '',
+        specialMark: selectedAnimal.specialMark || '',
+        region: selectedAnimal.region || '',
+        rescued_at: selectedAnimal.rescued_at || '',
+        shelter_name: selectedAnimal.shelter_name || '',
+        shelter_address: selectedAnimal.shelter_address || '',
+        shelter_contact_number: selectedAnimal.shelter_contact_number || ''
       });
       navigate(`/maker/result?${params.toString()}`);
     }, 3000);

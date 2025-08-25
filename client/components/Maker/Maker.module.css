@@ -17,7 +17,8 @@
 }
 
 .tableTitle {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  padding: 12px 12px 0;
   font-size: 1.2em;
   color: #333;
   font-weight: 600;
@@ -25,7 +26,7 @@
 
 .infoRow {
   display: flex;
-  padding: 10px 0;
+  padding: 15px 12px;
   border-bottom: 1px solid #f0f0f0;
 }
 
@@ -44,11 +45,12 @@
 
 .infoValue {
   flex-grow: 1;
-  padding-left: 15px;
+  padding-left: 18px;
   color: #333;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  line-height: 1.5;
 }
 
 .shortcutButton {
@@ -91,8 +93,15 @@
 
 .placeholderText {
   font-size: 16px;
-  color: #888;
-  font-weight: 500;
+  color: #64748b;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  z-index: 1;
 }
 
 .body {
@@ -104,19 +113,18 @@
 .mainContainer {
   max-width: 42rem;
   margin: auto;
+  margin-bottom: 3rem;
   background-color: #ffffff;
   padding: 1.5rem;
   border-radius: 1.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 /* 이미지 영역 */
 .petImagePlaceholder,
 .userImageContainer {
   width: 100%;
-  height: 12rem;
-  background-color: #e2e8f0;
+  height: 17rem;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
   border-radius: 1rem;
   display: flex;
   align-items: center;
@@ -124,8 +132,33 @@
   text-align: center;
   color: #6b7280;
   font-weight: 700;
-  border: 2px dashed #d1d5db;
+  border: 2px solid #e5e7eb;
   margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.petImagePlaceholder::before,
+.userImageContainer::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
 }
 
 .userImageContainer {
@@ -142,6 +175,13 @@
   height: 100%;
   object-fit: cover;
   border-radius: 1rem;
+  filter: brightness(1.1) contrast(1.05) saturate(1.1);
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.userImage:hover, .petImage:hover {
+  filter: brightness(1.15) contrast(1.1) saturate(1.15);
+  transform: scale(1.01);
 }
 
 .placeholderText {

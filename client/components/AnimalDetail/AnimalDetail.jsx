@@ -30,7 +30,7 @@ const AnimalDetail = () => {
 
   const handleMakerClick = () => {
     if (auth.isAuthenticated()) {
-      navigate('/maker', { state: { animal: animal } });
+      navigate(`/maker?animalId=${animal.id}`, { state: { animal: animal } });
     } else {
       navigate('/login');
     }
