@@ -75,33 +75,31 @@ const AdoptionApply = () => {
     const buttons = input.querySelectorAll('.no-print');
     buttons.forEach(btn => btn.style.display = 'none');
 
-    setTimeout(() => {
-        html2canvas(input, { scale: 2, useCORS: true }).then((canvas) => {
-          buttons.forEach(btn => btn.style.display = 'flex');
-    
-          const imgData = canvas.toDataURL('image/png');
-          const pdf = new jsPDF('p', 'mm', 'a4');
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = pdf.internal.pageSize.getHeight();
-          const canvasWidth = canvas.width;
-          const canvasHeight = canvas.height;
-          const ratio = canvasWidth / canvasHeight;
-    
-          let newWidth = pdfWidth;
-          let newHeight = newWidth / ratio;
-    
-          if (newHeight > pdfHeight) {
-              newHeight = pdfHeight;
-              newWidth = newHeight * ratio;
-          }
-    
-          const x = (pdfWidth - newWidth) / 2;
-          const y = (pdfHeight - newHeight) / 2;
-    
-          pdf.addImage(imgData, 'PNG', x, y, newWidth, newHeight);
-          pdf.save('adoption_application.pdf');
-        });
-    }, 1000);
+    html2canvas(input, { scale: 2, useCORS: true }).then((canvas) => {
+      buttons.forEach(btn => btn.style.display = 'flex');
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      const ratio = canvasWidth / canvasHeight;
+
+      let newWidth = pdfWidth;
+      let newHeight = newWidth / ratio;
+
+      if (newHeight > pdfHeight) {
+          newHeight = pdfHeight;
+          newWidth = newHeight * ratio;
+      }
+
+      const x = (pdfWidth - newWidth) / 2;
+      const y = (pdfHeight - newHeight) / 2;
+
+      pdf.addImage(imgData, 'PNG', x, y, newWidth, newHeight);
+      pdf.save('adoption_application.pdf');
+    });
   };
 
   const genderMap = { male: '수컷', female: '암컷', unknown: '불명' };
@@ -254,11 +252,9 @@ const AdoptionApply = () => {
           <button type="submit" className={styles["submit-btn"]}>
             신청하기
           </button>
-        </div>
-        <div className={`${styles["button-actions"]} no-print`}>
-            <button type="button" onClick={handleGeneratePdf} className={styles["pdf-btn"]}>
-                pdf만들기
-            </button>
+          <button type="button" onClick={handleGeneratePdf} className={styles["pdf-btn"]}>
+            pdf만들기
+          </button>
         </div>
       </form>
     </div>
