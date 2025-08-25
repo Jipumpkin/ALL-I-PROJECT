@@ -3,10 +3,10 @@
 const https = require('https');
 const url = require('url');
 const mysql = require('mysql2/promise');
-const { getPool } = require('../config/database');
+const { pool } = require('../db/connection');
 
 // --- API 호출 및 데이터베이스 저장 함수 ---
-async function syncAnimalData() {
+async function syncAnimalData(pool) {
   console.log('🚀 최근 한 달간의 데이터 동기화를 시작합니다...');
 
   const serviceKey = process.env.PUBLICDATA_API_KEY;
@@ -68,7 +68,6 @@ async function syncAnimalData() {
     console.log(`✅ API에서 ${items.length}건의 데이터를 성공적으로 가져왔습니다.`);
 
     console.log('🔌 데이터베이스에 연결 중...');
-    const pool = await getPool();
     connection = await pool.getConnection();
     console.log('✅ 데이터베이스 연결 성공!');
 
@@ -117,8 +116,8 @@ async function syncAnimalData() {
 
     for (const animal of transformedData) {
       const [shelterResult] = await connection.execute(
-        `INSERT INTO shelters (shelter_name, address, region, contact_number, email, ext_id)
-         VALUES (?, ?, ?, ?, ?, ?)
+        `INSERT INTO shelters (shelter_name, address, region, contact_number, email, ext_id, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP())
          ON DUPLICATE KEY UPDATE
          shelter_name=VALUES(shelter_name), address=VALUES(address), region=VALUES(region), contact_number=VALUES(contact_number)`,
         [
@@ -144,8 +143,8 @@ async function syncAnimalData() {
 
       const [animalResult] = await connection.execute(
         `INSERT INTO animals (
-          species, gender, age, image_url, shelter_id, status, region, rescued_at, ext_id, colorCd, specialMark
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          species, gender, age, image_url, shelter_id, status, region, rescued_at, ext_id, colorCd, specialMark, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())
         ON DUPLICATE KEY UPDATE
           species = VALUES(species), gender = VALUES(gender), age = VALUES(age),
           image_url = CASE 
@@ -155,7 +154,7 @@ async function syncAnimalData() {
           END,
           shelter_id = VALUES(shelter_id), status = VALUES(status),
           region = VALUES(region), rescued_at = VALUES(rescued_at), colorCd = VALUES(colorCd),
-          specialMark = VALUES(specialMark)`,
+          specialMark = VALUES(specialMark), updated_at = VALUES(updated_at)`,
         [
           animal.animal_species, animal.animal_gender, animal.animal_age, animal.animal_image_url,
           shelterId, animal.animal_status, animal.animal_region, animal.animal_rescued_at,
@@ -175,7 +174,7 @@ async function syncAnimalData() {
     console.error('💥 동기화 중 오류 발생:', error);
   } finally {
     if (connection) {
-      await connection.end();
+      connection.release();
       console.log('🔌 데이터베이스 연결 종료.');
     }
   }

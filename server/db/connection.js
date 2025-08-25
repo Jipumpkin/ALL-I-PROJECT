@@ -33,4 +33,4 @@ async function testConnection() {
 }
 
 // 다른 파일에서는 이 pool 객체를 그대로 사용하면 됩니다.
-module.exports = { pool };
+module.exports = { pool, testConnection };

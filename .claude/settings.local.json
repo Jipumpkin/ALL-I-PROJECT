@@ -6,7 +6,13 @@
       "Bash(curl:*)",
       "Bash(node:*)",
       "Bash(mysql:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(taskkill:*)",
+      "Bash(npm start)",
+      "Bash(npm run lint)",
+      "Bash(npm run build:*)",
+      "Bash(npm install:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []

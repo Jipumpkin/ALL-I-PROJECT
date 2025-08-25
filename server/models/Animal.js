@@ -5,9 +5,9 @@ class Animal {
         const query = `
             SELECT animal_id, species, gender, age, image_url, region, rescued_at
             FROM animals 
-            WHERE status = 'available' -- 보호중인 동물만
-            ORDER BY rescued_at ASC -- 구조일 가장 오래된
-            LIMIT 3 -- 3마리만 조회
+            WHERE status = 'available'
+            ORDER BY rescued_at ASC
+            LIMIT 3
         `;
         const [rows] = await pool.execute(query);
         return rows;
