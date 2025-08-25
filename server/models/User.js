@@ -42,16 +42,16 @@ module.exports = (sequelize) => {
     createdAt: 'created_at',
     updatedAt: 'updated_at',
     
-    // 인덱스 설정
-    indexes: [
-      {
-        unique: true,
-        fields: ['email']
-      },
-      {
-        fields: ['username']
-      }
-    ]
+    // 인덱스 설정 (기존 DB에 인덱스가 있어 임시 주석)
+    // indexes: [
+    //   {
+    //     unique: true,
+    //     fields: ['email']
+    //   },
+    //   {
+    //     fields: ['username']
+    //   }
+    // ]
   });
 
   // 관계 설정
