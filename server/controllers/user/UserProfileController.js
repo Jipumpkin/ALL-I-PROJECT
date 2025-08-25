@@ -17,7 +17,9 @@ const UserProfileController = {
             res.json({
                 success: true,
                 message: '사용자 프로필을 성공적으로 조회했습니다.',
-                user: userProfile
+                data: {
+                    profile: userProfile
+                }
             });
 
         } catch (error) {
@@ -110,7 +112,7 @@ const UserProfileController = {
             }
 
             // 업데이트된 사용자 정보 조회
-            const updatedUser = await User.findById(userId);
+            const updatedUser = await User.findByPk(userId);
             
             const userProfile = {
                 id: updatedUser.user_id,
@@ -125,7 +127,9 @@ const UserProfileController = {
             res.json({
                 success: true,
                 message: '프로필이 성공적으로 업데이트되었습니다.',
-                user: userProfile
+                data: {
+                    profile: userProfile
+                }
             });
 
         } catch (error) {
