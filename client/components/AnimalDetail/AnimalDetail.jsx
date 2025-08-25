@@ -82,11 +82,7 @@ const AnimalDetail = () => {
   return (
     <div className={styles.container}>
       <div className={styles.profileSection}>
-<<<<<<< HEAD
         <img src={animal.image_url} alt={animal.species} className={styles.animalImage} onError={(e) => { e.target.src = '/images/unknown_animal.png'; }} />
-=======
-        <img src={animal.image_url} alt={animal.species} className={styles.animalImage} onError={(e) => { e.target.src = '/images/unknown_animal.png'; }} />
->>>>>>> d06f90bc5d948f474963a40114423fc55b0ab6e0
       </div>
 
       <div className={styles.infoWrapper}>
