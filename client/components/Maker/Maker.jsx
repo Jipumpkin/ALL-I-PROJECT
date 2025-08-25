@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../src/context/AuthContext';
 import api from '../../axios';
@@ -19,7 +19,7 @@ const Maker = () => {
   const { user } = useAuth();
 
   // 사용자 등록 이미지 가져오기
-  const fetchUserRegistrationImage = async () => {
+  const fetchUserRegistrationImage = useCallback(async () => {
     // user.id 또는 user.user_id 확인
     const userId = user?.id || user?.user_id;
     if (userId) {
@@ -36,7 +36,7 @@ const Maker = () => {
         console.error('사용자 이미지 가져오기 실패:', error);
       }
     }
-  };
+  }, [user]);
 
   // 성별 매핑 함수
   const getGenderText = (gender) => {
@@ -66,48 +66,46 @@ const Maker = () => {
       }
     });
 
-    if (imageContainerRef.current) {
-      observer.observe(imageContainerRef.current);
+    const currentImageContainer = imageContainerRef.current;
+    if (currentImageContainer) {
+      observer.observe(currentImageContainer);
     }
 
     // 컴포넌트 마운트 시 사용자 등록 이미지 가져오기
     fetchUserRegistrationImage();
 
-    // 먼저 location.state에서 전달된 동물 정보 확인
-    if (location.state && location.state.animal) {
-      setSelectedAnimal(location.state.animal);
-      // 동물 이미지는 사용자 이미지 영역에 자동으로 설정하지 않음
-    } else {
-      // URL 파라미터에서 선택된 동물 ID 확인
-      const searchParams = new URLSearchParams(location.search);
-      const animalId = searchParams.get('animalId');
-      
-      if (animalId) {
-        // 특정 동물 정보 가져오기
-        const fetchSelectedAnimal = async () => {
-          try {
-            const response = await api.get(`/api/animals/${animalId}`);
-            if (response.data) {
-              setSelectedAnimal(response.data);
-              // URL 파라미터로 온 경우에만 동물 이미지를 사용자 영역에 설정하지 않음
-            }
-          } catch (error) {
-            console.error('선택된 동물 정보 가져오기 실패:', error);
+    // URL 파라미터에서 선택된 동물 ID 확인 또는 location.state에서 animal 정보 확인
+    const searchParams = new URLSearchParams(location.search);
+    const animalId = searchParams.get('animalId');
+    const animalFromState = location.state?.animal;
+    
+    if (animalFromState) {
+      // location.state로 전달된 동물 정보 사용 (더 빠름)
+      setSelectedAnimal(animalFromState);
+    } else if (animalId) {
+      // 특정 동물 정보 가져오기
+      const fetchSelectedAnimal = async () => {
+        try {
+          const response = await api.get(`/api/animals/${animalId}`);
+          if (response.data) {
+            setSelectedAnimal(response.data);
           }
-        };
-        fetchSelectedAnimal();
-      }
+        } catch (error) {
+          console.error('선택된 동물 정보 가져오기 실패:', error);
+        }
+      };
+      fetchSelectedAnimal();
     }
 
     return () => {
-      if (imageContainerRef.current) {
-        observer.unobserve(imageContainerRef.current);
+      if (currentImageContainer) {
+        observer.unobserve(currentImageContainer);
       }
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
     };
-  }, [user, location]);
+  }, [user, location, fetchUserRegistrationImage]);
 
   // Function to handle image change
   const handleImageChange = (url) => {
@@ -138,13 +136,13 @@ const Maker = () => {
     let message = '';
     switch (action) {
       case 'food':
-        message = `${petName}\n밥 먹는 중\n조금만 기다려주세요!`;
+        message = `밥 먹는 중\n조금만 기다려주세요!`;
         break;
       case 'shower':
-        message = `${petName}\n목욕 하는 중\n조금만 기다려주세요!`;
+        message = `목욕 하는 중\n조금만 기다려주세요!`;
         break;
       case 'grooming':
-        message = `${petName}\n미용 하는 중\n조금만 기다려주세요!`;
+        message = `미용 하는 중\n조금만 기다려주세요!`;
         break;
       default:
         message = '처리 중입니다...';
@@ -156,11 +154,22 @@ const Maker = () => {
     // 3초 후 로딩 모달 닫고 결과 페이지로 이동
     timerRef.current = setTimeout(() => {
       setShowLoadingModal(false);
-      // URL 파라미터로 데이터 전달
+      // URL 파라미터로 데이터 전달 (selectedAnimal 정보 포함)
       const params = new URLSearchParams({
         action: action,
         petName: petName,
-        resultImage: selectedAnimal.image_url || "https://placehold.co/600x600/f97316/FFFFFF?text=Result+Image"
+        resultImage: selectedAnimal.image_url || "https://placehold.co/600x600/f97316/FFFFFF?text=Result+Image",
+        // 동물 정보 추가
+        species: selectedAnimal.species || '',
+        gender: selectedAnimal.gender || '',
+        age: selectedAnimal.age || '',
+        colorCd: selectedAnimal.colorCd || '',
+        specialMark: selectedAnimal.specialMark || '',
+        region: selectedAnimal.region || '',
+        rescued_at: selectedAnimal.rescued_at || '',
+        shelter_name: selectedAnimal.shelter_name || '',
+        shelter_address: selectedAnimal.shelter_address || '',
+        shelter_contact_number: selectedAnimal.shelter_contact_number || ''
       });
       navigate(`/maker/result?${params.toString()}`);
     }, 3000);
@@ -171,29 +180,6 @@ const Maker = () => {
       clearTimeout(timerRef.current);
     }
     setShowLoadingModal(false);
-  };
-
-  const genderMap = {
-    male: '수컷',
-    female: '암컷',
-    unknown: '불명'
-  };
-
-  const formatDetailedDate = (dateString) => {
-    if (!dateString) return '정보 없음';
-    try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        return dateString;
-      }
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    } catch (error) {
-      console.error("Error formatting date:", error);
-      return dateString;
-    }
   };
 
   return (
@@ -301,58 +287,76 @@ const Maker = () => {
 
       {/* 유기동물 정보 테이블 */}
       <div className={styles.infoTableContainer}>
-        <table className={styles.infoTable}>
-          <thead>
-            <tr>
-              <th className={styles.tableHeader}>목록</th>
-              <th className={styles.tableHeader}>내용</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className={styles.tableCellKey}>품종</td>
-              <td className={styles.tableCellValue}>
-                {selectedAnimal ? selectedAnimal.species : '동물을 선택해주세요'}
-              </td>
-            </tr>
-            <tr>
-              <td className={styles.tableCellKey}>성별</td>
-              <td className={styles.tableCellValue}>
-                {selectedAnimal ? getGenderText(selectedAnimal.gender) : '-'}
-              </td>
-            </tr>
-            <tr>
-              <td className={styles.tableCellKey}>나이</td>
-              <td className={styles.tableCellValue}>
-                {selectedAnimal ? selectedAnimal.age : '-'}
-              </td>
-            </tr>
-            <tr>
-              <td className={styles.tableCellKey}>색상</td>
-              <td className={styles.tableCellValue}>
-                {selectedAnimal ? (selectedAnimal.colorCd || '정보 없음') : '-'}
-              </td>
-            </tr>
-            <tr>
-              <td className={styles.tableCellKey}>특이사항</td>
-              <td className={styles.tableCellValue}>
-                {selectedAnimal ? (selectedAnimal.specialMark || '정보 없음') : '-'}
-              </td>
-            </tr>
-            <tr>
-              <td className={styles.tableCellKey}>구조 지역</td>
-              <td className={styles.tableCellValue}>
-                {selectedAnimal ? selectedAnimal.region : '-'}
-              </td>
-            </tr>
-            <tr>
-              <td className={styles.tableCellKey}>구조 일자</td>
-              <td className={styles.tableCellValue}>
-                {selectedAnimal ? formatDetailedDate(selectedAnimal.rescued_at) : '-'}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        {selectedAnimal ? (
+          <div className={styles.infoWrapper}>
+            <div className={styles.infoTable}>
+              <h3 className={styles.tableTitle}>동물 정보</h3>
+              <div className={styles.infoRow}>
+                <div className={styles.infoLabel}>품종</div>
+                <div className={styles.infoValue}>{selectedAnimal.species}</div>
+              </div>
+              <div className={styles.infoRow}>
+                <div className={styles.infoLabel}>성별</div>
+                <div className={styles.infoValue}>{getGenderText(selectedAnimal.gender)}</div>
+              </div>
+              <div className={styles.infoRow}>
+                <div className={styles.infoLabel}>출생년도</div>
+                <div className={styles.infoValue}>{selectedAnimal.age}</div>
+              </div>
+              <div className={styles.infoRow}>
+                <div className={styles.infoLabel}>색상</div>
+                <div className={styles.infoValue}>{selectedAnimal.colorCd || '정보 없음'}</div>
+              </div>
+              <div className={styles.infoRow}>
+                <div className={styles.infoLabel}>특이사항</div>
+                <div className={styles.infoValue}>{selectedAnimal.specialMark || '없음'}</div>
+              </div>
+              <div className={styles.infoRow}>
+                <div className={styles.infoLabel}>구조 지역</div>
+                <div className={styles.infoValue}>{selectedAnimal.region}</div>
+              </div>
+              <div className={styles.infoRow}>
+                <div className={styles.infoLabel}>구조 일자</div>
+                <div className={styles.infoValue}>{formatDate(selectedAnimal.rescued_at)}</div>
+              </div>
+            </div>
+
+            <hr className={styles.divider} />
+
+            <div className={styles.infoTable}>
+              <h3 className={styles.tableTitle}>보호소 정보</h3>
+              <div className={styles.infoRow}>
+                <div className={styles.infoLabel}>보호소 이름</div>
+                <div className={styles.infoValue}>
+                  {selectedAnimal.shelter_name || '정보 없음'}
+                  {selectedAnimal.shelter_name && (
+                    <a 
+                      href={`https://www.google.com/search?q=${encodeURIComponent(selectedAnimal.shelter_name)}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className={styles.shortcutButton}
+                    >
+                      &#x2197;
+                    </a>
+                  )}
+                </div>
+              </div>
+              <div className={styles.infoRow}>
+                <div className={styles.infoLabel}>주소</div>
+                <div className={styles.infoValue}>{selectedAnimal.shelter_address || '정보 없음'}</div>
+              </div>
+              <div className={styles.infoRow}>
+                <div className={styles.infoLabel}>연락처</div>
+                <div className={styles.infoValue}>{selectedAnimal.shelter_contact_number || '정보 없음'}</div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className={styles.noAnimalSelected}>
+            <p>유기동물을 선택하면 상세 정보가 여기에 표시됩니다.</p>
+            <p>동물 목록에서 원하는 동물을 선택해주세요.</p>
+          </div>
+        )}
       </div>
     </div>
   );

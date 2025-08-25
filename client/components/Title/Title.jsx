@@ -23,10 +23,10 @@ const Title = () => {
         }, 3000); // Change image every 3 seconds
     
         return () => clearInterval(interval);
-      }, [isPaused]);
-    const nextImage = () => {
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-     };
+      }, [isPaused, images.length]);
+    // const nextImage = () => {
+    //     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    //  };
 
   const goToImage = (index) => {
         setCurrentImageIndex(index);

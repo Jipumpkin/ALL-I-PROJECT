@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../src/context/AuthContext';
 import axios from "../../axios";
@@ -30,10 +30,10 @@ const MyAccount = () => {
       });
       fetchUserImages();
     }
-  }, [user]);
+  }, [user, fetchUserImages]);
 
   // 사용자 이미지 불러오기
-  const fetchUserImages = async () => {
+  const fetchUserImages = useCallback(async () => {
     const userId = user?.id || user?.user_id;
     if (userId) {
       try {
@@ -41,11 +41,11 @@ const MyAccount = () => {
         if (response.data.success) {
           setUserImages(response.data.data);
         }
-      } catch (error) {
-        console.error('사용자 이미지 조회 실패:', error);
+      } catch (err) {
+        console.error('사용자 이미지 조회 실패:', err);
       }
     }
-  };
+  }, [user]);
 
   // 이미지 업데이트
   const handleImageUpdate = async (imageUrl) => {
@@ -59,7 +59,7 @@ const MyAccount = () => {
         setShowImageModal(false);
         setSuccess('이미지가 성공적으로 업데이트되었습니다.');
         setTimeout(() => setSuccess(''), 3000);
-      } catch (error) {
+      } catch (err) {
         setError('이미지 업데이트 중 오류가 발생했습니다.');
         setTimeout(() => setError(''), 5000);
       }
