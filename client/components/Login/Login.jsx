@@ -99,6 +99,7 @@ const Login = () => {
                     name="password" 
                     value={formData.password}
                     onChange={handleChange}
+                    placeholder="비밀번호를 입력하세요"
                     required
                   />
                 </div>
