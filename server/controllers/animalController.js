@@ -1,7 +1,5 @@
-const Animal = require('../models/Animal');
-const Shelter = require('../models/Shelter');
+const { Animal, Shelter } = require('../models');
 const axios = require('axios');
-const db = require('../config/database');
 
 // 유기동물 목록 조회 (필터링 및 페이지네이션)
 exports.getAnimals = async (req, res) => {
@@ -10,40 +8,44 @@ exports.getAnimals = async (req, res) => {
     const offset = (page - 1) * limit;
 
     try {
-        const pool = await db.getPool();
-        let whereClauses = [];
-        let params = [];
+        const { Op } = require('sequelize');
+        let whereClause = {};
 
         if (filter && filter !== 'all') {
             if (filter === 'dog') {
-                whereClauses.push("species LIKE ?");
-                params.push('%개%');
+                whereClause.species = { [Op.like]: '%개%' };
             } else if (filter === 'cat') {
-                whereClauses.push("species LIKE ?");
-                params.push('%고양이%');
+                whereClause.species = { [Op.like]: '%고양이%' };
             } else if (filter === 'other') {
-                whereClauses.push("species NOT LIKE ? AND species NOT LIKE ?");
-                params.push('%개%');
-                params.push('%고양이%');
+                whereClause.species = {
+                    [Op.and]: [
+                        { [Op.notLike]: '%개%' },
+                        { [Op.notLike]: '%고양이%' }
+                    ]
+                };
             }
         }
 
         if (shelter_id && shelter_id !== 'all') {
-            whereClauses.push("shelter_id = ?");
-            params.push(shelter_id);
+            whereClause.shelter_id = shelter_id;
         }
 
-        const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
-
         // Count total records
-        const countQuery = `SELECT COUNT(*) as count FROM animals ${whereSql}`;
-        const [countRows] = await pool.execute(countQuery, params);
-        const totalAnimals = countRows[0].count;
+        const totalAnimals = await Animal.count({ where: whereClause });
         const totalPages = Math.ceil(totalAnimals / limit);
 
         // Fetch paginated records
-        const query = `SELECT * FROM animals ${whereSql} ORDER BY animal_id DESC LIMIT ${limit} OFFSET ${offset}`;
-        const [animals] = await pool.execute(query, params);
+        const animals = await Animal.findAll({
+            where: whereClause,
+            order: [['animal_id', 'DESC']],
+            limit: limit,
+            offset: offset,
+            include: [{
+                model: Shelter,
+                as: 'shelter',
+                attributes: ['shelter_name', 'region']
+            }]
+        });
 
         res.json({ animals, totalPages });
 
@@ -56,7 +58,7 @@ exports.getAnimals = async (req, res) => {
 // 특정 유기동물 상세 정보 조회
 exports.getAnimalById = async (req, res) => {
     try {
-        const animal = await Animal.findById(req.params.id);
+        const animal = await Animal.findByIdWithDetails(req.params.id);
         if (animal) {
             res.json(animal);
         } else {
@@ -71,7 +73,7 @@ exports.getAnimalById = async (req, res) => {
 // 보호소 목록 조회
 exports.getShelters = async (req, res) => {
     try {
-        const shelters = await Shelter.findAll();
+        const shelters = await Shelter.findAllShelters();
         res.json(shelters);
     } catch (error) {
         console.error(error);
@@ -105,14 +107,7 @@ exports.imageProxy = async (req, res) => {
 exports.getOldestAnimals = async (req, res) => {
     const limit = parseInt(req.query.limit, 10) || 6;
     try {
-        const pool = await db.getPool();
-        const query = `
-            SELECT *
-            FROM animals
-            ORDER BY rescued_at ASC
-            LIMIT ${limit}
-        `;
-        const [animals] = await pool.execute(query);
+        const animals = await Animal.findOldest(limit);
         res.json({ animals: animals });
     } catch (error) {
         console.error('Error fetching oldest animals:', error);

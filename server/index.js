@@ -46,28 +46,36 @@ app.listen(PORT, async () => {
         process.exit(1);
     }
 
-    // 데이터 동기화 (Sequelize 초기화 후에 실행)
-    try {
-        console.log('🚀 서버 시작과 함께 데이터 동기화를 시작합니다...');
-        await syncAnimalData();
-    } catch (err) {
-        console.error('💥 동기화 중 오류 발생:', err.message);
-        console.log('⚠️ 데이터베이스 연결 없이 서버 계속 실행');
+    // 데이터 동기화 (환경변수로 제어)
+    if (process.env.SYNC_ON_STARTUP === 'true') {
+        try {
+            console.log('🚀 서버 시작과 함께 데이터 동기화를 시작합니다...');
+            await syncAnimalData();
+        } catch (err) {
+            console.error('💥 동기화 중 오류 발생:', err.message);
+            console.log('⚠️ 데이터베이스 연결 없이 서버 계속 실행');
+        }
+    } else {
+        console.log('ℹ️ 시작시 데이터 동기화 비활성화됨 (SYNC_ON_STARTUP=false)');
     }
 
-    // 정기 동기화 스케줄러
-    cron.schedule('0 0 * * *', async () => {
-        console.log('🔄 정기 데이터 동기화 시작...');
-        try {
-            await syncAnimalData();
-            console.log('✅ 정기 데이터 동기화 완료');
-        } catch (error) {
-            console.error('❌ 정기 데이터 동기화 실패:', error);
-        }
-    }, {
-        timezone: 'Asia/Seoul'
-    });
-    console.log('⏰ 정기 데이터 동기화 스케줄러가 활성화되었습니다 (매일 자정).');
+    // 정기 동기화 스케줄러 (환경변수로 제어)
+    if (process.env.SYNC_SCHEDULE_ENABLED === 'true') {
+        cron.schedule('0 0 * * *', async () => {
+            console.log('🔄 정기 데이터 동기화 시작...');
+            try {
+                await syncAnimalData();
+                console.log('✅ 정기 데이터 동기화 완료');
+            } catch (error) {
+                console.error('❌ 정기 데이터 동기화 실패:', error);
+            }
+        }, {
+            timezone: 'Asia/Seoul'
+        });
+        console.log('⏰ 정기 데이터 동기화 스케줄러가 활성화되었습니다 (매일 자정).');
+    } else {
+        console.log('ℹ️ 정기 데이터 동기화 스케줄러가 비활성화됨 (SYNC_SCHEDULE_ENABLED=false)');
+    }
 });
 
 // 전역 에러 핸들러

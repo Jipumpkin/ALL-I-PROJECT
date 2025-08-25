@@ -9,16 +9,16 @@ module.exports = (sequelize) => {
     },
     username: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: true  // 기존 데이터 호환성을 위해 true로 변경
     },
     email: {
       type: DataTypes.STRING(100),
-      allowNull: false,
+      allowNull: true,  // 기존 데이터 호환성을 위해 true로 변경
       unique: true
     },
     password_hash: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: true  // 기존 데이터 호환성을 위해 true로 변경
     },
     nickname: {
       type: DataTypes.STRING(50),
