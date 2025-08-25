@@ -246,13 +246,27 @@ const AdoptionApply = () => {
         </div>
 
         <div className={`${styles["button-actions"]} no-print`}>
-          <button type="button" onClick={() => navigate('/')} className={styles["cancel-btn"]}>
+          <button 
+            type="button" 
+            onClick={() => navigate('/')} 
+            className={styles["cancel-btn"]}
+            style={{ height: '48px', minHeight: '48px', maxHeight: '48px' }}
+          >
             취소
           </button>
-          <button type="submit" className={styles["submit-btn"]}>
+          <button 
+            type="submit" 
+            className={styles["submit-btn"]}
+            style={{ height: '48px', minHeight: '48px', maxHeight: '48px' }}
+          >
             신청하기
           </button>
-          <button type="button" onClick={handleGeneratePdf} className={styles["pdf-btn"]}>
+          <button 
+            type="button" 
+            onClick={handleGeneratePdf} 
+            className={styles["pdf-btn"]}
+            style={{ height: '48px', minHeight: '48px', maxHeight: '48px' }}
+          >
             pdf만들기
           </button>
         </div>
