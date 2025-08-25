@@ -41,12 +41,18 @@
 }
 
 /* --- 보호소 필터 드롭다운 스타일 (새로 추가) --- */
+.shelterFilter {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .shelterFilter select {
   padding: 10px 15px;
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 14px;
-  min-width: 200px; /* 드롭다운의 최소 너비 */
+  flex: 1;
 }
 
 /* -------------------------------------- */
