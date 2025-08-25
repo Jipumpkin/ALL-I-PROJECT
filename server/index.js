@@ -51,10 +51,9 @@ app.use((req, res, next) => {
 
 // 미들웨어 적용
 const { apiLogger, errorHandler, notFoundHandler } = require('./middleware');
-const { apiLimiter, authLimiter } = require('./middleware/rateLimiter');
+// const { apiLimiter, authLimiter } = require('./middleware/rateLimiter'); // 일시적으로 비활성화
 
-// Rate limiting 적용 (모든 API 요청)
-app.use('/api/', apiLimiter);
+// Rate limiting 일시적으로 비활성화
 app.use(apiLogger);
 
 // 테스트 라우트
@@ -63,16 +62,23 @@ app.get('/api/test', (req, res) => {
     res.json({ message: 'Mock API 테스트 성공!' });
 });
 
+// 직접 Animals API 테스트
+const animalController = require('./controllers/animalController');
+app.get('/api/animals-direct', (req, res) => {
+    console.log('🔍 /api/animals-direct 요청 받음:', req.query);
+    animalController.getAnimals(req, res);
+});
+
 // Mock API 라우트 (프론트엔드 호환용) - 새로운 컨트롤러 사용  
 const AuthController = require('./controllers/auth/AuthController');
 
 // 인증 관련 엔드포인트에 엄격한 Rate Limiting 적용
-app.post('/api/login', authLimiter, (req, res) => {
+app.post('/api/login', (req, res) => {
     console.log('🔍 /api/login 요청 받음 (실제 DB):', req.body);
     AuthController.login(req, res);
 });
 
-app.post('/api/register', authLimiter, (req, res) => {
+app.post('/api/register', (req, res) => {
     console.log('🔍 /api/register 요청 받음 (실제 DB):', req.body);
     AuthController.register(req, res);
 });

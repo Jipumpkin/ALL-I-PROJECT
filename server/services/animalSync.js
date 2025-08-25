@@ -6,7 +6,7 @@ const mysql = require('mysql2/promise');
 const { pool } = require('../db/connection');
 
 // --- API 호출 및 데이터베이스 저장 함수 ---
-async function syncAnimalData(pool) {
+async function syncAnimalData() {
   console.log('🚀 최근 한 달간의 데이터 동기화를 시작합니다...');
 
   const serviceKey = process.env.PUBLICDATA_API_KEY;

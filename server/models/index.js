@@ -31,9 +31,9 @@ Object.keys(models).forEach(modelName => {
 async function initializeDatabase() {
   const sequelizeInstance = await initializeSequelize();
   
-  // 모델 동기화 (개발 환경에서만)
+  // 모델 동기화 (개발 환경에서만) - force: false로 기존 테이블 유지
   if (process.env.NODE_ENV !== 'production') {
-    await sequelizeInstance.sync({ alter: true });
+    await sequelizeInstance.sync({ force: false });
     console.log('✅ 모든 모델이 데이터베이스와 동기화되었습니다.');
   }
   

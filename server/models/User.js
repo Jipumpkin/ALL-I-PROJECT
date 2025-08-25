@@ -13,8 +13,7 @@ module.exports = (sequelize) => {
     },
     email: {
       type: DataTypes.STRING(100),
-      allowNull: false,
-      unique: true
+      allowNull: false
     },
     password_hash: {
       type: DataTypes.STRING(255),
@@ -43,15 +42,6 @@ module.exports = (sequelize) => {
     updatedAt: 'updated_at',
     
     // 인덱스 설정
-    indexes: [
-      {
-        unique: true,
-        fields: ['email']
-      },
-      {
-        fields: ['username']
-      }
-    ]
   });
 
   // 관계 설정
