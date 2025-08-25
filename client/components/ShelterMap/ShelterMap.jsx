@@ -9,6 +9,7 @@ const ShelterMap = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [shelters, setShelters] = useState([]);
+  const [map, setMap] = useState(null);
 
   useEffect(() => {
     const loadKakaoScript = () => {
