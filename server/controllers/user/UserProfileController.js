@@ -52,7 +52,7 @@ const UserProfileController = {
             console.log('🔍 updateUserProfile - body:', { nickname, gender, phone_number, current_password: current_password ? '***' : undefined, new_password: new_password ? '***' : undefined });
 
             // 현재 사용자 정보 조회
-            const user = await User.findById(userId);
+            const user = await User.findByPk(userId);
             if (!user) {
                 return res.status(404).json({
                     success: false,
@@ -159,7 +159,7 @@ const UserProfileController = {
             }
 
             // 현재 사용자 정보 조회
-            const user = await User.findById(userId);
+            const user = await User.findByPk(userId);
             if (!user) {
                 return res.status(404).json({
                     success: false,
