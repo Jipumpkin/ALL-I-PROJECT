@@ -42,7 +42,6 @@ const Main = () => {
             <>
               <TopSix />
               <div className={styles['animal-grid']}>
-<<<<<<< HEAD
                 {animals.map((animal) => (
                   <div key={animal.animal_id} className={styles['animal-card']}>
                     <Link to={`/animal/${animal.animal_id}`} className={styles['animal-card-link']}>
@@ -55,21 +54,6 @@ const Main = () => {
                       </div>
                     </Link>
                   </div>
-                ))}
-=======
-                {animals.map((animal) => (
-                  <div key={animal.animal_id} className={styles['animal-card']}>
-                    <Link to={`/animal/${animal.animal_id}`} className={styles['animal-card-link']}>
-                      <img src={animal.image_url} alt={animal.species} className={styles['animal-image']} onError={(e) => { e.target.src = '/images/unknown_animal.png'; }} />
-                      <div className={styles['animal-info']}>
-                        <p><strong>품종:</strong> {animal.species}</p>
-                        <p><strong>출생년도:</strong> {animal.age}</p>
-                        <p><strong>성별:</strong> {genderMap[animal.gender] || '정보 없음'}</p>
-                        <p><strong>구조지역:</strong> {animal.region}</p>
-                      </div>
-                    </Link>
-                  </div>
->>>>>>> d06f90bc5d948f474963a40114423fc55b0ab6e0
                 ))}
               </div>
             </>

@@ -1,4 +1,4 @@
-// server/index.js (최종 수정본)
+// server/index.js (Sequelize 버전)
 
 // ✅ 다른 어떤 코드보다도 이 라인이 가장 위에 있어야 합니다.
 require('dotenv').config();
@@ -6,10 +6,11 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const cron = require('node-cron');
-const path = require('path');
 
-// dotenv가 실행된 후에 db connection을 가져옵니다.
-const { pool, testConnection } = require('./db/connection'); 
+// Sequelize 초기화
+const { initializeDatabase } = require('./models');
+
+// services 파일의 함수를 불러옵니다.
 const { syncAnimalData } = require('./services/animalSync');
 
 const app = express();
@@ -21,11 +22,10 @@ app.use(express.json());
 // --- 라우트 설정 ---
 app.get('/health', (_, res) => res.json({ ok: true }));
 app.get('/api/test', (req, res) => res.json({ message: 'API 테스트 성공!' }));
-app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/animals', require('./routes/animalRoutes'));
-app.use('/api/ai', require('./routes/aiRoutes'));
+// app.use('/api/ai', require('./routes/aiRoutes'));
 // app.use('/api/shelters', require('./routes/shelterRoutes')); // TODO: 구현 예정
-app.use('/api/auth', require('./routes/authRoutes'));
+// app.use('/api/auth', require('./routes/authRoutes'));
 
 app.get('/', (req, res) => {
     res.json({ message: 'ALL-I-PROJECT Backend Server Running' });
@@ -36,25 +36,30 @@ app.listen(PORT, async () => {
     console.log(`✅ 서버가 ${PORT}번 포트에서 정상적으로 시작되었습니다!`);
     console.log(`🌐 서버 주소: http://localhost:${PORT}`);
 
-    // Test database connection
-    const isConnected = await testConnection();
-    if (!isConnected) {
-        console.error('❌ 데이터베이스 연결에 실패했습니다. 서버를 종료합니다.');
+    // Sequelize 데이터베이스 초기화
+    try {
+        await initializeDatabase();
+        console.log('🎉 Sequelize 데이터베이스 초기화 완료');
+    } catch (error) {
+        console.error('💥 Sequelize 데이터베이스 초기화 실패:', error.message);
+        // 데이터베이스 초기화 실패는 치명적이므로 서버 종료
         process.exit(1);
     }
 
+    // 데이터 동기화 (Sequelize 초기화 후에 실행)
     try {
         console.log('🚀 서버 시작과 함께 데이터 동기화를 시작합니다...');
-        await syncAnimalData(pool); 
+        await syncAnimalData();
     } catch (err) {
         console.error('💥 동기화 중 오류 발생:', err.message);
         console.log('⚠️ 데이터베이스 연결 없이 서버 계속 실행');
     }
 
+    // 정기 동기화 스케줄러
     cron.schedule('0 0 * * *', async () => {
         console.log('🔄 정기 데이터 동기화 시작...');
         try {
-            await syncAnimalData(pool);
+            await syncAnimalData();
             console.log('✅ 정기 데이터 동기화 완료');
         } catch (error) {
             console.error('❌ 정기 데이터 동기화 실패:', error);
@@ -63,4 +68,13 @@ app.listen(PORT, async () => {
         timezone: 'Asia/Seoul'
     });
     console.log('⏰ 정기 데이터 동기화 스케줄러가 활성화되었습니다 (매일 자정).');
+});
+
+// 전역 에러 핸들러
+process.on('uncaughtException', (error) => {
+    console.error('❌ Uncaught Exception:', error);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
 });
