@@ -45,7 +45,7 @@ const Register = () => {
     
     // 연락처 필드 처리
     if (name === 'phone') {
-      processedValue = value.replace(/[^0-9-]/g, '');
+      processedValue = value.replace(new RegExp('[^0-9-]', 'g'), '');
     }
     
     setFormData({
@@ -77,10 +77,10 @@ const Register = () => {
     if (!phone) return false;
     
     // 한국 휴대폰 번호 패턴 (010, 011, 016, 017, 018, 019)
-    const phoneRegex = /^01[0-9]-?\d{3,4}-?\d{4}$/;
+    const phoneRegex = new RegExp('^01[0-9]-?\\d{3,4}-?\\d{4}$');
     
     // 숫자만 추출하여 길이 검사
-    const digitsOnly = phone.replace(/[^0-9]/g, '');
+    const digitsOnly = phone.replace(new RegExp('[^0-9]', 'g'), '');
     
     // 11자리 숫자여야 함
     if (digitsOnly.length !== 11) {
@@ -371,19 +371,22 @@ const Register = () => {
                 {emailDomains.map((domain, index) => {
                   const atIndex = formData.email.indexOf('@');
                   const localPart = atIndex !== -1 ? formData.email.substring(0, atIndex + 1) : formData.email + '@';
+                  const isSelected = index === selectedSuggestionIndex;
+                  const suggestionClass = isSelected ? 
+                    styles["suggestion-item"] + ' ' + styles["selected"] : 
+                    styles["suggestion-item"];
+                  
                   return (
                     <div 
                       key={domain}
-                      className={`${styles["suggestion-item"]} ${
-                        index === selectedSuggestionIndex ? styles["selected"] : ''
-                      }`}
+                      className={suggestionClass}
                       onClick={() => handleEmailDomainSelect(domain)}
                       onMouseEnter={() => setSelectedSuggestionIndex(index)}
                     >
                       {localPart}{domain}
                     </div>
                   );
-                })
+                })}
               </div>
             )}
           </div>
