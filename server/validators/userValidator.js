@@ -1,4 +1,6 @@
 const { body, param, validationResult } = require('express-validator');
+const { VALIDATION, HTTP_STATUS } = require('../config/constants');
+const ResponseFormatter = require('../utils/responseFormatter');
 
 // 공통 검증 결과 처리 미들웨어
 const handleValidationErrors = (req, res, next) => {
@@ -9,11 +11,7 @@ const handleValidationErrors = (req, res, next) => {
       formattedErrors[error.path] = error.msg;
     });
 
-    return res.status(400).json({
-      success: false,
-      message: '입력값이 올바르지 않습니다.',
-      errors: formattedErrors
-    });
+    return ResponseFormatter.validationError(res, formattedErrors, '입력값 검증에 실패했습니다.');
   }
   next();
 };
@@ -22,22 +20,22 @@ const handleValidationErrors = (req, res, next) => {
 const validateRegister = [
   body('username')
     .trim()
-    .isLength({ min: 3, max: 50 })
-    .withMessage('사용자명은 3자 이상 50자 이하여야 합니다.')
+    .isLength({ min: VALIDATION.USERNAME_MIN_LENGTH, max: VALIDATION.USERNAME_MAX_LENGTH })
+    .withMessage(`사용자명은 ${VALIDATION.USERNAME_MIN_LENGTH}자 이상 ${VALIDATION.USERNAME_MAX_LENGTH}자 이하여야 합니다.`)
     .matches(/^[a-zA-Z0-9가-힣_]+$/)
     .withMessage('사용자명은 영문, 한글, 숫자, 언더스코어만 사용할 수 있습니다.'),
 
   body('email')
     .trim()
-    .isEmail()
+    .matches(VALIDATION.EMAIL_REGEX)
     .withMessage('올바른 이메일 형식이 아닙니다.')
     .isLength({ max: 100 })
     .withMessage('이메일은 100자 이하여야 합니다.'),
 
   body('password')
-    .isLength({ min: 8 })
-    .withMessage('비밀번호는 8자 이상이어야 합니다.')
-    .matches(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
+    .isLength({ min: VALIDATION.PASSWORD_MIN_LENGTH })
+    .withMessage(`비밀번호는 ${VALIDATION.PASSWORD_MIN_LENGTH}자 이상이어야 합니다.`)
+    .matches(VALIDATION.PASSWORD_REGEX)
     .withMessage('비밀번호는 영문자, 숫자, 특수문자를 포함해야 합니다.'),
 
   body('nickname')

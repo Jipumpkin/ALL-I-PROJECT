@@ -14,12 +14,44 @@ const { syncAnimalData } = require('./services/animalSync'); // services 파일�
 const app = express();
 const PORT = process.env.PORT || 3005;
 
-app.use(cors());
-app.use(bodyParser.json({ charset: 'utf-8' }));
-app.use(bodyParser.urlencoded({ extended: true, charset: 'utf-8' }));
+// CORS 보안 설정 - 개발환경과 프로덕션 분리
+const corsOptions = {
+    origin: process.env.NODE_ENV === 'production' 
+        ? process.env.FRONTEND_URL || 'https://your-domain.com'
+        : ['http://localhost:3000', 'http://localhost:5173'], // React, Vite 개발서버
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+
+// Request 크기 제한 및 보안 설정
+app.use(bodyParser.json({ 
+    charset: 'utf-8', 
+    limit: '10mb' // API 요청 크기 제한
+}));
+app.use(bodyParser.urlencoded({ 
+    extended: true, 
+    charset: 'utf-8',
+    limit: '10mb'
+}));
+
+// 기본 보안 헤더 추가
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    next();
+});
 
 // 미들웨어 적용
 const { apiLogger, errorHandler, notFoundHandler } = require('./middleware');
+const { apiLimiter, authLimiter } = require('./middleware/rateLimiter');
+
+// Rate limiting 적용 (모든 API 요청)
+app.use('/api/', apiLimiter);
 app.use(apiLogger);
 
 // 테스트 라우트
@@ -31,12 +63,13 @@ app.get('/api/test', (req, res) => {
 // Mock API 라우트 (프론트엔드 호환용) - 새로운 컨트롤러 사용  
 const AuthController = require('./controllers/auth/AuthController');
 
-app.post('/api/login', (req, res) => {
+// 인증 관련 엔드포인트에 엄격한 Rate Limiting 적용
+app.post('/api/login', authLimiter, (req, res) => {
     console.log('🔍 /api/login 요청 받음 (실제 DB):', req.body);
     AuthController.login(req, res);
 });
 
-app.post('/api/register', (req, res) => {
+app.post('/api/register', authLimiter, (req, res) => {
     console.log('🔍 /api/register 요청 받음 (실제 DB):', req.body);
     AuthController.register(req, res);
 });

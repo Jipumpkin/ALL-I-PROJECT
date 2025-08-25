@@ -1,4 +1,5 @@
 const UserService = require('../../services/userService');
+const ResponseFormatter = require('../../utils/responseFormatter');
 
 const AuthController = {
     /**

@@ -1,4 +1,5 @@
 const UserService = require('../../services/userService');
+const { User } = require('../../models');
 
 const UserCrudController = {
     /**
