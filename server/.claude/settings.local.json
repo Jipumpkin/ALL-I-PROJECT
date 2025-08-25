@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx nodemon:*)",
+      "Read(/C:\\Users\\SAMSUNG\\Desktop\\newProject\\ALL-I-PROJECT/**)",
+      "Read(/C:\\Users\\SAMSUNG\\Desktop\\newProject\\ALL-I-PROJECT\\client/**)",
+      "Read(/C:\\Users\\SAMSUNG\\Desktop\\newProject\\ALL-I-PROJECT\\client\\components\\MyAccount/**)",
+      "Read(/C:\\Users\\SAMSUNG\\Desktop\\newProject\\ALL-I-PROJECT\\client/**)",
+      "Bash(git fetch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git stash:*)",
+      "Bash(git pull:*)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(npm run dev:*)",
+      "Bash(git commit:*)",
+      "Bash(npm install)",
+      "Bash(git merge:*)",
+      "Bash(git rm:*)",
+      "Read(/C:\\Users\\SAMSUNG\\Desktop\\newProject\\ALL-I-PROJECT\\.claude/**)",
+      "Read(/C:\\Users\\SAMSUNG\\Desktop\\newProject\\ALL-I-PROJECT\\.claude/**)",
+      "Bash(npm install:*)",
+      "Bash(taskkill:*)",
+      "Bash(powershell:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

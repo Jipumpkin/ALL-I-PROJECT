@@ -6,9 +6,7 @@
 module.exports = {
     // 암호화 관련
     SECURITY: {
-        SALT_ROUNDS: parseInt(process.env.SALT_ROUNDS) || 12,
-        PASSWORD_MIN_LENGTH: 8,
-        PASSWORD_REGEX: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/
+        SALT_ROUNDS: parseInt(process.env.SALT_ROUNDS) || 12
     },
 
     // JWT 관련
@@ -75,8 +73,10 @@ module.exports = {
         USERNAME_MAX_LENGTH: 20,
         NICKNAME_MIN_LENGTH: 2,
         NICKNAME_MAX_LENGTH: 20,
+        PASSWORD_MIN_LENGTH: 8,
         PHONE_REGEX: /^010-\d{4}-\d{4}$/,
-        EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        PASSWORD_REGEX: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/
     },
 
     // HTTP 상태 코드
