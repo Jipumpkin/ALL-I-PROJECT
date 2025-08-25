@@ -30,7 +30,7 @@ const MyAccount = () => {
       });
       fetchUserImages();
     }
-  }, [user, fetchUserImages]);
+  }, [user]);
 
   // 사용자 이미지 불러오기
   const fetchUserImages = useCallback(async () => {
@@ -45,7 +45,7 @@ const MyAccount = () => {
         console.error('사용자 이미지 조회 실패:', err);
       }
     }
-  }, [user]);
+  }, [user?.id, user?.user_id]);
 
   // 이미지 업데이트
   const handleImageUpdate = async (imageUrl) => {
@@ -327,7 +327,6 @@ const MyAccount = () => {
         </div>
 
         <div className={styles.menuSection}>
-          <h3>메뉴</h3>
           <div className={styles.menuButtons}>
             <button className={styles.menuButton} onClick={handleEditClick}>
               내 정보 수정
