@@ -1,0 +1,59 @@
+.scrollAnimation {
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Fade In Up Animation */
+.fadeInUp {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.fadeInUp.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Fade In Left Animation */
+.fadeInLeft {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.fadeInLeft.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Fade In Right Animation */
+.fadeInRight {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.fadeInRight.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Scale In Animation */
+.scaleIn {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.scaleIn.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Bounce In Animation */
+.bounceIn {
+  opacity: 0;
+  transform: scale(0.3);
+  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.bounceIn.visible {
+  opacity: 1;
+  transform: scale(1);
+}

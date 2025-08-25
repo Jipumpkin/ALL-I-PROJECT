@@ -4,7 +4,7 @@ import { useAuth } from '../../src/context/AuthContext';
 import styles from './AdoptionHistory.module.css';
 
 const AdoptionHistory = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [adoptionList, setAdoptionList] = useState([]);
   const [loading, setLoading] = useState(true);

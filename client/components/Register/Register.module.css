@@ -49,20 +49,32 @@ label {
 }
 
 input[type="text"],
+input[type="email"],
 input[type="password"] {
     width: 100%;
     padding: 12px;
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-md);
     box-sizing: border-box;
-    transition: var(--transition-fast);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 16px;
+    transform: translateY(0);
 }
 
 input[type="text"]:focus,
+input[type="email"]:focus,
 input[type="password"]:focus {
-    border-color: var(--color-primary);
+    border-color: #ff7849;
     outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 120, 73, 0.1);
+    transform: translateY(-1px);
+}
+
+input[type="text"]:hover:not(:focus),
+input[type="email"]:hover:not(:focus),
+input[type="password"]:hover:not(:focus) {
+    border-color: #cbd5e0;
+    transform: translateY(-1px);
 }
 
 /* Button styles */
@@ -84,8 +96,87 @@ button[type="submit"]:hover:not(:disabled) {
     background-color: var(--color-primary-hover);
 }
 
+/* Error message styles */
+.error-message {
+    background-color: #fee;
+    color: #c33;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    border: 1px solid #fcc;
+}
+
+/* Button disabled state */
+button[type="submit"]:disabled {
+    background-color: var(--color-secondary-light);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Password confirmation validation styles */
+.input-error {
+    border-color: #e74c3c !important;
+    box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+}
+
+.input-success {
+    border-color: #27ae60 !important;
+    box-shadow: 0 0 0 2px rgba(39, 174, 96, 0.2);
+}
+
+.password-mismatch {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.password-mismatch::before {
+    content: "✗";
+    font-weight: bold;
+}
+
+.password-match {
+    color: #27ae60;
+    font-size: 12px;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.password-match::before {
+    content: "✓";
+    font-weight: bold;
+}
+
+/* Birthdate select styling */
+.birthdate-select {
+    display: flex;
+    gap: 8px;
+}
+
 .birthdate-select select {
-    margin-right: 10px;
+    flex: 1;
+    padding: 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    font-size: 16px;
+    background-color: white;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.birthdate-select select:focus {
+    border-color: var(--color-primary);
+    outline: none;
+}
+
+.birthdate-select select:hover {
+    border-color: var(--color-primary-light);
 }
 
 /* 아이디 중복체크 스타일 */
