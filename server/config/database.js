@@ -14,7 +14,8 @@ const remoteConfig = {
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  connectTimeout: 5000 // 5초 타임아웃
+  connectTimeout: 5000, // 5초 타임아웃
+  charset: 'utf8mb4'
 };
 
 // 로컬 데이터베이스 설정 (백업)
@@ -26,7 +27,8 @@ const localConfig = {
   database: process.env.LOCAL_DB_NAME || 'alli_core_local',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  charset: 'utf8mb4'
 };
 
 let pool = null;

@@ -8,7 +8,7 @@ const cors = require('cors');
 const cron = require('node-cron');
 
 // dotenv가 실행된 후에 db connection을 가져옵니다.
-const { pool } = require('./db/connection'); 
+const { pool, testConnection } = require('./db/connection'); 
 const { syncAnimalData } = require('./services/animalSync');
 
 const app = express();
@@ -32,6 +32,13 @@ app.get('/', (req, res) => {
 app.listen(PORT, async () => {
     console.log(`✅ 서버가 ${PORT}번 포트에서 정상적으로 시작되었습니다!`);
     console.log(`🌐 서버 주소: http://localhost:${PORT}`);
+
+    // Test database connection
+    const isConnected = await testConnection();
+    if (!isConnected) {
+        console.error('❌ 데이터베이스 연결에 실패했습니다. 서버를 종료합니다.');
+        process.exit(1);
+    }
 
     try {
         console.log('🚀 서버 시작과 함께 데이터 동기화를 시작합니다...');

@@ -117,6 +117,7 @@
   border-top: 1px solid #e5e7eb;
 }
 
+<<<<<<< HEAD
 .cancel-btn {
   all: unset !important;
   display: inline-flex !important;
@@ -187,6 +188,79 @@
   background-color: #10b981 !important;
   text-align: center !important;
   vertical-align: middle !important;
+}
+=======
+.cancel-btn {
+  all: unset !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 24px !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+  min-width: 120px !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  color: white !important;
+  background-color: #6b7280 !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+.submit-btn {
+  all: unset !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 24px !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+  min-width: 120px !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  color: white !important;
+  background-color: #f97316 !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+.pdf-btn {
+  all: unset !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 24px !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+  min-width: 120px !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  color: white !important;
+  background-color: #10b981 !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+>>>>>>> d06f90bc5d948f474963a40114423fc55b0ab6e0
 }
 
 .cancel-btn:hover {
