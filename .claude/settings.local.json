@@ -10,7 +10,9 @@
       "Bash(npm start)",
       "Bash(npm run lint)",
       "Bash(npm run build:*)",
-      "Bash(mysql:*)"
+      "Bash(mysql:*)",
+      "Bash(npm install:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []
