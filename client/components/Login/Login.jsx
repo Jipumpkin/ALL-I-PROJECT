@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from './Login.module.css';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../src/context/AuthContext';
-import axios from 'axios';
+import axios from '../../axios';
 import ScrollAnimation from '../ScrollAnimation/ScrollAnimation';
 
 const Login = () => {
@@ -30,10 +30,9 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:3003/api/users/auth/login', formData, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
+      const response = await axios.post('/api/login', {
+        username: formData.username,
+        password: formData.password
       });
 
       if (response.data.success) {

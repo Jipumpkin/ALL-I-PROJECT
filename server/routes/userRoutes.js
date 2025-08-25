@@ -1,48 +1,50 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/userController');
+
+// 분할된 컨트롤러들 import
+const AuthController = require('../controllers/auth/AuthController');
+const UserProfileController = require('../controllers/user/UserProfileController');
+const UserCrudController = require('../controllers/user/UserCrudController');
+const TestController = require('../controllers/test/TestController');
+
+// 미들웨어 import
 const { authMiddleware, optionalAuthMiddleware } = require('../middleware/auth');
 
+// Validators import
+const {
+  validateRegister,
+  validateLogin,
+  validateCheckUsername,
+  validateProfileUpdate,
+  validateDeleteAccount,
+  validateUserId
+} = require('../validators');
+
 // === 인증 관련 라우트 (우선순위 높음) ===
-router.post('/auth/register', userController.register);
-router.post('/auth/login', userController.login);
-router.post('/auth/check-username', userController.checkUsername);
+router.post('/auth/register', validateRegister, AuthController.register);
+router.post('/auth/login', validateLogin, AuthController.login);
+router.post('/auth/check-username', validateCheckUsername, AuthController.checkUsername);
 
-// === 미들웨어 테스트용 임시 라우트 ===
-// JWT 토큰 생성 테스트 (실제 로그인 전까지 임시)
-router.post('/test/generate-token', userController.generateTestToken);
+// === 사용자 프로필 관련 라우트 (인증 필요) ===
+router.get('/profile', authMiddleware, UserProfileController.getUserProfile);
+router.put('/profile', authMiddleware, validateProfileUpdate, UserProfileController.updateUserProfile);
+router.delete('/account', authMiddleware, validateDeleteAccount, UserProfileController.deleteAccount);
 
-// 인증 필요한 보호된 라우트 테스트
-router.get('/test/protected', authMiddleware, userController.testProtectedRoute);
+// === 테스트 라우트 (개발용) ===
+router.post('/test/generate-token', TestController.generateTestToken);
+router.get('/test/protected', authMiddleware, TestController.testProtectedRoute);
+router.get('/test/optional-auth', optionalAuthMiddleware, TestController.testOptionalAuth);
 
-// 옵셔널 인증 테스트 라우트
-router.get('/test/optional-auth', optionalAuthMiddleware, userController.testOptionalAuth);
-
-// 사용자 프로필 조회 (인증 필요)
-router.get('/profile', authMiddleware, userController.getUserProfile);
-
-// 사용자 프로필 수정 (인증 필요)
-router.put('/profile', authMiddleware, userController.updateUserProfile);
-
-// 회원탈퇴 (인증 필요)
-router.delete('/account', authMiddleware, userController.deleteAccount);
-
-// 사용자 등록 이미지 조회
-router.get('/:userId/images', userController.getUserImages);
-
-// 사용자 이미지 추가
-router.post('/:userId/images', userController.addUserImage);
-
-// 테스트 라우트
+// === 기본 테스트 라우트 ===
 router.get('/test-route', (req, res) => {
     res.json({ message: 'Test route working' });
 });
 
-// 기본 CRUD 라우트 (마지막에 배치하여 다른 라우트와 충돌 방지)
-router.get('/', userController.getAllUsers);
-router.get('/:id', userController.getUserById);
-router.post('/', userController.createUser);
-router.put('/:id', userController.updateUser);
-router.delete('/:id', userController.deleteUser);
+// === 기본 CRUD 라우트 (마지막에 배치하여 다른 라우트와 충돌 방지) ===
+router.get('/', UserCrudController.getAllUsers);
+router.get('/:id', validateUserId, UserCrudController.getUserById);
+router.post('/', validateRegister, UserCrudController.createUser);
+router.put('/:id', validateUserId, validateProfileUpdate, UserCrudController.updateUser);
+router.delete('/:id', validateUserId, UserCrudController.deleteUser);
 
 module.exports = router;
