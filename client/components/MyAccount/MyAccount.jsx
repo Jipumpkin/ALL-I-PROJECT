@@ -327,7 +327,6 @@ const MyAccount = () => {
         </div>
 
         <div className={styles.menuSection}>
-          <h3>메뉴</h3>
           <div className={styles.menuButtons}>
             <button className={styles.menuButton} onClick={handleEditClick}>
               내 정보 수정
