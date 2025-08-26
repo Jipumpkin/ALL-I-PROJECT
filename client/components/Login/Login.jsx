@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from './Login.module.css';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../src/context/AuthContext';
-import axios from '../../axios';
+import api from '../../axios';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -29,13 +29,13 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post('/api/login', {
+      const response = await api.post('/api/login', {
         username: formData.username,
         password: formData.password
       });
 
       if (response.data.success) {
-        login(response.data.data.user, response.data.data.tokens);
+        login(response.data.user, response.data.tokens);
         // 보호된 페이지에서 온 경우 원래 페이지로, 아니면 메인으로
         const from = location.state?.from?.pathname || '/';
         navigate(from, { replace: true });

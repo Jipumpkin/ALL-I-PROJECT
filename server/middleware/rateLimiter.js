@@ -15,8 +15,8 @@ const apiLimiter = rateLimit({
     },
     standardHeaders: true, // `RateLimit-*` 헤더 반환
     legacyHeaders: false, // `X-RateLimit-*` 헤더 비활성화
-    // IP 기반 제한
-    keyGenerator: (req) => req.ip,
+    // IP 기반 제한 (IPv6 호환)
+    // keyGenerator: (req) => req.ip, // 임시 주석처리
     // 요청 성공 여부에 관계없이 카운트
     skipSuccessfulRequests: false,
     skipFailedRequests: false
@@ -36,7 +36,7 @@ const authLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req) => req.ip,
+    // keyGenerator: (req) => req.ip, // 임시 주석처리
     // 실패한 로그인만 카운트 (선택적)
     skipSuccessfulRequests: true,
     skipFailedRequests: false,

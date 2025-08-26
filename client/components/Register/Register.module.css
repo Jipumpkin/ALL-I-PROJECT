@@ -195,3 +195,57 @@ select {
     background-color: #9ca3af;
     cursor: not-allowed;
 }
+
+/* 검증 오류 메시지 스타일 */
+.validation-error {
+    color: #dc2626;
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 4px;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    padding: 6px 8px;
+    border-radius: 4px;
+}
+
+/* 비밀번호 요구사항 스타일 */
+.password-requirements {
+    margin-top: 8px;
+    padding: 12px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.requirement-title {
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.requirement-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 3px;
+    font-weight: 500;
+}
+
+.requirement-item.valid {
+    color: #059669;
+}
+
+.requirement-item.invalid {
+    color: #dc2626;
+}
+
+.upload-status {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background-color: #f0f9ff;
+    border: 1px solid #0ea5e9;
+    border-radius: 4px;
+    color: #0c4a6e;
+    font-size: 12px;
+    font-weight: 500;
+}

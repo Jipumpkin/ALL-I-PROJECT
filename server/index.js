@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 3005;
 const corsOptions = {
     origin: process.env.NODE_ENV === 'production' 
         ? process.env.FRONTEND_URL || 'https://your-domain.com'
-        : ['http://localhost:3000', 'http://localhost:5173'], // React, Vite 개발서버
+        : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174'], // React, Vite 개발서버
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -37,6 +37,9 @@ app.use(bodyParser.urlencoded({
     limit: '10mb'
 }));
 
+// 정적 파일 제공 (업로드된 이미지)
+app.use('/uploads', express.static('uploads'));
+
 // 기본 보안 헤더 추가
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -54,28 +57,29 @@ const { apiLimiter, authLimiter } = require('./middleware/rateLimiter');
 app.use('/api/', apiLimiter);
 app.use(apiLogger);
 
-// 테스트 라우트
+// API 헬스체크 라우트
 app.get('/api/test', (req, res) => {
     console.log('🔍 /api/test 요청 받음');
-    res.json({ message: 'Mock API 테스트 성공!' });
+    res.json({ message: 'API 서버 테스트 성공!' });
 });
 
-// Mock API 라우트 (프론트엔드 호환용) - 새로운 컨트롤러 사용  
+// 인증 컨트롤러 로드
 const AuthController = require('./controllers/auth/AuthController');
 
-// 인증 관련 엔드포인트에 엄격한 Rate Limiting 적용
+// 인증 관련 API 엔드포인트 (Rate Limiting 적용)
 app.post('/api/login', authLimiter, (req, res) => {
-    console.log('🔍 /api/login 요청 받음 (실제 DB):', req.body);
+    console.log('🔍 /api/login 요청 받음:', req.body);
     AuthController.login(req, res);
 });
 
 app.post('/api/register', authLimiter, (req, res) => {
-    console.log('🔍 /api/register 요청 받음 (실제 DB):', req.body);
+    console.log('🔍 /api/register 요청 받음:', req.body);
     AuthController.register(req, res);
 });
 
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/animals', require('./routes/animalRoutes'));
+app.use('/api/images', require('./routes/imageRoutes'));
 
 // 404 및 에러 핸들러 (라우트 뒤에 배치)
 app.use(notFoundHandler);
@@ -108,11 +112,13 @@ const server = app.listen(PORT, async () => {
     }
 
     console.log(`Server is running on port ${PORT}`);
-    console.log('📍 등록된 라우트:');
-    console.log('   - GET  /api/test');
-    console.log('   - POST /api/login');
-    console.log('   - POST /api/register');
-    console.log('   - /api/users/* (userRoutes)');
+    console.log('📍 등록된 API 엔드포인트:');
+    console.log('   - GET  /api/test (헬스체크)');
+    console.log('   - POST /api/login (로그인)');
+    console.log('   - POST /api/register (회원가입)');
+    console.log('   - /api/users/* (사용자 관리)');
+    console.log('   - /api/animals/* (동물 정보)');
+    console.log('   - /api/images/* (이미지 업로드)');
     console.log(`🌐 서버 주소: http://localhost:${PORT}`);
     console.log('✅ 서버가 정상적으로 시작되었습니다!');
 

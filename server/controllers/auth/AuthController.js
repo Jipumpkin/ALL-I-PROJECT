@@ -8,7 +8,7 @@ const AuthController = {
      */
     register: async (req, res) => {
         try {
-            console.log('🔍 register 함수 입력 데이터:', { ...req.body, password: '***' });
+            console.log('🔍 register 함수 입력 데이터:', JSON.stringify({ ...req.body, password: '***' }, null, 2));
 
             const result = await UserService.registerUser(req.body);
 

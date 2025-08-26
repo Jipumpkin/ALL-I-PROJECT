@@ -3,7 +3,7 @@ import styles from "./Register.module.css";
 import ImageUploader from "../ImageUploader/ImageUploader";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../src/context/AuthContext";
-import axios from "axios";
+import api from "../../axios";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -23,6 +23,14 @@ const Register = () => {
   const [error, setError] = useState('');
   const [isUsernameChecked, setIsUsernameChecked] = useState(false);
   const [usernameCheckMessage, setUsernameCheckMessage] = useState('');
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [validationErrors, setValidationErrors] = useState({});
+  const [passwordValidation, setPasswordValidation] = useState({
+    minLength: false,
+    hasLetter: false,
+    hasNumber: false,
+    hasSpecialChar: false
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,6 +44,29 @@ const Register = () => {
       setIsUsernameChecked(false);
       setUsernameCheckMessage('');
     }
+    
+    // 실시간 비밀번호 유효성 검사
+    if (name === 'password') {
+      validatePasswordRealTime(value);
+    }
+    
+    // 입력시 해당 필드의 유효성 오류 제거
+    if (validationErrors[name]) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  // 실시간 비밀번호 유효성 검사
+  const validatePasswordRealTime = (password) => {
+    setPasswordValidation({
+      minLength: password.length >= 8,
+      hasLetter: /[a-zA-Z]/.test(password),
+      hasNumber: /\d/.test(password),
+      hasSpecialChar: /[@$!%*?&]/.test(password)
+    });
   };
 
   // 아이디 중복체크 함수
@@ -46,7 +77,7 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3003/api/users/auth/check-username', {
+      const response = await api.post('/api/users/auth/check-username', {
         username: formData.username
       });
       
@@ -65,6 +96,12 @@ const Register = () => {
         setUsernameCheckMessage('중복체크 중 오류가 발생했습니다.');
       }
     }
+  };
+
+  // 이미지 업로드 완료 시 호출되는 함수
+  const handleImagesUpload = (images) => {
+    setUploadedImages(images);
+    console.log('회원가입에서 받은 이미지 정보:', images);
   };
 
   const registerHandler = async (e) => {
@@ -104,15 +141,11 @@ const Register = () => {
         phone_number: formData.phone || null
       };
 
-      const response = await axios.post('http://localhost:3003/api/users/auth/register', requestData, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
+      const response = await api.post('/api/users/auth/register', requestData);
 
       if (response.data.success) {
         // 회원가입 성공 시 자동 로그인
-        login(response.data.data.user, response.data.data.tokens);
+        login(response.data.user, response.data.tokens);
         navigate('/');
       } else {
         setError(response.data.message || '회원가입에 실패했습니다.');
@@ -121,12 +154,17 @@ const Register = () => {
       console.error('회원가입 오류:', error);
       if (error.response?.data?.errors) {
         const errors = error.response.data.errors;
-        if (errors.username) {
-          setError(errors.username);
+        setValidationErrors(errors);
+        
+        // 전체적인 오류 메시지도 표시
+        if (errors.password) {
+          setError('비밀번호 요구사항을 확인해주세요.');
+        } else if (errors.username) {
+          setError('사용자명을 확인해주세요.');
         } else if (errors.email) {
-          setError(errors.email);
+          setError('이메일을 확인해주세요.');
         } else {
-          setError(error.response.data.message || '회원가입에 실패했습니다.');
+          setError(error.response.data.message || '입력 정보를 확인해주세요.');
         }
       } else if (error.response) {
         setError(error.response.data.message || '회원가입에 실패했습니다.');
@@ -189,6 +227,30 @@ const Register = () => {
             placeholder="비밀번호를 입력해주세요"
             required
           />
+          {validationErrors.password && (
+            <div className={styles["validation-error"]}>
+              {validationErrors.password}
+            </div>
+          )}
+          
+          {/* 실시간 비밀번호 검증 표시 */}
+          {formData.password && (
+            <div className={styles["password-requirements"]}>
+              <div className={styles["requirement-title"]}>비밀번호 요구사항:</div>
+              <div className={`${styles["requirement-item"]} ${passwordValidation.minLength ? styles["valid"] : styles["invalid"]}`}>
+                {passwordValidation.minLength ? '✓' : '✗'} 8자 이상
+              </div>
+              <div className={`${styles["requirement-item"]} ${passwordValidation.hasLetter ? styles["valid"] : styles["invalid"]}`}>
+                {passwordValidation.hasLetter ? '✓' : '✗'} 영문자 포함
+              </div>
+              <div className={`${styles["requirement-item"]} ${passwordValidation.hasNumber ? styles["valid"] : styles["invalid"]}`}>
+                {passwordValidation.hasNumber ? '✓' : '✗'} 숫자 포함
+              </div>
+              <div className={`${styles["requirement-item"]} ${passwordValidation.hasSpecialChar ? styles["valid"] : styles["invalid"]}`}>
+                {passwordValidation.hasSpecialChar ? '✓' : '✗'} 특수문자 포함 (@$!%*?&)
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 비밀번호 확인 */}
@@ -217,6 +279,11 @@ const Register = () => {
             placeholder="이메일을 입력해주세요"
             required
           />
+          {validationErrors.email && (
+            <div className={styles["validation-error"]}>
+              {validationErrors.email}
+            </div>
+          )}
         </div>
 
         {/* 닉네임 */}
@@ -231,6 +298,11 @@ const Register = () => {
             placeholder="닉네임을 입력해주세요"
             required
           />
+          {validationErrors.nickname && (
+            <div className={styles["validation-error"]}>
+              {validationErrors.nickname}
+            </div>
+          )}
         </div>
 
         {/* 성별 */}
@@ -260,12 +332,22 @@ const Register = () => {
             onChange={handleChange}
             placeholder="연락처를 입력해주세요 (예: 010-1234-5678)"
           />
+          {validationErrors.phone_number && (
+            <div className={styles["validation-error"]}>
+              {validationErrors.phone_number}
+            </div>
+          )}
         </div>
 
         {/* 사용자 집 이미지 (이미지합성용) */}
         <div className={styles["form-group"]}>
           <label>사용자 집 이미지 (이미지합성용)</label>
-          <ImageUploader />
+          <ImageUploader onImagesChange={handleImagesUpload} />
+          {uploadedImages.length > 0 && (
+            <div className={styles["upload-status"]}>
+              ✅ {uploadedImages.length}개 이미지 업로드 완료
+            </div>
+          )}
         </div>
 
         <button 

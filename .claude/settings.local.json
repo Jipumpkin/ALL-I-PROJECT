@@ -6,7 +6,8 @@
       "Bash(curl:*)",
       "Bash(node:*)",
       "Bash(mysql:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []
