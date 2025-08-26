@@ -1,20 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../src/context/AuthContext';
+import api from '../../axios';
 import styles from './Animals.module.css';
 import Pagination from '../Pagination/Pagination';
 import ScrollAnimation from '../ScrollAnimation/ScrollAnimation';
 import Loading from '../Loading/Loading';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
 
 const Animals = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
 
   const [animals, setAnimals] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [shelters, setShelters] = useState([]);
+  const [regions, setRegions] = useState([]);
+  const [selectedRegion, setSelectedRegion] = useState('all');
+  const [userImages, setUserImages] = useState([]);
 
   // ✅ 초기 queryParams
   const [queryParams, setQueryParams] = useState(() => {
@@ -32,6 +39,8 @@ const Animals = () => {
       try {
         const response = await axios.get('/api/animals/shelters');
         setShelters(response.data);
+        const uniqueRegions = [...new Set(response.data.map(s => s.region))];
+        setRegions(uniqueRegions);
       } catch (err) {
         console.error("보호소 목록을 불러오는 데 실패했습니다.", err);
       }
@@ -69,6 +78,11 @@ const Animals = () => {
     setQueryParams(prev => ({ ...prev, filter: newFilter, page: 1 }));
   };
 
+  const handleRegionChange = (e) => {
+    setSelectedRegion(e.target.value);
+    setQueryParams(prev => ({ ...prev, shelter_id: 'all', page: 1 }));
+  };
+
   const handleShelterChange = (e) => {
     setQueryParams(prev => ({ ...prev, shelter_id: e.target.value, page: 1 }));
   };
@@ -81,54 +95,68 @@ const Animals = () => {
 
   const genderMap = { male: '수컷', female: '암컷', unknown: '불명' };
 
+  const filteredShelters = selectedRegion === 'all'
+    ? shelters
+    : shelters.filter(shelter => shelter.region === selectedRegion);
+
   // ✅ 최종 UI
   return (
     <div className={styles.container}>
-      {/* 🎯 필터 버튼 */}
-      <ScrollAnimation animation="fadeInUp">
-        <div className={styles.filterButtons}>
-          <button onClick={() => handleFilterChange('all')} className={queryParams.filter === 'all' ? styles.active : ''}>전체</button>
-          <button onClick={() => handleFilterChange('dog')} className={queryParams.filter === 'dog' ? styles.active : ''}>유기견</button>
-          <button onClick={() => handleFilterChange('cat')} className={queryParams.filter === 'cat' ? styles.active : ''}>유기묘</button>
-          <button onClick={() => handleFilterChange('other')} className={queryParams.filter === 'other' ? styles.active : ''}>기타</button>
-        </div>
-      </ScrollAnimation>
+      <div className={styles.filterContainer}>
+        {/* 🎯 필터 버튼 */}
+        <ScrollAnimation animation="fadeInUp">
+          <div className={styles.filterButtons}>
+            <button onClick={() => handleFilterChange('all')} className={queryParams.filter === 'all' ? styles.active : ''}>전체</button>
+            <button onClick={() => handleFilterChange('dog')} className={queryParams.filter === 'dog' ? styles.active : ''}>유기견</button>
+            <button onClick={() => handleFilterChange('cat')} className={queryParams.filter === 'cat' ? styles.active : ''}>유기묘</button>
+            <button onClick={() => handleFilterChange('other')} className={queryParams.filter === 'other' ? styles.active : ''}>기타</button>
+          </div>
+        </ScrollAnimation>
 
-      {/* 보호소 필터 */}
-      <div className={styles.shelterFilter}>
-        <select value={queryParams.shelter_id} onChange={handleShelterChange}>
-          <option value="all">모든 보호소</option>
-          {shelters.map(shelter => (
-            <option key={shelter.shelter_id} value={shelter.shelter_id}>
-              {shelter.shelter_name}
-            </option>
-          ))}
-        </select>
+        {/* 보호소 필터 */}
+        <div className={styles.shelterFilter}>
+          <select value={selectedRegion} onChange={handleRegionChange}>
+            <option value="all">모든 지역</option>
+            {regions.map(region => (
+              <option key={region} value={region}>
+                {region}
+              </option>
+            ))}
+          </select>
+          <select value={queryParams.shelter_id} onChange={handleShelterChange}>
+            <option value="all">모든 보호소</option>
+            {filteredShelters.map(shelter => (
+              <option key={shelter.shelter_id} value={shelter.shelter_id}>
+                {shelter.shelter_name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* 🔄 로딩 */}
       {loading && <Loading message="동물들을 찾고 있어요..." />}
 
       {/* ❌ 에러 */}
-      {error && <p>데이터를 불러오는 중 오류가 발생했습니다: {error.message}</p>}
+      {error && <ErrorMessage message={`데이터를 불러오는 중 오류가 발생했습니다: ${error.message}`} />}
 
       {/* ✅ 데이터 렌더링 */}
       {!loading && !error && (
         <>
           <div className={styles.animalGrid}>
             {animals.length > 0 ? animals.map((animal, index) => (
-              <ScrollAnimation 
-                key={animal.animal_id} 
-                animation="scaleIn" 
+              <ScrollAnimation
+                key={animal.animal_id}
+                animation="scaleIn"
                 delay={index * 80}
               >
                 <div className={styles.animalCard}>
                   <Link to={`/animal/${animal.animal_id}`} className={styles.animalCardLink}>
-                    <img 
-                      src={animal.image_url} 
-                      alt={animal.species} 
-                      className={styles.animalImage} 
-                      onError={(e) => { e.target.src = '/images/unknown_animal.png'; }} 
+                    <img
+                      src={animal.image_url}
+                      alt={animal.species}
+                      className={styles.animalImage}
+                      onError={(e) => { e.target.src = '/images/unknown_animal.png'; }}
                     />
                     <div className={styles.animalInfo}>
                       <p><strong>품종:</strong> {animal.species}</p>
@@ -146,7 +174,7 @@ const Animals = () => {
 
           {/* 🎭 페이지네이션 */}
           <ScrollAnimation animation="fadeInUp">
-            <Pagination 
+            <Pagination
               currentPage={queryParams.page}
               totalPages={totalPages}
               onPageChange={handlePageChange}

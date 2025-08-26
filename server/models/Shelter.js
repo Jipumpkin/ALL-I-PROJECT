@@ -40,16 +40,16 @@ module.exports = (sequelize) => {
     createdAt: 'created_at',
     updatedAt: false, // 스키마에 updated_at이 없음
     
-    // 인덱스 설정
-    indexes: [
-      {
-        fields: ['region']
-      },
-      {
-        unique: true,
-        fields: ['ext_id']
-      }
-    ]
+    // 인덱스 설정 (기존 DB에 인덱스가 있어 임시 주석)
+    // indexes: [
+    //   {
+    //     fields: ['region']
+    //   },
+    //   {
+    //     unique: true,
+    //     fields: ['ext_id']
+    //   }
+    // ]
   });
 
   // 관계 설정
@@ -86,7 +86,7 @@ module.exports = (sequelize) => {
   /**
    * 보호소와 동물 정보 함께 조회
    */
-  Shelter.findByIdWithAnimals = async function(shelterId) {
+  Shelter.findByIdWithDetails = async function(shelterId) {
     return await this.findByPk(shelterId, {
       include: [{
         model: this.sequelize.models.Animal,

@@ -32,6 +32,15 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData, tokens) => {
+    // 디버깅: AuthContext에서 받은 사용자 데이터 확인
+    console.log('🔍 AuthContext.login 받은 사용자 데이터:', userData);
+    console.log('📅 AuthContext created_at 정보:');
+    console.log('  - Raw created_at:', userData?.created_at);
+    console.log('  - Type of created_at:', typeof userData?.created_at);
+    console.log('  - created_at toString():', userData?.created_at ? userData.created_at.toString() : 'null');
+    console.log('  - JavaScript Date 변환:', userData?.created_at ? new Date(userData.created_at) : 'null');
+    console.log('  - toLocaleDateString(ko-KR):', userData?.created_at ? new Date(userData.created_at).toLocaleDateString('ko-KR') : 'null');
+    
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
     if (tokens) {

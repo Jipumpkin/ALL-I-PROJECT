@@ -29,7 +29,7 @@ const BravestAnimals = () => {
       <div className={styles.grid}>
         {animals.map(animal => (
           <div key={animal.animal_id} className={styles.card}>
-            <img src={animal.image_url} alt={animal.species} className={styles.image} />
+            <img src={animal.image_url} alt={animal.species} onError={(e) => { e.target.src = '/images/unknown_animal.png'; }} />
             <div className={styles.info}>
               <h3>{animal.species} ({animal.gender === 'male' ? '수컷' : '암컷'})</h3>
               <p>{animal.region}</p>

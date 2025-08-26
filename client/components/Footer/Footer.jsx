@@ -21,8 +21,6 @@ const Footer = () => {
         </div>
         <div className={styles['footer-section']}>
           <div className={styles['footer-info']}>
-            <p className={styles['contact-info']}>📞 상담 문의: 1588-0000</p>
-            <p className={styles['contact-info']}>📧 pawpaw.adopt@gmail.com</p>
             <p className={styles['copyright']}>&copy; {new Date().getFullYear()} PAW PAW. 모든 권리 보유.</p>
           </div>
         </div>

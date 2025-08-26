@@ -20,6 +20,7 @@ const MyAccount = () => {
   });
   const [userImages, setUserImages] = useState([]);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImageForUpload, setSelectedImageForUpload] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -30,7 +31,7 @@ const MyAccount = () => {
       });
       fetchUserImages();
     }
-  }, [user, fetchUserImages]);
+  }, [user]);
 
   // 사용자 이미지 불러오기
   const fetchUserImages = useCallback(async () => {
@@ -45,23 +46,62 @@ const MyAccount = () => {
         console.error('사용자 이미지 조회 실패:', err);
       }
     }
-  }, [user]);
+  }, [user?.id, user?.user_id]);
 
-  // 이미지 업데이트
+  // 프로필 이미지 교체 (URL 방식)
   const handleImageUpdate = async (imageUrl) => {
     const userId = user?.id || user?.user_id;
     if (userId) {
       try {
-        await axios.post(`/api/users/${userId}/images`, {
-          image_url: imageUrl
+        setLoading(true);
+        await axios.put(`/api/users/${userId}/images/profile`, {
+          image_url: imageUrl,
+          storage_type: 'url'
         });
         fetchUserImages(); // 이미지 목록 새로고침
+        setSelectedImageForUpload(null); // 선택된 이미지 상태 초기화
         setShowImageModal(false);
-        setSuccess('이미지가 성공적으로 업데이트되었습니다.');
+        setSuccess('프로필 이미지가 성공적으로 변경되었습니다.');
         setTimeout(() => setSuccess(''), 3000);
       } catch (err) {
-        setError('이미지 업데이트 중 오류가 발생했습니다.');
+        console.error('이미지 업데이트 오류:', err);
+        const errorMessage = err.response?.data?.message || '이미지 변경 중 오류가 발생했습니다.';
+        setError(errorMessage);
         setTimeout(() => setError(''), 5000);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  // Base64 프로필 이미지 교체
+  const handleImageUploadBase64 = async (imageData) => {
+    const userId = user?.id || user?.user_id;
+    console.log('handleImageUploadBase64 호출됨:', { userId, imageData });
+    
+    if (userId) {
+      try {
+        setLoading(true);
+        console.log('API 호출 시작:', `/api/users/${userId}/images/profile`);
+        
+        const response = await axios.put(`/api/users/${userId}/images/profile`, imageData);
+        console.log('API 응답:', response.data);
+        
+        fetchUserImages(); // 이미지 목록 새로고침
+        setSelectedImageForUpload(null); // 선택된 이미지 상태 초기화
+        setShowImageModal(false);
+        setSuccess('프로필 이미지가 성공적으로 변경되었습니다.');
+        setTimeout(() => setSuccess(''), 3000);
+        
+        console.log('이미지 업로드 성공, 모달 닫힘');
+      } catch (err) {
+        console.error('이미지 업로드 오류:', err);
+        console.error('오류 상세:', err.response?.data);
+        const errorMessage = err.response?.data?.message || '이미지 변경 중 오류가 발생했습니다.';
+        setError(errorMessage);
+        setTimeout(() => setError(''), 5000);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -70,9 +110,36 @@ const MyAccount = () => {
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // 파일 크기 검증 (5MB 제한)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('이미지 파일은 5MB 이하만 업로드 가능합니다.');
+        setTimeout(() => setError(''), 5000);
+        return;
+      }
+
+      // 파일 타입 검증
+      if (!file.type.startsWith('image/')) {
+        setError('이미지 파일만 업로드 가능합니다.');
+        setTimeout(() => setError(''), 5000);
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (event) => {
-        handleImageUpdate(event.target.result);
+        // 실제 이미지 데이터를 Base64로 저장
+        console.log('이미지 선택됨:', file.name);
+        setSelectedImageForUpload({
+          image_data: event.target.result, // 실제 Base64 이미지 데이터
+          preview_data: event.target.result, // 미리보기용 실제 이미지
+          filename: file.name,
+          mime_type: file.type,
+          file_size: file.size,
+          storage_type: 'base64'
+        });
+      };
+      reader.onerror = () => {
+        setError('이미지 읽기에 실패했습니다.');
+        setTimeout(() => setError(''), 5000);
       };
       reader.readAsDataURL(file);
     }
@@ -215,7 +282,9 @@ const MyAccount = () => {
               <strong>이메일:</strong> <span>{user.email}</span>
             </div>
             <div className={styles.infoItem}>
-              <strong>가입일:</strong> <span>{new Date(user.created_at).toLocaleDateString('ko-KR')}</span>
+              <strong>가입일:</strong> <span>
+                {user.created_at ? new Date(user.created_at).toLocaleDateString('ko-KR') : '정보 없음'}
+              </span>
             </div>
           </div>
 
@@ -296,13 +365,18 @@ const MyAccount = () => {
                     {userImages.length > 0 ? (
                       <div className={styles.currentPhoto}>
                         <img 
-                          src={userImages[0].image_url} 
+                          src={userImages[0].storage_type === 'base64' && userImages[0].image_data 
+                            ? userImages[0].image_data 
+                            : userImages[0].image_url} 
                           alt="사용자 등록 사진" 
                           className={styles.profileImage}
                           onClick={() => setShowImageModal(true)}
                         />
                         <button 
-                          onClick={() => setShowImageModal(true)}
+                          onClick={() => {
+                            setSelectedImageForUpload(null);
+                            setShowImageModal(true);
+                          }}
                           className={styles.changePhotoButton}
                         >
                           사진 변경
@@ -312,7 +386,10 @@ const MyAccount = () => {
                       <div className={styles.noPhoto}>
                         <span>등록된 사진이 없습니다</span>
                         <button 
-                          onClick={() => setShowImageModal(true)}
+                          onClick={() => {
+                            setSelectedImageForUpload(null);
+                            setShowImageModal(true);
+                          }}
                           className={styles.addPhotoButton}
                         >
                           사진 추가
@@ -327,7 +404,6 @@ const MyAccount = () => {
         </div>
 
         <div className={styles.menuSection}>
-          <h3>메뉴</h3>
           <div className={styles.menuButtons}>
             <button className={styles.menuButton} onClick={handleEditClick}>
               내 정보 수정
@@ -392,12 +468,27 @@ const MyAccount = () => {
         <div className={styles.modal}>
           <div className={styles.modalContent}>
             <h3>프로필 사진 변경</h3>
-            {userImages.length > 0 && (
+            {/* 새 이미지가 선택되지 않은 경우에만 현재 이미지 표시 */}
+            {!selectedImageForUpload && userImages.length > 0 && (
               <div className={styles.currentImagePreview}>
                 <p>현재 이미지:</p>
                 <img 
-                  src={userImages[0].image_url} 
+                  src={userImages[0].storage_type === 'base64' && userImages[0].image_data 
+                    ? userImages[0].image_data 
+                    : userImages[0].image_url} 
                   alt="현재 사진" 
+                  className={styles.previewImage}
+                />
+              </div>
+            )}
+            
+            {/* 선택된 새 이미지 미리보기 */}
+            {selectedImageForUpload && (
+              <div className={styles.selectedImagePreview}>
+                <p>새 이미지: {selectedImageForUpload.filename}</p>
+                <img 
+                  src={selectedImageForUpload.preview_data || selectedImageForUpload.image_url} 
+                  alt="선택된 사진" 
                   className={styles.previewImage}
                 />
               </div>
@@ -405,30 +496,61 @@ const MyAccount = () => {
             
             <div className={styles.imageOptions}>
               <label className={styles.fileUploadLabel}>
-                새 이미지 업로드
+                📷 새 이미지 업로드
                 <input 
                   type="file" 
                   accept="image/*" 
                   onChange={handleFileUpload}
                   style={{ display: 'none' }}
+                  disabled={loading}
                 />
               </label>
               
               <button 
                 onClick={() => handleImageUpdate('https://placehold.co/400x400/33A3FF/FFFFFF?text=Default+Image')}
                 className={styles.defaultImageButton}
+                disabled={loading}
               >
-                기본 이미지로 변경
+                🖼️ 기본 이미지로 변경
               </button>
             </div>
 
             <div className={styles.modalButtons}>
-              <button 
-                onClick={() => setShowImageModal(false)}
-                className={styles.cancelButton}
-              >
-                닫기
-              </button>
+              {selectedImageForUpload ? (
+                <>
+                  <button 
+                    onClick={() => {
+                      if (selectedImageForUpload.storage_type === 'base64') {
+                        handleImageUploadBase64(selectedImageForUpload);
+                      } else {
+                        handleImageUpdate(selectedImageForUpload.image_url);
+                      }
+                    }}
+                    className={styles.imageModalApplyButton}
+                    disabled={loading}
+                  >
+                    {loading ? '처리 중...' : '적용하기'}
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setSelectedImageForUpload(null);
+                      setShowImageModal(false);
+                    }}
+                    className={styles.imageModalCancelButton}
+                    disabled={loading}
+                  >
+                    닫기
+                  </button>
+                </>
+              ) : (
+                <button 
+                  onClick={() => setShowImageModal(false)}
+                  className={styles.imageModalCancelButton}
+                  disabled={loading}
+                >
+                  {loading ? '처리 중...' : '닫기'}
+                </button>
+              )}
             </div>
           </div>
         </div>
