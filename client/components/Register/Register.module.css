@@ -227,6 +227,22 @@ button[type="submit"]:disabled {
     color: #ef4444;
 }
 
+/* 이메일 체크 메시지 전용 스타일 */
+.email-check-message {
+    margin-top: 4px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.3;
+}
+
+.email-check-message.success {
+    color: #22c55e;
+}
+
+.email-check-message.error {
+    color: #ef4444;
+}
+
 /* 프로필 이미지 업로드 스타일 */
 .profile-image-section {
     margin-top: 8px;
@@ -342,12 +358,21 @@ select {
 /* 에러 메시지 스타일 */
 .error-message {
     background-color: #fef2f2;
-    border: 1px solid #fecaca;
+    border: 2px solid #ef4444;
     color: #dc2626;
-    padding: 12px;
+    padding: 16px;
     border-radius: var(--border-radius-md);
-    margin-bottom: 16px;
-    font-size: 14px;
+    margin-bottom: 20px;
+    font-size: 15px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
 /* 제출 버튼 스타일 개선 */

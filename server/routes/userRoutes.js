@@ -24,6 +24,7 @@ const { authMiddleware, optionalAuthMiddleware } = require('../middleware/auth')
 router.post('/auth/register', AuthController.register);
 router.post('/auth/login', AuthController.login);
 router.post('/auth/check-username', AuthController.checkUsername);
+router.post('/auth/check-email', AuthController.checkEmail);
 router.post('/auth/find-id', AuthController.findId);
 
 // === 사용자 프로필 관련 라우트 (인증 필요) ===
