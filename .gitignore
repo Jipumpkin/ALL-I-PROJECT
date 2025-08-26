@@ -23,3 +23,7 @@ GEMINI.md
 
 # 발표 및 문서 자료
 presentation/
+
+# 업로드된 이미지 파일들 (용량이 클 수 있고, 개발용 테스트 파일)
+**/uploads/
+uploads/
