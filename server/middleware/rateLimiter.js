@@ -13,13 +13,8 @@ const apiLimiter = rateLimit({
         errorCode: 'RATE_LIMITED',
         retryAfter: Math.ceil(RATE_LIMIT.WINDOW_MS / 1000)
     },
-    standardHeaders: true, // `RateLimit-*` 헤더 반환
-    legacyHeaders: false, // `X-RateLimit-*` 헤더 비활성화
-    // IP 기반 제한 - IPv6 호환
-    keyGenerator: (req, res) => {
-        return req.ip || req.connection.remoteAddress || req.socket.remoteAddress || '127.0.0.1';
-    },
-    // 요청 성공 여부에 관계없이 카운트
+    standardHeaders: true,
+    legacyHeaders: false,
     skipSuccessfulRequests: false,
     skipFailedRequests: false
 });
@@ -38,15 +33,9 @@ const authLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req, res) => {
-        return req.ip || req.connection.remoteAddress || req.socket.remoteAddress || '127.0.0.1';
-    },
-    // 실패한 로그인만 카운트 (선택적)
     skipSuccessfulRequests: true,
     skipFailedRequests: false,
-    // 사용자 정의 스킵 조건
     skip: (req) => {
-        // 특정 IP나 환경에서는 제한 해제 (개발 환경 등)
         if (process.env.NODE_ENV === 'development' && req.ip === '127.0.0.1') {
             return true;
         }
@@ -67,8 +56,7 @@ const sensitiveActionLimiter = rateLimit({
         retryAfter: 3600
     },
     standardHeaders: true,
-    legacyHeaders: false,
-    keyGenerator: (req) => req.ip
+    legacyHeaders: false
 });
 
 /**
@@ -76,16 +64,13 @@ const sensitiveActionLimiter = rateLimit({
  */
 const uploadLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15분
-    max: 10, // 15분간 10개 파일만 업로드 허용
+    max: 10, // 15분당 10회 업로드
     message: {
         success: false,
-        message: '파일 업로드 요청이 너무 많습니다. 잠시 후 다시 시도해주세요.',
+        message: '파일 업로드 한도를 초과했습니다. 잠시 후 다시 시도해주세요.',
         errorCode: 'UPLOAD_RATE_LIMITED',
-        retryAfter: 900
-    },
-    standardHeaders: true,
-    legacyHeaders: false,
-    keyGenerator: (req) => req.ip
+        retryAfter: Math.ceil(15 * 60)
+    }
 });
 
 module.exports = {

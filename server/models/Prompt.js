@@ -45,17 +45,18 @@ module.exports = (sequelize) => {
     createdAt: 'created_at',
     updatedAt: false, // 스키마에 updated_at이 없음
     
-    indexes: [
-      {
-        fields: ['user_id']
-      },
-      {
-        fields: ['image_id']
-      },
-      {
-        fields: ['animal_id']
-      }
-    ]
+    // 인덱스 설정 (기존 DB에 인덱스가 있어 임시 주석)
+    // indexes: [
+    //   {
+    //     fields: ['user_id']
+    //   },
+    //   {
+    //     fields: ['image_id']
+    //   },
+    //   {
+    //     fields: ['animal_id']
+    //   }
+    // ]
   });
 
   // 관계 설정

@@ -17,7 +17,31 @@ module.exports = (sequelize) => {
     },
     image_url: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: true
+    },
+    image_data: {
+      type: DataTypes.TEXT('long'),
+      allowNull: true,
+      comment: 'Base64 encoded image data'
+    },
+    filename: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    mime_type: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      comment: 'image/jpeg, image/png, etc.'
+    },
+    file_size: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: 'File size in bytes'
+    },
+    storage_type: {
+      type: DataTypes.ENUM('url', 'base64', 'file'),
+      defaultValue: 'url',
+      comment: 'Storage method used'
     },
     uploaded_at: {
       type: DataTypes.DATE,
@@ -27,11 +51,12 @@ module.exports = (sequelize) => {
     tableName: 'user_images',
     timestamps: false, // 스키마에서 custom timestamp 사용
     
-    indexes: [
-      {
-        fields: ['user_id']
-      }
-    ]
+    // 인덱스 설정 (기존 DB에 인덱스가 있어 임시 주석)
+    // indexes: [
+    //   {
+    //     fields: ['user_id']
+    //   }
+    // ]
   });
 
   // 관계 설정

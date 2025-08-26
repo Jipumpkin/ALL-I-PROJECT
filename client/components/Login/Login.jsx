@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import styles from './Login.module.css';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../src/context/AuthContext';
-import axios from '../../axios';
-import ScrollAnimation from '../ScrollAnimation/ScrollAnimation';
+import api from '../../axios';
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -15,7 +14,6 @@ const Login = () => {
 
   const { login } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleChange = (e) => {
     setFormData({
@@ -30,16 +28,27 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post('/api/login', {
+      console.log('🔍 프론트엔드 로그인 시도:', { username: formData.username });
+      const response = await api.post('/api/login', {
         username: formData.username,
         password: formData.password
       });
-
+// aaa
+// aaa
+// aaa
       if (response.data.success) {
-        login(response.data.data.user, response.data.data.tokens);
-        // 보호된 페이지에서 온 경우 원래 페이지로, 아니면 메인으로
-        const from = location.state?.from?.pathname || '/';
-        navigate(from, { replace: true });
+        console.log('✅ 프론트엔드 로그인 성공!');
+        console.log('📦 받은 응답 데이터:', response.data);
+        console.log('👤 받은 사용자 데이터:', response.data.user);
+        console.log('📅 받은 created_at:', response.data.user?.created_at);
+        console.log('📅 created_at 타입:', typeof response.data.user?.created_at);
+        if (response.data.user?.created_at) {
+          console.log('📅 Date 변환 테스트:', new Date(response.data.user.created_at));
+          console.log('📅 한국어 형식:', new Date(response.data.user.created_at).toLocaleDateString('ko-KR'));
+        }
+        
+        login(response.data.user, response.data.tokens);
+        navigate('/');
       } else {
         setError(response.data.message);
       }
@@ -59,72 +68,44 @@ const Login = () => {
     <div className={styles["login-container"]}>
       <div className={styles["login-box"]}>
         <div className={styles["login-form"]}>
-          {/* 🎭 로그인 제목: fadeInUp 애니메이션 */}
-          <ScrollAnimation animation="fadeInUp">
-            <h2>로그인</h2>
-          </ScrollAnimation>
-          
-          <ScrollAnimation animation="fadeInUp" delay={200}>
-            <form onSubmit={handleSubmit}>
-              {/* ❌ 에러 메시지: bounceIn 애니메이션 */}
-              {error && (
-                <ScrollAnimation animation="bounceIn">
-                  <div className={styles["error-message"]}>{error}</div>
-                </ScrollAnimation>
-              )}
-              
-              {/* 📧 이메일 입력: fadeInLeft 애니메이션 */}
-              <ScrollAnimation animation="fadeInLeft" delay={300}>
-                <div className={styles["input-group"]}>
-                  <label htmlFor="email">이메일</label>
-                  <input 
-                    type="email" 
-                    id="email" 
-                    name="email" 
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </ScrollAnimation>
-              
-              {/* 🔒 비밀번호 입력: fadeInRight 애니메이션 */}
-              <ScrollAnimation animation="fadeInRight" delay={400}>
-                <div className={styles["input-group"]}>
-                  <label htmlFor="password">비밀번호</label>
-                  <input 
-                    type="password" 
-                    id="password" 
-                    name="password" 
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="비밀번호를 입력하세요"
-                    required
-                  />
-                </div>
-              </ScrollAnimation>
-              
-              {/* 🚀 로그인 버튼: scaleIn 애니메이션 */}
-              <ScrollAnimation animation="scaleIn" delay={500}>
-                <button 
-                  type="submit" 
-                  className={styles["login-button"]}
-                  disabled={isLoading}
-                >
-                  {isLoading ? '로그인 중...' : '로그인'}
-                </button>
-              </ScrollAnimation>
-            </form>
-          </ScrollAnimation>
-          
-          {/* 🔗 링크들: fadeInUp 애니메이션 */}
-          <ScrollAnimation animation="fadeInUp" delay={600}>
-            <div className={styles["login-links"]}>
-              <div><Link to="/register">회원가입</Link></div>
-              <div><Link to="/forgot-id">아이디찾기</Link></div>
-              <div><Link to="/forgot-password">비밀번호찾기</Link></div>
+          <h2>로그인</h2>
+          <form onSubmit={handleSubmit}>
+            {error && <div className={styles["error-message"]}>{error}</div>}
+            <div className={styles["input-group"]}>
+              <label htmlFor="username">아이디</label>
+              <input 
+                type="text" 
+                id="username" 
+                name="username" 
+                value={formData.username}
+                onChange={handleChange}
+                required
+              />
             </div>
-          </ScrollAnimation>
+            <div className={styles["input-group"]}>
+              <label htmlFor="password">비밀번호</label>
+              <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <button 
+              type="submit" 
+              className={styles["login-button"]}
+              disabled={isLoading}
+            >
+              {isLoading ? '로그인 중...' : '로그인'}
+            </button>
+          </form>
+          <div className={styles["login-links"]}>
+            <div><Link to="/register">회원가입</Link></div>
+            <div><Link to="/forgot-id">아이디찾기</Link></div>
+            <div><Link to="/forgot-password">비밀번호찾기</Link></div>
+          </div>
         </div>
       </div>
     </div>
