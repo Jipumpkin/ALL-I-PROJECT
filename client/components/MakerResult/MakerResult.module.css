@@ -1,20 +1,31 @@
 /* MakerResult.module.css */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
 
+.infoTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  margin-top: 1.5rem;
+  color: #374151;
+}
+
+.infoTitle:first-child {
+  margin-top: 0;
+}
+
 .body {
   font-family: "Inter", sans-serif;
   background-color: #f7fafc;
-  padding: 1rem;
+  padding: 0;
 }
 
 .resultContainer {
   max-width: 28rem;
   margin: auto;
-  background-color: #ffffff;
+  margin-bottom: 3rem;
+  background-color: transparent;
   padding: 1.5rem;
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-radius: 0;
 }
 
 .resultHeader {

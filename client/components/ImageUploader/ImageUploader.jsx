@@ -103,7 +103,14 @@ const ImageUploader = ({ onImagesChange }) => {
   };
 
   const handleRemove = (id) => {
-    setImages((prev) => prev.filter((img) => img.id !== id));
+    setImages((prev) => {
+      const updatedImages = prev.filter((img) => img.id !== id);
+      // 부모 컴포넌트에 이미지 변경 알림
+      if (onImagesChange) {
+        onImagesChange(updatedImages);
+      }
+      return updatedImages;
+    });
     URL.revokeObjectURL(id);
   };
 

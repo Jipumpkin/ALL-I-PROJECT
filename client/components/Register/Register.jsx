@@ -130,6 +130,7 @@ const Register = () => {
       return;
     }
 
+
     try {
       // API 요청 데이터 구성
       const requestData = {
@@ -179,7 +180,7 @@ const Register = () => {
   return (
     <div className={styles["register-container"]}>
       <h2>회원가입</h2>
-      <h4 style={{ color: "skyblue", textAlign: "center" }}>
+      <h4 style={{ color: "var(--color-text-secondary)", textAlign: "center" }}>
         우리가족이 되어주세요!
       </h4>
 
@@ -317,7 +318,6 @@ const Register = () => {
             <option value="">선택해주세요</option>
             <option value="male">남성</option>
             <option value="female">여성</option>
-            <option value="other">기타</option>
           </select>
         </div>
 

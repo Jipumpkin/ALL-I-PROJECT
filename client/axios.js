@@ -4,6 +4,12 @@ const api = axios.create({
     baseURL : 'http://localhost:3005'
     // 현재 사용하는 서버 주소 입력 -> 배포할 때 변경
 
+const api = axios.create({
+    baseURL: API_BASE_URL,
+    timeout: 10000,
+    headers: {
+        'Content-Type': 'application/json',
+    },
 });
 
 // 요청 인터셉터: 모든 요청에 토큰을 자동으로 포함

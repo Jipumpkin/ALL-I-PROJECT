@@ -14,8 +14,8 @@ const ForgotPassword = () => {
               <input type="text" id="name" name="name" placeholder="이름을 입력해주세요" />
             </div>
             <div className={styles["input-group"]}>
-              <label htmlFor="id">아이디</label>
-              <input type="text" id="id" name="id" placeholder="아이디를 입력해주세요" />
+              <label htmlFor="email">이메일</label>
+              <input type="email" id="email" name="email" placeholder="이메일을 입력해주세요" />
             </div>
             <div className={styles["input-group"]}>
               <label htmlFor="phone">연락처</label>

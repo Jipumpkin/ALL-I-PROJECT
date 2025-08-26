@@ -1,10 +1,11 @@
-// server/index.js
+// server/index.js (최종 수정본)
+
+// ✅ 다른 어떤 코드보다도 이 라인이 가장 위에 있어야 합니다.
+require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 const cron = require('node-cron');
-require('dotenv').config();
 
 // Sequelize 초기화
 const { initializeDatabase } = require('./models');
@@ -77,6 +78,9 @@ app.post('/api/register', authLimiter, (req, res) => {
     AuthController.register(req, res);
 });
 
+// --- 라우트 설정 ---
+app.get('/health', (_, res) => res.json({ ok: true }));
+app.get('/api/test', (req, res) => res.json({ message: 'API 테스트 성공!' }));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/animals', require('./routes/animalRoutes'));
 app.use('/api/images', require('./routes/imageRoutes'));
@@ -120,20 +124,20 @@ const server = app.listen(PORT, async () => {
     console.log('   - /api/animals/* (동물 정보)');
     console.log('   - /api/images/* (이미지 업로드)');
     console.log(`🌐 서버 주소: http://localhost:${PORT}`);
-    console.log('✅ 서버가 정상적으로 시작되었습니다!');
 
-    // 🚀 서버 시작과 동시에 데이터 동기화 함수를 호출합니다.
     try {
-        await syncAnimalData();
+        console.log('🚀 서버 시작과 함께 데이터 동기화를 시작합니다...');
+        // pool 객체를 전달합니다.
+        await syncAnimalData(pool); 
     } catch (err) {
-        console.error('💥 초기 데이터 동기화 실패:', err);
+        console.error('💥 동기화 중 오류 발생:', err.message);
+        console.log('⚠️ 데이터베이스 연결 없이 서버 계속 실행');
     }
 
-    // 🕒 매일 자정(00:00)에 데이터 동기화 실행
     cron.schedule('0 0 * * *', async () => {
         console.log('🔄 정기 데이터 동기화 시작...');
         try {
-            await syncAnimalData();
+            await syncAnimalData(pool);
             console.log('✅ 정기 데이터 동기화 완료');
         } catch (error) {
             console.error('❌ 정기 데이터 동기화 실패:', error);
@@ -141,10 +145,5 @@ const server = app.listen(PORT, async () => {
     }, {
         timezone: 'Asia/Seoul'
     });
-
-    console.log('⏰ 정기 데이터 동기화 스케줄러 활성화 (매일 자정)');
-});
-
-server.on('error', (error) => {
-    console.error('❌ 서버 오류:', error);
+    console.log('⏰ 정기 데이터 동기화 스케줄러가 활성화되었습니다 (매일 자정).');
 });

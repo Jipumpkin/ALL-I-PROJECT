@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './AnimalDetail.module.css';
+import { useAuth } from '../../src/context/AuthContext';
 
 const AnimalDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const auth = useAuth();
   const [animal, setAnimal] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   useEffect(() => {
     const fetchAnimal = async () => {
@@ -25,8 +28,20 @@ const AnimalDetail = () => {
     fetchAnimal();
   }, [id]);
 
-  const handleImageUploadClick = () => {
-    navigate('/image-uploader');
+  const handleMakerClick = () => {
+    if (auth.isAuthenticated()) {
+      navigate(`/maker?animalId=${animal.id}`, { state: { animal: animal } });
+    } else {
+      navigate('/login');
+    }
+  };
+
+  const handleAdoptionApplyClick = () => {
+    if (auth.isAuthenticated()) {
+      navigate(`/adoption-apply`, { state: { animal: animal } });
+    } else {
+      navigate('/login');
+    }
   };
 
   if (loading) {
@@ -47,10 +62,34 @@ const AnimalDetail = () => {
     unknown: '불명'
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return '정보 없음';
+    try {
+      const date = new Date(dateString);
+      // Check if the date is valid
+      if (isNaN(date.getTime())) {
+        return dateString; // Return original string if date is invalid
+      }
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateString; // Return original string in case of an error
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.profileSection}>
-        <img src={animal.image_url} alt={animal.species} className={styles.profileImage} />
+        <img 
+          src={animal.image_url} 
+          alt={animal.species} 
+          className={styles.profileImage}
+          onClick={() => setShowImageModal(true)}
+          style={{ cursor: 'pointer' }}
+        />
       </div>
 
       <div className={styles.infoWrapper}>
@@ -64,7 +103,7 @@ const AnimalDetail = () => {
             <div className={styles.infoValue}>{genderMap[animal.gender] || '정보 없음'}</div>
           </div>
           <div className={styles.infoRow}>
-            <div className={styles.infoLabel}>나이</div>
+            <div className={styles.infoLabel}>출생년도</div>
             <div className={styles.infoValue}>{animal.age}</div>
           </div>
           <div className={styles.infoRow}>
@@ -81,7 +120,7 @@ const AnimalDetail = () => {
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>구조 일자</div>
-            <div className={styles.infoValue}>{animal.rescued_at}</div>
+            <div className={styles.infoValue}>{formatDate(animal.rescued_at)}</div>
           </div>
         </div>
 
@@ -116,9 +155,37 @@ const AnimalDetail = () => {
         </div>
       </div>
 
-      <button className={styles.uploadButton}>
-        이미지 합성
-      </button>
+      <div className={styles.buttonContainer}>
+        <button className={styles.actionButton} onClick={handleMakerClick}>
+          이미지 합성
+        </button>
+        <button className={styles.actionButton} onClick={handleAdoptionApplyClick}>
+          입양 신청하기
+        </button>
+      </div>
+
+      {/* 이미지 모달 */}
+      {showImageModal && (
+        <div className={styles.imageModalOverlay} onClick={() => setShowImageModal(false)}>
+          <div className={styles.imageModalContent} onClick={(e) => e.stopPropagation()}>
+            <button 
+              className={styles.imageModalClose}
+              onClick={() => setShowImageModal(false)}
+            >
+              ×
+            </button>
+            <img 
+              src={animal.image_url} 
+              alt={animal.species}
+              className={styles.imageModalImage}
+            />
+            <div className={styles.imageModalInfo}>
+              <p><strong>{animal.species}</strong></p>
+              <p>원본 이미지를 보고 계십니다</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
