@@ -16,9 +16,6 @@ const apiLimiter = rateLimit({
     standardHeaders: true, // `RateLimit-*` 헤더 반환
     legacyHeaders: false, // `X-RateLimit-*` 헤더 비활성화
     // IP 기반 제한 - IPv6 호환
-    keyGenerator: (req, res) => {
-        return req.ip || req.connection.remoteAddress || req.socket.remoteAddress || '127.0.0.1';
-    },
     // 요청 성공 여부에 관계없이 카운트
     skipSuccessfulRequests: false,
     skipFailedRequests: false
@@ -38,9 +35,6 @@ const authLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req, res) => {
-        return req.ip || req.connection.remoteAddress || req.socket.remoteAddress || '127.0.0.1';
-    },
     // 실패한 로그인만 카운트 (선택적)
     skipSuccessfulRequests: true,
     skipFailedRequests: false,
@@ -67,8 +61,7 @@ const sensitiveActionLimiter = rateLimit({
         retryAfter: 3600
     },
     standardHeaders: true,
-    legacyHeaders: false,
-    keyGenerator: (req) => req.ip
+    legacyHeaders: false
 });
 
 /**
@@ -84,8 +77,7 @@ const uploadLimiter = rateLimit({
         retryAfter: 900
     },
     standardHeaders: true,
-    legacyHeaders: false,
-    keyGenerator: (req) => req.ip
+    legacyHeaders: false
 });
 
 module.exports = {

@@ -13,6 +13,7 @@ const { initializeDatabase } = require('./models');
 
 // services 파일의 함수를 불러옵니다.
 const { syncAnimalData } = require('./services/animalSync');
+const { pool } = require('./db/connection');
 
 const app = express();
 const PORT = process.env.PORT || 3005; // Changed PORT to 3005 from feature/backend-refactoring
@@ -137,7 +138,7 @@ const server = app.listen(PORT, async () => {
         console.log('🚀 서버 시작과 함께 데이터 동기화를 시작합니다...');
         // If syncAnimalData is refactored to use Sequelize, it might not need 'pool' argument.
         // For now, keeping the argument as it was in HEAD, assuming it will be adapted.
-        await syncAnimalData(); // Removed 'pool' argument as it's not compatible with Sequelize
+        await syncAnimalData(pool); // Removed 'pool' argument as it's not compatible with Sequelize
     } catch (err) {
         console.error('💥 동기화 중 오류 발생:', err.message);
         console.log('⚠️ 데이터베이스 연결 없이 서버 계속 실행');
@@ -147,7 +148,7 @@ const server = app.listen(PORT, async () => {
         console.log('🔄 정기 데이터 동기화 시작...');
         try {
             // Assuming syncAnimalData will be adapted to Sequelize
-            await syncAnimalData(); // Removed 'pool' argument
+            await syncAnimalData(pool); // Removed 'pool' argument
             console.log('✅ 정기 데이터 동기화 완료');
         } catch (error) {
             console.error('❌ 정기 데이터 동기화 실패:', error);
