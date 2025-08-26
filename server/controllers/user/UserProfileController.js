@@ -1,5 +1,5 @@
 const UserService = require('../../services/userService');
-const { User } = require('../../models');
+const { User, UserImage } = require('../../models');
 const hashUtils = require('../../utils/hash');
 
 const UserProfileController = {
@@ -17,7 +17,9 @@ const UserProfileController = {
             res.json({
                 success: true,
                 message: '사용자 프로필을 성공적으로 조회했습니다.',
-                user: userProfile
+                data: {
+                    profile: userProfile
+                }
             });
 
         } catch (error) {
@@ -52,7 +54,7 @@ const UserProfileController = {
             console.log('🔍 updateUserProfile - body:', { nickname, gender, phone_number, current_password: current_password ? '***' : undefined, new_password: new_password ? '***' : undefined });
 
             // 현재 사용자 정보 조회
-            const user = await User.findById(userId);
+            const user = await User.findByPk(userId);
             if (!user) {
                 return res.status(404).json({
                     success: false,
@@ -110,7 +112,7 @@ const UserProfileController = {
             }
 
             // 업데이트된 사용자 정보 조회
-            const updatedUser = await User.findById(userId);
+            const updatedUser = await User.findByPk(userId);
             
             const userProfile = {
                 id: updatedUser.user_id,
@@ -119,13 +121,17 @@ const UserProfileController = {
                 nickname: updatedUser.nickname,
                 gender: updatedUser.gender,
                 phone_number: updatedUser.phone_number,
-                updated_at: updatedUser.updated_at
+                created_at: updatedUser.created_at,
+                updated_at: updatedUser.updated_at,
+                last_login_at: updatedUser.last_login_at
             };
 
             res.json({
                 success: true,
                 message: '프로필이 성공적으로 업데이트되었습니다.',
-                user: userProfile
+                data: {
+                    profile: userProfile
+                }
             });
 
         } catch (error) {
@@ -159,7 +165,7 @@ const UserProfileController = {
             }
 
             // 현재 사용자 정보 조회
-            const user = await User.findById(userId);
+            const user = await User.findByPk(userId);
             if (!user) {
                 return res.status(404).json({
                     success: false,
@@ -194,6 +200,141 @@ const UserProfileController = {
             res.status(500).json({
                 success: false,
                 message: '회원탈퇴 처리 중 오류가 발생했습니다.',
+                error: error.message
+            });
+        }
+    },
+
+    /**
+     * 사용자 이미지 저장 (회원가입 시 집 이미지를 프로필 이미지로 저장)
+     * POST /api/users/:userId/images
+     */
+    saveUserImage: async (req, res) => {
+        try {
+            const { userId } = req.params;
+            const { image_url, image_data, filename, mime_type, file_size, storage_type } = req.body;
+
+            console.log('🔍 saveUserImage - userId:', userId);
+            console.log('🔍 saveUserImage - image_url:', image_url ? image_url.substring(0, 50) + '...' : 'null');
+            console.log('🔍 saveUserImage - storage_type:', storage_type);
+
+            // 필수 입력값 검증
+            if (!image_url && !image_data) {
+                return res.status(400).json({
+                    success: false,
+                    message: '이미지 URL 또는 이미지 데이터가 필요합니다.',
+                    errors: { image: '이미지 정보를 제공해주세요.' }
+                });
+            }
+
+            // 사용자 존재 확인
+            const user = await User.findByPk(userId);
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: '사용자를 찾을 수 없습니다.',
+                    errors: { user: '존재하지 않는 사용자입니다.' }
+                });
+            }
+
+            // 기존 이미지가 있는지 확인 (프로필 이미지는 하나만 유지)
+            const existingImages = await UserImage.findAll({
+                where: { user_id: userId },
+                order: [['uploaded_at', 'DESC']]
+            });
+
+            // 새 이미지 저장
+            const newImage = await UserImage.create({
+                user_id: userId,
+                image_url: image_url || null,
+                image_data: image_data || null,
+                filename: filename || null,
+                mime_type: mime_type || 'image/jpeg',
+                file_size: file_size || null,
+                storage_type: storage_type || (image_url ? 'url' : 'base64'),
+                uploaded_at: new Date()
+            });
+
+            // 기존 이미지들 삭제 (최신 하나만 유지)
+            if (existingImages.length > 0) {
+                const imageIdsToDelete = existingImages.map(img => img.image_id);
+                await UserImage.destroy({
+                    where: { image_id: imageIdsToDelete }
+                });
+                console.log('🗑️ 기존 이미지', imageIdsToDelete.length, '개 삭제 완료');
+            }
+
+            res.json({
+                success: true,
+                message: '사용자 이미지가 성공적으로 저장되었습니다.',
+                data: {
+                    image_id: newImage.image_id,
+                    image_url: newImage.image_url,
+                    storage_type: newImage.storage_type,
+                    uploaded_at: newImage.uploaded_at
+                }
+            });
+
+        } catch (error) {
+            console.error('Save user image error:', error);
+            res.status(500).json({
+                success: false,
+                message: '이미지 저장 중 오류가 발생했습니다.',
+                error: error.message
+            });
+        }
+    },
+
+    /**
+     * 사용자 이미지 조회
+     * GET /api/users/:userId/images
+     */
+    getUserImages: async (req, res) => {
+        try {
+            const { userId } = req.params;
+
+            console.log('🔍 getUserImages - userId:', userId);
+
+            // 사용자 존재 확인
+            const user = await User.findByPk(userId);
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: '사용자를 찾을 수 없습니다.',
+                    errors: { user: '존재하지 않는 사용자입니다.' }
+                });
+            }
+
+            // 사용자 이미지 조회
+            const userImages = await UserImage.findAll({
+                where: { user_id: userId },
+                order: [['uploaded_at', 'DESC']]
+            });
+
+            console.log(`사용자 ${userId}의 이미지 ${userImages.length}개 조회`);
+
+            res.json({
+                success: true,
+                message: '사용자 이미지를 성공적으로 조회했습니다.',
+                data: {
+                    images: userImages.map(image => ({
+                        image_id: image.image_id,
+                        image_url: image.image_url,
+                        image_data: image.image_data,
+                        filename: image.filename,
+                        mime_type: image.mime_type,
+                        file_size: image.file_size,
+                        storage_type: image.storage_type,
+                        uploaded_at: image.uploaded_at
+                    }))
+                }
+            });
+
+        } catch (error) {
+            console.error('Get user images error:', error);
+            res.status(500).json({
+                success: false,
+                message: '이미지 조회 중 오류가 발생했습니다.',
                 error: error.message
             });
         }

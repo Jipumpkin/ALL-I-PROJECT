@@ -1,43 +1,35 @@
 import axios from "axios";
 
-// 환경변수에서 API URL 가져오기
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3003';
+// 개발(DEV)에서는 '/api'로 보내서 vite 프록시를 타게 하고,
+// 운영(PROD)에서는 환경변수에 설정한 절대주소를 사용합니다.
+const API_BASE_URL = import.meta.env.DEV
+  ? "/api"
+  : (import.meta.env.VITE_API_BASE_URL || "/api");
 
 const api = axios.create({
-    baseURL: API_BASE_URL,
-    timeout: 10000,
-    headers: {
-        'Content-Type': 'application/json',
-    },
+  baseURL: API_BASE_URL,
+  timeout: 10000,
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true, // 쿠키/세션 쓰면 켜두세요 (서버 CORS 옵션과 짝)
 });
 
-// 요청 인터셉터 - 토큰 자동 추가
-api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
-// 응답 인터셉터 - 에러 처리
 api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            // 토큰 만료 시 로그아웃 처리
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            localStorage.removeItem('user');
-            window.location.href = '/login';
-        }
-        return Promise.reject(error);
+  (res) => res,
+  async (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      window.location.href = "/login";
     }
+    return Promise.reject(error);
+  }
 );
 
 export default api;

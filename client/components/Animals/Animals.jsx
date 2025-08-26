@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../src/context/AuthContext';
+import api from '../../axios';
 import styles from './Animals.module.css';
 import Pagination from '../Pagination/Pagination';
 import ScrollAnimation from '../ScrollAnimation/ScrollAnimation';
@@ -10,6 +12,7 @@ import ErrorMessage from '../ErrorMessage/ErrorMessage';
 const Animals = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
 
   const [animals, setAnimals] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
@@ -18,6 +21,7 @@ const Animals = () => {
   const [shelters, setShelters] = useState([]);
   const [regions, setRegions] = useState([]);
   const [selectedRegion, setSelectedRegion] = useState('all');
+  const [userImages, setUserImages] = useState([]);
 
   // ✅ 초기 queryParams
   const [queryParams, setQueryParams] = useState(() => {

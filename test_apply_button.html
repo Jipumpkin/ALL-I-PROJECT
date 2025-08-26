@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test MyAccount Apply Button</title>
+</head>
+<body>
+    <h1>MyAccount Apply Button Test</h1>
+    <p>Go to: <a href="http://localhost:5174" target="_blank">http://localhost:5174</a></p>
+    <h2>Test Steps:</h2>
+    <ol>
+        <li>Login with test credentials (test@example.com / Test123!@#)</li>
+        <li>Navigate to MyAccount</li>
+        <li>Click "사진 추가" or "사진 변경" button</li>
+        <li>Upload an image file</li>
+        <li>Verify that "적용하기" button appears</li>
+        <li>Click "적용하기" button</li>
+        <li>Check if image is updated in the profile</li>
+    </ol>
+    
+    <h2>Expected Behavior:</h2>
+    <ul>
+        <li>✅ Apply button should appear when image is selected</li>
+        <li>✅ Apply button should call handleImageUpdate function</li>
+        <li>✅ Profile image should be updated in the database</li>
+        <li>✅ Modal should close after successful update</li>
+        <li>✅ Success message should appear</li>
+    </ul>
+</body>
+</html>

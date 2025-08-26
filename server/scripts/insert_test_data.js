@@ -34,7 +34,7 @@ async function insertTestData() {
         await connection.execute('SET FOREIGN_KEY_CHECKS = 1');
         console.log('✅ 기존 데이터 정리 완료');
         
-        // 테스트 사용자 데이터 삽입 (Mock API와 동일한 사용자들)
+        // 테스트 사용자 데이터 삽입
         console.log('👤 사용자 데이터 삽입...');
         const users = [
             ['testuser', 'test@example.com', '$2b$12$NGU9YUwB6qIuMIuD6.Ye5.6rcYnVBW2SjReFMpos.TWctknK7MPmu', '테스트유저', 'male', '010-1234-5678'],

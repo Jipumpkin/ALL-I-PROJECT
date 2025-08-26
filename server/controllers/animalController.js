@@ -1,5 +1,4 @@
-const Animal = require('../models/Animal');
-const Shelter = require('../models/Shelter');
+const { Animal, Shelter } = require('../models');
 const axios = require('axios');
 const db = require('../config/database');
 
@@ -56,7 +55,7 @@ exports.getAnimals = async (req, res) => {
 // 특정 유기동물 상세 정보 조회
 exports.getAnimalById = async (req, res) => {
     try {
-        const animal = await Animal.findById(req.params.id);
+        const animal = await Animal.findByIdWithDetails(req.params.id);
         if (animal) {
             res.json(animal);
         } else {

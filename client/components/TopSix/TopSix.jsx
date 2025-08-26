@@ -51,7 +51,7 @@ const TopSix = () => {
             animals.map((animal) => (
               <div key={animal.animal_id} className={styles['info-item']}>
                 <Link to={`/animal/${animal.animal_id}`}>
-                  <img src={animal.image_url} alt={animal.species} className={styles.animalImage} onError={(e) => { e.target.src = '/images/unknown_animal.png'; }} />
+                  <img src={animal.image_url} alt={animal.species} className={styles['info-item-image']} onError={(e) => { e.target.src = '/images/unknown_animal.png'; }} />
                 </Link>
               </div>
             ))

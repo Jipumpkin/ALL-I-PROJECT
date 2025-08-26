@@ -88,3 +88,125 @@ h2 {
 .login-links a:hover {
   text-decoration: underline;
 }
+
+/* 토글 버튼 스타일 */
+.toggle-container {
+  display: flex;
+  gap: 0;
+  margin-bottom: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+}
+
+.toggle-button {
+  flex: 1;
+  padding: 12px;
+  background-color: #f5f5f5;
+  color: var(--color-text-secondary);
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.toggle-button:first-child {
+  border-right: 1px solid var(--color-border);
+}
+
+.toggle-button:hover {
+  background-color: #e8e8e8;
+}
+
+.toggle-button.active {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+/* 에러 메시지 스타일 */
+.error-message {
+  color: #d32f2f;
+  font-size: 14px;
+  margin-top: -8px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* 결과 표시 스타일 */
+.result-container {
+  padding: 20px 0;
+}
+
+.result-box {
+  background-color: #f9f9f9;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  padding: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.result-box h3 {
+  color: var(--color-primary);
+  margin-bottom: 16px;
+  font-size: 18px;
+}
+
+.result-username {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: var(--color-text-primary);
+}
+
+.result-username strong {
+  color: var(--color-primary);
+  font-size: 20px;
+}
+
+.result-email {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+/* 버튼 그룹 스타일 */
+.button-group {
+  display: flex;
+  gap: 12px;
+}
+
+.reset-button,
+.login-button {
+  flex: 1;
+  padding: 12px;
+  border-radius: var(--border-radius-md);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.reset-button {
+  background-color: #f5f5f5;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.reset-button:hover {
+  background-color: #e8e8e8;
+}
+
+.login-button {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  display: inline-block;
+  line-height: 1.5;
+}
+
+.login-button:hover {
+  background-color: var(--color-primary-hover);
+  text-decoration: none;
+}

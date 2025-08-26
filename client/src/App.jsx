@@ -22,6 +22,7 @@ import AdoptionApply from "../components/AdoptionApply/AdoptionApply";
 import NotFound from "../components/NotFound/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import ShelterMap from "../components/ShelterMap/ShelterMap";
+import Admin from "../components/Admin/Admin";
 
 function App() {
   return (
@@ -72,6 +73,10 @@ function App() {
               <AccountD />
             </ProtectedRoute>
           } />
+          
+          {/* 관리자 페이지 */}
+          <Route path="/admin" element={<Admin />} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
