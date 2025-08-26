@@ -9,7 +9,14 @@
       "Bash(taskkill:*)",
       "Bash(npm start)",
       "Bash(npm run lint)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(mysql:*)",
+      "Bash(npm install:*)",
+      "Bash(git pull:*)",
+      "Bash(git push:*)",
+      "Bash(git fetch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []

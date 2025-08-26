@@ -1,5 +1,5 @@
 const jwtUtils = require('../utils/jwt');
-const User = require('../models/User');
+const { User } = require('../models');
 const { initializeDatabase } = require('../config/database');
 
 /**
@@ -66,7 +66,7 @@ const authMiddleware = async (req, res, next) => {
         
         // 데이터베이스에서 사용자 확인
         console.log('🔍 Auth middleware - Looking for user with ID:', userId);
-        const user = await User.findById(userId);
+        const user = await User.findByPk(userId);
         console.log('🔍 Auth middleware - Found user:', user ? 'YES' : 'NO');
         if (!user) {
             console.log('🔍 Auth middleware - User not found in database');
@@ -78,8 +78,9 @@ const authMiddleware = async (req, res, next) => {
         }
 
         // 4. req.user에 사용자 정보 추가 (비밀번호 제외)
-        const { password_hash, ...userWithoutPassword } = user;
-        req.user = userWithoutPassword;
+        const userData = user.dataValues || user;
+        const { password_hash, ...userWithoutPassword } = userData;
+        req.user = { ...userWithoutPassword, userId: userData.user_id || userData.id };
         req.token = token;
 
         next();
@@ -119,10 +120,11 @@ const optionalAuthMiddleware = async (req, res, next) => {
                 const userId = decoded.userId || decoded.id;
                 
                 if (userId) {
-                    const user = await User.findById(userId);
+                    const user = await User.findByPk(userId);
                     if (user) {
-                        const { password_hash, ...userWithoutPassword } = user;
-                        req.user = userWithoutPassword;
+                        const userData = user.dataValues || user;
+                        const { password_hash, ...userWithoutPassword } = userData;
+                        req.user = { ...userWithoutPassword, userId: userData.user_id || userData.id };
                         req.token = token;
                     }
                 }

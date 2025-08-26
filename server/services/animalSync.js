@@ -3,7 +3,7 @@
 const https = require('https');
 const url = require('url');
 const mysql = require('mysql2/promise');
-const { getPool } = require('../config/database');
+const { pool } = require('../db/connection');
 
 // --- API 호출 및 데이터베이스 저장 함수 ---
 async function syncAnimalData() {
@@ -68,7 +68,7 @@ async function syncAnimalData() {
     console.log(`✅ API에서 ${items.length}건의 데이터를 성공적으로 가져왔습니다.`);
 
     console.log('🔌 데이터베이스에 연결 중...');
-    connection = await getPool();
+    connection = await pool.getConnection();
     console.log('✅ 데이터베이스 연결 성공!');
 
     await connection.beginTransaction();
@@ -115,9 +115,20 @@ async function syncAnimalData() {
     });
 
     for (const animal of transformedData) {
+      // 중복 체크 먼저 수행
+      const [existingAnimal] = await connection.execute(
+        'SELECT animal_id FROM animals WHERE ext_id = ?',
+        [animal.ext_id]
+      );
+      
+      if (existingAnimal.length > 0) {
+        // 이미 존재하는 동물은 스킵
+        continue;
+      }
+
       const [shelterResult] = await connection.execute(
-        `INSERT INTO shelters (shelter_name, address, region, contact_number, email, ext_id)
-         VALUES (?, ?, ?, ?, ?, ?)
+        `INSERT INTO shelters (shelter_name, address, region, contact_number, email, ext_id, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP())
          ON DUPLICATE KEY UPDATE
          shelter_name=VALUES(shelter_name), address=VALUES(address), region=VALUES(region), contact_number=VALUES(contact_number)`,
         [
@@ -143,13 +154,13 @@ async function syncAnimalData() {
 
       const [animalResult] = await connection.execute(
         `INSERT INTO animals (
-          species, gender, age, image_url, shelter_id, status, region, rescued_at, ext_id, colorCd, specialMark
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          species, gender, age, image_url, shelter_id, status, region, rescued_at, ext_id, colorCd, specialMark, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())
         ON DUPLICATE KEY UPDATE
           species = VALUES(species), gender = VALUES(gender), age = VALUES(age),
           image_url = VALUES(image_url), shelter_id = VALUES(shelter_id), status = VALUES(status),
           region = VALUES(region), rescued_at = VALUES(rescued_at), colorCd = VALUES(colorCd),
-          specialMark = VALUES(specialMark)`,
+          specialMark = VALUES(specialMark), updated_at = VALUES(updated_at)`,
         [
           animal.animal_species, animal.animal_gender, animal.animal_age, animal.animal_image_url,
           shelterId, animal.animal_status, animal.animal_region, animal.animal_rescued_at,
@@ -169,7 +180,7 @@ async function syncAnimalData() {
     console.error('💥 동기화 중 오류 발생:', error);
   } finally {
     if (connection) {
-      await connection.end();
+      connection.release();
       console.log('🔌 데이터베이스 연결 종료.');
     }
   }

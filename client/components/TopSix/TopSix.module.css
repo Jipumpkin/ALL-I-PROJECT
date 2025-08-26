@@ -170,6 +170,11 @@
     height: 80px;
   }
   
+  .info-item-image {
+    width: 80px;
+    height: 80px;
+  }
+  
   .scroll-button {
     width: 36px;
     height: 36px;
@@ -184,6 +189,11 @@
   }
   
   .info-item {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .info-item-image {
     width: 70px;
     height: 70px;
   }

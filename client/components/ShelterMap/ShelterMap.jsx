@@ -9,12 +9,20 @@ const ShelterMap = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [shelters, setShelters] = useState([]);
+  const [map, setMap] = useState(null);
 
   useEffect(() => {
     const loadKakaoScript = () => {
       return new Promise((resolve, reject) => {
         if (window.kakao && window.kakao.maps) {
           resolve();
+          return;
+        }
+
+        // 임시 해결: 카카오 API 키가 없을 경우 스크립트 로드 생략
+        if (!import.meta.env.VITE_KAKAO_MAP_API_KEY) {
+          console.warn('카카오 지도 API 키가 설정되지 않았습니다. 지도 기능을 사용할 수 없습니다.');
+          reject(new Error('KAKAO_API_KEY_NOT_FOUND'));
           return;
         }
 
@@ -64,7 +72,11 @@ const ShelterMap = () => {
         }
       }).catch((error) => {
         console.error("스크립트 로드 실패:", error);
-        setError("지도를 불러올 수 없습니다. 네트워크를 확인해주세요.");
+        if (error.message === 'KAKAO_API_KEY_NOT_FOUND') {
+          setError("지도 서비스 설정이 완료되지 않았습니다. 관리자에게 문의해주세요.");
+        } else {
+          setError("지도를 불러올 수 없습니다. 네트워크를 확인해주세요.");
+        }
         setIsLoading(false);
       });
     };

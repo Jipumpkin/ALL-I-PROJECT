@@ -6,7 +6,10 @@ const animalController = require('../controllers/animalController');
 router.get('/', animalController.getAnimals);
 
 // GET /api/animals/shelters -> 모든 보호소 목록 조회 (새로운 라우트)
-router.get('/shelters', animalController.getAllShelters);
+router.get('/shelters', animalController.getShelters);
+
+// 이미지 프록시
+router.get('/image-proxy', animalController.imageProxy);
 
 // GET /api/animals/oldest -> 가장 오래된 동물 조회
 router.get('/oldest', animalController.getOldestAnimals);

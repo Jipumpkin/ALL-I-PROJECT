@@ -12,7 +12,6 @@ const TopSix = () => {
   useEffect(() => {
     const fetchOldestAnimals = async () => {
       try {
-        // Assuming an API endpoint for oldest animals
         const response = await axios.get('/api/animals/oldest?limit=12');
         setAnimals(response.data.animals);
       } catch (err) {
@@ -48,13 +47,17 @@ const TopSix = () => {
           &lt;
         </button>
         <div className={styles['info-list']} ref={scrollRef}>
-          {animals.map((animal) => (
-            <div key={animal.animal_id} className={styles['info-item']}>
-              <Link to={`/animal/${animal.animal_id}`}>
-                <img src={animal.image_url} alt={animal.species} className={styles['info-item-image']} />
-              </Link>
-            </div>
-          ))}
+          {animals && animals.length > 0 ? (
+            animals.map((animal) => (
+              <div key={animal.animal_id} className={styles['info-item']}>
+                <Link to={`/animal/${animal.animal_id}`}>
+                  <img src={animal.image_url} alt={animal.species} className={styles['info-item-image']} onError={(e) => { e.target.src = '/images/unknown_animal.png'; }} />
+                </Link>
+              </div>
+            ))
+          ) : (
+            <p>보호소에서 가장 오래된 동물을 찾을 수 없습니다.</p>
+          )}
         </div>
         <button className={`${styles['scroll-button']} ${styles.right}`} onClick={() => scroll(300)}>
           &gt;
