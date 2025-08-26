@@ -16,7 +16,7 @@ const { syncAnimalData } = require('./services/animalSync');
 const { pool } = require('./db/connection');
 
 const app = express();
-const PORT = process.env.PORT || 3005; // Changed PORT to 3005 from feature/backend-refactoring
+const PORT = process.env.PORT || 3003; // Changed PORT to 3005 from feature/backend-refactoring
 
 // CORS 보안 설정 - 개발환경과 프로덕션 분리
 const corsOptions = {

@@ -1,10 +1,10 @@
 import axios from "axios";
 
-// 환경변수에서 API URL 가져오기
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3003';
-
 const api = axios.create({
-    baseURL: API_BASE_URL,
+    // Vite 프록시를 사용하므로 상대 경로로 설정합니다.
+    // 이렇게 하면 모든 요청이 Vite 개발 서버를 통해 전달되고,
+    // vite.config.js의 프록시 설정에 따라 백엔드로 전달됩니다.
+    baseURL: '/', 
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',

@@ -46,15 +46,30 @@ router.get('/:id/images', async (req, res) => {
     const { id } = req.params;
     
     try {
-        const { UserImage } = require('../models');
+        const { User, UserImage } = require('../models');
+        let userId;
+        const parsedId = parseInt(id, 10);
+
+        if (isNaN(parsedId)) {
+            // If 'id' is not a number, assume it's a username
+            const user = await User.findOne({ where: { username: id } });
+            if (user) {
+                userId = user.user_id;
+            } else {
+                return res.status(404).json({ success: false, message: `사용자 '${id}'를 찾을 수 없습니다.` });
+            }
+        } else {
+            // If 'id' is a number, use it directly
+            userId = parsedId;
+        }
         
         // 사용자의 모든 이미지 조회 (Base64 데이터 포함)
         const images = await UserImage.findAll({
-            where: { user_id: parseInt(id) },
+            where: { user_id: userId },
             order: [['uploaded_at', 'DESC']]
         });
         
-        console.log(`사용자 ${id}의 이미지 ${images.length}개 조회`);
+        console.log(`사용자 ${id}(ID: ${userId})의 이미지 ${images.length}개 조회`);
         
         res.json({
             success: true,
