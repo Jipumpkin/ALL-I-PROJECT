@@ -14,7 +14,7 @@ const Main = () => {
     const fetchAnimals = async () => {
       try {
         // 백엔드 API 엔드포인트를 /api/animals/list로 수정합니다.
-        const response = await api.get('/api/animals?filter=all&page=1');
+        const response = await api.get('/animals?filter=all&page=1');
         setAnimals(response.data.animals);
       } catch (err) {
         setError(err);

@@ -55,13 +55,19 @@ const ShelterMap = () => {
                 initializeMap(lat, lng);
               },
               (error) => {
-                console.error("Geolocation error: ", error);
+                if (error.code === 1) {
+                  console.log("📍 위치 정보 접근이 거부되었습니다. 기본 위치(서울)로 지도를 표시합니다.");
+                } else if (error.code === 2) {
+                  console.log("📍 위치 정보를 가져올 수 없습니다. 기본 위치(서울)로 지도를 표시합니다.");
+                } else {
+                  console.log("📍 위치 서비스 시간이 초과되었습니다. 기본 위치(서울)로 지도를 표시합니다.");
+                }
                 // 위치를 가져올 수 없을 경우 기본 위치(서울시청)로 지도를 초기화합니다.
                 initializeMap(37.5665, 126.9780);
               }
             );
           } else {
-            console.error("Geolocation is not supported by this browser.");
+            console.log("📍 이 브라우저는 위치 서비스를 지원하지 않습니다. 기본 위치(서울)로 지도를 표시합니다.");
             // Geolocation을 지원하지 않을 경우 기본 위치로 지도를 초기화합니다.
             initializeMap(37.5665, 126.9780);
           }

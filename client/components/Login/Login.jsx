@@ -24,13 +24,13 @@ const Login = () => {
     setError('');
 
     try {
-      const res = await api.post('/api/login', {
+      const res = await api.post('/login', {
         username: formData.username,
         password: formData.password,
       });
 
       if (res.data?.success) {
-        const { user, tokens } = res.data.data || {};
+        const { user, tokens } = res.data || {};
         login(user, tokens);
 
         const from = location.state?.from?.pathname || '/';
@@ -84,11 +84,7 @@ const Login = () => {
               />
             </div>
 
-            <button
-              type="submit"
-              className={styles['login-button']}
-              disabled={isLoading}
-            >
+            <button type="submit" className={styles['login-button']} disabled={isLoading}>
               {isLoading ? '로그인 중...' : '로그인'}
             </button>
           </form>
