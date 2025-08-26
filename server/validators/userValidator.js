@@ -11,6 +11,9 @@ const handleValidationErrors = (req, res, next) => {
       formattedErrors[error.path] = error.msg;
     });
 
+    console.log('🔴 검증 오류:', JSON.stringify(formattedErrors, null, 2));
+    console.log('🔍 요청 데이터:', JSON.stringify(req.body, null, 2));
+
     return ResponseFormatter.validationError(res, formattedErrors, '입력값 검증에 실패했습니다.');
   }
   next();
@@ -35,7 +38,7 @@ const validateRegister = [
   body('password')
     .isLength({ min: VALIDATION.PASSWORD_MIN_LENGTH })
     .withMessage(`비밀번호는 ${VALIDATION.PASSWORD_MIN_LENGTH}자 이상이어야 합니다.`)
-    .matches(VALIDATION.PASSWORD_REGEX)
+    .matches(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
     .withMessage('비밀번호는 영문자, 숫자, 특수문자를 포함해야 합니다.'),
 
   body('nickname')
