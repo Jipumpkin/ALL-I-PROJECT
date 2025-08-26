@@ -7,7 +7,7 @@ import ScrollAnimation from '../ScrollAnimation/ScrollAnimation';
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +37,7 @@ const Login = () => {
       });
 
       if (response.data.success) {
-        login(response.data.data.user, response.data.data.tokens);
+        login(response.data.user, response.data.tokens);
         // 보호된 페이지에서 온 경우 원래 페이지로, 아니면 메인으로
         const from = location.state?.from?.pathname || '/';
         navigate(from, { replace: true });
@@ -74,16 +74,17 @@ const Login = () => {
                 </ScrollAnimation>
               )}
               
-              {/* 📧 이메일 입력: fadeInLeft 애니메이션 */}
+              {/* 🆔 아이디 입력: fadeInLeft 애니메이션 */}
               <ScrollAnimation animation="fadeInLeft" delay={300}>
                 <div className={styles["input-group"]}>
-                  <label htmlFor="email">이메일</label>
+                  <label htmlFor="username">아이디</label>
                   <input 
-                    type="email" 
-                    id="email" 
-                    name="email" 
-                    value={formData.email}
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    value={formData.username}
                     onChange={handleChange}
+                    placeholder="아이디를 입력하세요"
                     required
                   />
                 </div>

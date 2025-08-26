@@ -33,17 +33,20 @@ const validateRegister = [
     .withMessage('이메일은 100자 이하여야 합니다.'),
 
   body('password')
-    .isLength({ min: VALIDATION.PASSWORD_MIN_LENGTH })
-    .withMessage(`비밀번호는 ${VALIDATION.PASSWORD_MIN_LENGTH}자 이상이어야 합니다.`)
-    .matches(VALIDATION.PASSWORD_REGEX)
-    .withMessage('비밀번호는 영문자, 숫자, 특수문자를 포함해야 합니다.'),
+    .isLength({ min: 1 })
+    .withMessage('비밀번호를 입력해주세요.')
+    .isLength({ max: 255 })
+    .withMessage('비밀번호가 너무 깁니다.'),
 
   body('nickname')
     .optional()
     .trim()
     .isLength({ max: 50 })
     .withMessage('닉네임은 50자 이하여야 합니다.')
-    .matches(/^[a-zA-Z0-9가-힣\s_]+$/)
+    .custom((value) => {
+      if (!value || value === '') return true; // 빈 값 허용
+      return /^[a-zA-Z0-9가-힣\s_]+$/.test(value);
+    })
     .withMessage('닉네임은 영문, 한글, 숫자, 공백, 언더스코어만 사용할 수 있습니다.'),
 
   body('gender')
@@ -121,10 +124,10 @@ const validateProfileUpdate = [
 
   body('new_password')
     .optional()
-    .isLength({ min: 8 })
-    .withMessage('새 비밀번호는 8자 이상이어야 합니다.')
-    .matches(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
-    .withMessage('새 비밀번호는 영문자, 숫자, 특수문자를 포함해야 합니다.')
+    .isLength({ min: 1 })
+    .withMessage('새 비밀번호를 입력해주세요.')
+    .isLength({ max: 255 })
+    .withMessage('새 비밀번호가 너무 깁니다.')
     .custom((value, { req }) => {
       if (value && !req.body.current_password) {
         throw new Error('비밀번호 변경시 현재 비밀번호가 필요합니다.');

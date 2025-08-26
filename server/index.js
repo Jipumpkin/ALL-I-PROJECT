@@ -23,6 +23,7 @@ app.use(express.json());
 app.get('/health', (_, res) => res.json({ ok: true }));
 app.get('/api/test', (req, res) => res.json({ message: 'API 테스트 성공!' }));
 app.use('/api/animals', require('./routes/animalRoutes'));
+app.use('/api/users', require('./routes/userRoutes'));
 // app.use('/api/ai', require('./routes/aiRoutes'));
 // app.use('/api/shelters', require('./routes/shelterRoutes')); // TODO: 구현 예정
 // app.use('/api/auth', require('./routes/authRoutes'));

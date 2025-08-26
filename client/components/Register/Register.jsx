@@ -70,11 +70,13 @@ const Register = () => {
 
   const registerHandler = async (e) => {
     e.preventDefault();
+    console.log('🎯 회원가입 시작');
     setIsLoading(true);
     setError('');
 
     // 아이디 중복체크 확인
     if (!isUsernameChecked) {
+      console.log('❌ 중복체크 미완료');
       setError('아이디 중복체크를 완료해주세요.');
       setIsLoading(false);
       return;
@@ -82,6 +84,7 @@ const Register = () => {
 
     // 비밀번호 확인
     if (formData.password !== formData.confirmPassword) {
+      console.log('❌ 비밀번호 불일치');
       setError('비밀번호가 일치하지 않습니다.');
       setIsLoading(false);
       return;
@@ -89,32 +92,44 @@ const Register = () => {
 
     // 필수 필드 검증
     if (!formData.username || !formData.password || !formData.email || !formData.nickname) {
+      console.log('❌ 필수 필드 누락:', { 
+        username: !!formData.username, 
+        password: !!formData.password, 
+        email: !!formData.email, 
+        nickname: !!formData.nickname 
+      });
       setError('아이디, 비밀번호, 이메일, 닉네임은 필수 입력 항목입니다.');
       setIsLoading(false);
       return;
     }
 
+    console.log('✅ 사전 검증 통과');
+
+    // API 요청 데이터 구성 (try 블록 밖에서 정의)
+    const requestData = {
+      username: formData.username,
+      password: formData.password,
+      email: formData.email,
+      nickname: formData.nickname,
+      gender: formData.gender || null,
+      phone_number: formData.phone || null
+    };
+
+    console.log('📤 서버 요청 시작:', { ...requestData, password: '***' });
 
     try {
-      // API 요청 데이터 구성
-      const requestData = {
-        username: formData.username,
-        password: formData.password,
-        email: formData.email,
-        nickname: formData.nickname,
-        gender: formData.gender || null,
-        phone_number: formData.phone || null
-      };
-
+      
       const response = await axios.post('http://localhost:3003/api/users/auth/register', requestData, {
         headers: {
           'Content-Type': 'application/json',
         }
       });
+      
+      console.log('📥 서버 응답 받음:', response.data);
 
       if (response.data.success) {
         // 회원가입 성공 시 실제 업로드된 이미지 데이터 추가
-        const userId = response.data.data.user.id;
+        const userId = response.data.user.id;
         if (uploadedImages.length > 0) {
           try {
             // 첫 번째 업로드된 이미지 사용
@@ -136,22 +151,24 @@ const Register = () => {
         }
         
         // 자동 로그인
-        login(response.data.data.user, response.data.data.tokens);
+        login(response.data.user, response.data.tokens);
         navigate('/');
       } else {
         setError(response.data.message || '회원가입에 실패했습니다.');
       }
     } catch (error) {
       console.error('회원가입 오류:', error);
+      console.error('보낸 데이터:', { ...requestData, password: '***' });
+      console.error('응답 데이터:', error.response?.data);
+      
       if (error.response?.data?.errors) {
         const errors = error.response.data.errors;
-        if (errors.username) {
-          setError(errors.username);
-        } else if (errors.email) {
-          setError(errors.email);
-        } else {
-          setError(error.response.data.message || '회원가입에 실패했습니다.');
-        }
+        console.error('검증 오류들:', errors);
+        
+        // 첫 번째 오류를 표시
+        const firstErrorField = Object.keys(errors)[0];
+        const firstErrorMessage = errors[firstErrorField];
+        setError(`${firstErrorField}: ${firstErrorMessage}`);
       } else if (error.response) {
         setError(error.response.data.message || '회원가입에 실패했습니다.');
       } else {

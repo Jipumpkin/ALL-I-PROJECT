@@ -76,7 +76,9 @@ module.exports = {
         NICKNAME_MIN_LENGTH: 2,
         NICKNAME_MAX_LENGTH: 20,
         PHONE_REGEX: /^010-\d{4}-\d{4}$/,
-        EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        PASSWORD_MIN_LENGTH: 8,
+        PASSWORD_REGEX: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/
     },
 
     // HTTP 상태 코드
