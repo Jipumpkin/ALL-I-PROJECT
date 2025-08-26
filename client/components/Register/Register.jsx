@@ -38,6 +38,7 @@ const Register = () => {
   const [showEmailSuggestions, setShowEmailSuggestions] = useState(false);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0);
   const [emailCheckTimer, setEmailCheckTimer] = useState(null);
+  const [nicknameError, setNicknameError] = useState('');
   
   // 자주 사용되는 이메일 도메인
   const emailDomains = [
@@ -70,6 +71,23 @@ const Register = () => {
       setIsUsernameChecked(false);
       setUsernameCheckMessage('');
     }
+
+    // 닉네임 유효성 검사
+    if (name === 'nickname') {
+      if (value === '') {
+        setNicknameError('');
+      } else if (!validateNickname(value)) {
+        if (value.length < 2) {
+          setNicknameError('닉네임은 2자 이상이어야 합니다.');
+        } else if (value.length > 20) {
+          setNicknameError('닉네임은 20자 이하여야 합니다.');
+        } else {
+          setNicknameError('닉네임은 한글과 영어만 사용할 수 있습니다.');
+        }
+      } else {
+        setNicknameError('');
+      }
+    }
     
     // 이메일 필드 처리 - @ 입력 시 도메인 제안 표시 및 중복 체크
     if (name === 'email') {
@@ -100,6 +118,21 @@ const Register = () => {
     }
   };
 
+
+  // 닉네임 유효성 검사 함수
+  const validateNickname = (nickname) => {
+    if (!nickname) return false;
+    
+    // 한글과 영어만 허용 (공백 제외)
+    const nicknameRegex = /^[가-힣a-zA-Z]+$/;
+    
+    // 길이 검사 (2-20자)
+    if (nickname.length < 2 || nickname.length > 20) {
+      return false;
+    }
+    
+    return nicknameRegex.test(nickname);
+  };
 
   // 연락처 유효성 검사 함수
   const validatePhoneNumber = (phone) => {
@@ -281,6 +314,19 @@ const Register = () => {
     // 필수 필드 검증
     if (!formData.username || !formData.password || !formData.email || !formData.nickname || !formData.phone) {
       setError('아이디, 비밀번호, 이메일, 닉네임, 연락처는 필수 입력 항목입니다.');
+      setIsLoading(false);
+      return;
+    }
+
+    // 닉네임 유효성 검사
+    if (!validateNickname(formData.nickname)) {
+      if (formData.nickname.length < 2) {
+        setError('닉네임은 2자 이상이어야 합니다.');
+      } else if (formData.nickname.length > 20) {
+        setError('닉네임은 20자 이하여야 합니다.');
+      } else {
+        setError('닉네임은 한글과 영어만 사용할 수 있습니다.');
+      }
       setIsLoading(false);
       return;
     }
@@ -500,9 +546,14 @@ const Register = () => {
             name="nickname"
             value={formData.nickname}
             onChange={handleChange}
-            placeholder="닉네임을 입력해주세요"
+            placeholder="닉네임을 입력해주세요 (한글, 영어 2-20자)"
             required
           />
+          {nicknameError && (
+            <div className={`${styles["email-check-message"]} ${styles["error"]}`}>
+              {nicknameError}
+            </div>
+          )}
         </div>
 
         {/* 성별 */}
