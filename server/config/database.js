@@ -40,40 +40,40 @@ async function initializeDatabase() {
   console.log('🔄 데이터베이스 연결 초기화 중...');
   
   try {
-    // 원격 데이터베이스 연결 시도
-    console.log('📡 원격 데이터베이스 연결 시도 중...');
-    pool = mysql.createPool(remoteConfig);
+    // 로컬 데이터베이스 연결 시도 (우선순위 변경)
+    console.log('💻 로컬 데이터베이스 연결 시도 중...');
+    pool = mysql.createPool(localConfig);
     
     // 연결 테스트
     const connection = await pool.getConnection();
     await connection.ping();
     connection.release();
     
-    console.log('✅ 원격 데이터베이스 연결 성공');
+    console.log('✅ 로컬 데이터베이스 연결 성공');
     return pool;
     
   } catch (error) {
-    console.log('❌ 원격 데이터베이스 연결 실패:', error.message);
+    console.log('❌ 로컬 데이터베이스 연결 실패:', error.message);
     
     try {
-      // 로컬 데이터베이스로 폴백
-      console.log('🔄 로컬 데이터베이스로 폴백 중...');
+      // 원격 데이터베이스로 폴백
+      console.log('🔄 원격 데이터베이스로 폴백 중...');
       if (pool) {
         await pool.end();
       }
       
-      pool = mysql.createPool(localConfig);
+      pool = mysql.createPool(remoteConfig);
       
       // 연결 테스트
       const connection = await pool.getConnection();
       await connection.ping();
       connection.release();
       
-      console.log('✅ 로컬 데이터베이스 연결 성공');
+      console.log('✅ 원격 데이터베이스 연결 성공');
       return pool;
       
-    } catch (localError) {
-      console.error('💥 로컬 데이터베이스 연결도 실패:', localError.message);
+    } catch (remoteError) {
+      console.error('💥 원격 데이터베이스 연결도 실패:', remoteError.message);
       throw new Error('모든 데이터베이스 연결 실패');
     }
   }

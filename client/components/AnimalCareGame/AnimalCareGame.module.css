@@ -7,6 +7,9 @@
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   font-family: 'Arial', sans-serif;
+  min-height: 800px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 뒤로가기 버튼 */
@@ -78,11 +81,59 @@
   font-size: 20px;
 }
 
+/* 동물 필터 컨테이너 */
+.animalFilterContainer {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.filterButton {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 25px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 80px;
+  justify-content: center;
+}
+
+.filterButton:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.filterButton.active {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  border-color: #2980b9;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+}
+
+.filterButton.active:hover {
+  background: linear-gradient(135deg, #2980b9, #21618c);
+  box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+}
+
 .animalGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   margin-bottom: 20px;
+  max-width: 800px;
+  margin: 0 auto 20px;
 }
 
 .animalCard {
@@ -154,21 +205,24 @@
   align-items: center;
   margin-bottom: 20px;
   background: white;
-  padding: 15px 20px;
+  padding: 20px 50px;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  gap: 30px;
 }
 
 .gameHeader h2 {
   color: #2c3e50;
   margin: 0;
   font-size: 24px;
+  flex: 1;
 }
 
 .timeInfo {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
+  flex-shrink: 0;
 }
 
 .timeLeft {
@@ -195,6 +249,27 @@
 .resetButton:hover {
   background: #7f8c8d;
   transform: translateY(-2px);
+}
+
+.namingButton {
+  background: linear-gradient(135deg, #e17055, #d63031);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.namingButton:hover {
+  background: linear-gradient(135deg, #d63031, #b71c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(214, 48, 49, 0.3);
 }
 
 /* 메시지 박스 */
@@ -229,6 +304,8 @@
   grid-template-rows: auto auto;
   gap: 20px;
   margin-bottom: 20px;
+  flex: 1;
+  align-content: start;
 }
 
 .animalDisplay {
@@ -717,7 +794,7 @@
 .animalCard {
   background: white;
   border-radius: 15px;
-  padding: 20px;
+  padding: 25px;
   text-align: center;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
@@ -726,7 +803,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 400px;
+  min-height: 480px;
 }
 
 .animalCard:hover {
@@ -736,8 +813,8 @@
 }
 
 .animalImage {
-  width: 150px;
-  height: 150px;
+  width: 200px;
+  height: 200px;
   object-fit: cover;
   border-radius: 15px;
   margin: 0 auto 15px;
@@ -755,6 +832,7 @@
   .gameContainer {
     padding: 15px;
     margin: 10px;
+    min-height: 700px;
   }
   
   .gameBoard {
@@ -779,6 +857,7 @@
   
   .animalGrid {
     grid-template-columns: 1fr;
+    max-width: 400px;
   }
   
   .buttonGrid {
@@ -798,17 +877,342 @@
   }
   
   .animalCard {
-    min-height: 350px;
+    min-height: 420px;
+    padding: 20px;
   }
   
   .animalImage {
-    width: 120px;
-    height: 120px;
+    width: 160px;
+    height: 160px;
   }
   
   .realDataNotice {
     font-size: 13px;
     padding: 15px;
+  }
+  
+  .animalFilterContainer {
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .filterButton {
+    padding: 10px 15px;
+    font-size: 13px;
+    min-width: 70px;
+  }
+}
+
+/* 이름 짓기 모달 스타일 */
+.namingInputContainer {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  align-items: center;
+}
+
+.namingInput {
+  flex: 1;
+  padding: 12px 15px;
+  border: 2px solid #e2e8f0;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #2c3e50;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+.namingInput:focus {
+  outline: none;
+  border-color: #e17055;
+  box-shadow: 0 0 20px rgba(225, 112, 85, 0.2);
+}
+
+.randomNameButton {
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.randomNameButton:hover {
+  background: linear-gradient(135deg, #5f4fcf, #948ce6);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+}
+
+/* 미니 게임 버튼 스타일 */
+.miniGameButton {
+  background: linear-gradient(135deg, #00b894, #00cec9);
+  color: white;
+  border: none;
+  padding: 15px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-height: 80px;
+  justify-content: center;
+}
+
+.miniGameButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #00a085, #00b3b6);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 184, 148, 0.3);
+}
+
+.miniGameButton:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 미니 게임 모달 컨테이너 */
+.miniGameModalContent {
+  background: white;
+  border-radius: 20px;
+  max-width: 600px;
+  width: 95%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+.miniGameContainer {
+  padding: 20px;
+}
+
+.gameHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 15px;
+}
+
+.gameStats {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+/* 공 던지기 게임 스타일 */
+.ballGameField {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(135deg, #74b9ff, #0984e3);
+  border-radius: 15px;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+.target {
+  position: absolute;
+  font-size: 30px;
+  animation: targetPulse 1s ease-in-out infinite;
+  z-index: 5;
+}
+
+.ball {
+  position: absolute;
+  font-size: 25px;
+  transition: all 0.3s ease;
+  z-index: 4;
+}
+
+.dog {
+  position: absolute;
+  bottom: 10px;
+  left: 45%;
+  font-size: 40px;
+  z-index: 3;
+}
+
+@keyframes targetPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* 낚시 게임 스타일 */
+.fishingGameField {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(135deg, #74b9ff, #0984e3);
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.water {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60%;
+  background: linear-gradient(135deg, #00cec9, #00b894);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.fish {
+  position: absolute;
+  bottom: 20%;
+  font-size: 30px;
+  cursor: pointer;
+  animation: fishSwim 2s ease-in-out infinite;
+  z-index: 5;
+}
+
+.cat {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  font-size: 35px;
+  z-index: 3;
+}
+
+.fishingRod {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 30px;
+  z-index: 3;
+}
+
+@keyframes fishSwim {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* 퍼즐 게임 스타일 */
+.puzzleGameField {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.puzzleGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+  max-width: 300px;
+}
+
+.puzzlePiece {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.puzzlePiece:hover:not(.empty) {
+  background: linear-gradient(135deg, #5f4fcf, #948ce6);
+  transform: scale(1.05);
+}
+
+.puzzlePiece.empty {
+  background: #ecf0f1;
+  cursor: default;
+}
+
+/* 공통 게임 요소 */
+.gameEndOverlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.gameInstructions {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 2px solid #e2e8f0;
+}
+
+.closeGameButton {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.closeGameButton:hover {
+  background: #c0392b;
+  transform: translateY(-2px);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .namingInputContainer {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .namingInput {
+    width: 100%;
+  }
+  
+  .randomNameButton {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .miniGameModalContent {
+    width: 98%;
+    max-height: 90vh;
+  }
+  
+  .ballGameField, .fishingGameField {
+    height: 250px;
+  }
+  
+  .puzzleGrid {
+    max-width: 250px;
+  }
+  
+  .puzzlePiece {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
   }
 }
 
@@ -818,7 +1222,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 300px;
+  height: 350px;
   background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
   border-radius: 20px;
   position: relative;

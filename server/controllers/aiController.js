@@ -342,8 +342,8 @@ Make it heartwarming and show the specific positive changes this care activity b
             }
 
             const generatedImageUrl = imageResponse.data[0].url;
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-            const filename = `care_${careActivity}_${animalData.id}_${timestamp}.png`;
+            const imageTimestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            const filename = `care_${careActivity}_${animalData.id}_${imageTimestamp}.png`;
 
             // 생성된 이미지 정보 저장 (옵션 - 사용자 ID가 있는 경우)
             try {
@@ -371,7 +371,7 @@ Make it heartwarming and show the specific positive changes this care activity b
                 success: true,
                 image_path: generatedImageUrl,
                 filename: filename,
-                timestamp: timestamp,
+                timestamp: imageTimestamp,
                 activity: careActivity,
                 animal: animalData,
                 usedPrompt: dallePrompt,

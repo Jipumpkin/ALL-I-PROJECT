@@ -148,13 +148,6 @@ export default function PawPawIntro() {
             </p>
             <div className={styles.heroCta}>
               <button 
-                className={styles.btn} 
-                onClick={() => window.location.href = '/adoption-apply'}
-                aria-label="동물 입양 신청 페이지로 이동"
-              >
-                입양 신청하기
-              </button>
-              <button 
                 className={`${styles.btn} ${styles.btnOutline}`} 
                 onClick={() => window.location.href = '/shelter-map'}
                 aria-label="내 주변 동물보호소 지도 페이지로 이동"
@@ -168,7 +161,6 @@ export default function PawPawIntro() {
             <div className={styles.heroCard}>
               <img src="/images/hoochoo1.jpeg" alt="" />
               <div className={styles.heroCardFooter}>
-                <span className={styles.heroLabel}>상상 속 하루</span>
                 <span
                   className={`${styles.heroLabel} ${styles.heroLabelLight}`}
                 >
@@ -187,7 +179,7 @@ export default function PawPawIntro() {
           className={`${styles.container} ${styles.features}`}
         >
           <div className={styles.sectionHead}>
-            <h2>하루 시뮬레이션</h2>
+            <h2>케어 시뮬레이션</h2>
           </div>
           <div className={styles.grid4}>
             {features.map((f, index) => (
@@ -206,11 +198,9 @@ export default function PawPawIntro() {
               className={styles.startGameButton}
               onClick={() => navigate('/care-game')}
             >
-              <span className={styles.gameButtonIcon}>🎮</span>
               <span className={styles.gameButtonText}>
                 <strong>케어 시뮬레이션 시작!</strong>
               </span>
-              <span className={styles.gameButtonArrow}>→</span>
             </button>
           </div>
         </section>
