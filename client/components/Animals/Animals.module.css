@@ -34,9 +34,9 @@
 }
 
 .filterButtons button.active {
-  background-color: #3498db;
+  background-color: #6c757d;
   color: white;
-  border-color: #3498db;
+  border-color: #6c757d;
   font-weight: bold;
 }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../src/context/AuthContext';
-import axios from "../../axios";
+import api from "../../axios";
 import styles from './MyAccount.module.css';
 
 const MyAccount = () => {
@@ -38,7 +38,7 @@ const MyAccount = () => {
     const userId = user?.id || user?.user_id;
     if (userId) {
       try {
-        const response = await axios.get(`/users/${userId}/images`);
+        const response = await api.get(`/users/${userId}/images`);
         if (response.data.success) {
           setUserImages(response.data.data);
         }
@@ -67,7 +67,7 @@ const MyAccount = () => {
         requestData = imageData;
       }
 
-      await axios.put(`/users/${userId}/images/profile`, requestData);
+      await api.put(`/users/${userId}/images/profile`, requestData);
       fetchUserImages(); // 이미지 목록 새로고침
       return true;
     } catch (err) {
@@ -148,7 +148,7 @@ const MyAccount = () => {
         gender: editedUser.gender
       };
       
-      const response = await axios.put('/users/profile', profileData);
+      const response = await api.put('/users/profile', profileData);
       
       if (response.data.success) {
         // 2. 이미지가 선택된 경우 이미지 업데이트
@@ -215,7 +215,7 @@ const MyAccount = () => {
         return;
       }
 
-      const response = await axios.delete('/users/account', {
+      const response = await api.delete('/users/account', {
         data: { password: deletePassword }
       });
 
@@ -290,7 +290,14 @@ const MyAccount = () => {
 
           {/* 수정 가능한 정보 */}
           <div className={styles.editableSection}>
-            <h4>수정 가능한 정보</h4>
+            <div className={styles.editableSectionHeader}>
+              <h4>수정 가능한 정보</h4>
+              {!isEditing && (
+                <button onClick={handleEditClick} className={styles.editIcon}>
+                  ✏️
+                </button>
+              )}
+            </div>
             {isEditing ? (
               <>
                 <div className={styles.infoItem}>
@@ -349,7 +356,6 @@ const MyAccount = () => {
                           alt="현재 사진" 
                           className={styles.profileImage}
                         />
-                        <span className={styles.currentLabel}>현재 이미지</span>
                       </div>
                     ) : (
                       <div className={styles.noPhoto}>
@@ -433,7 +439,6 @@ const MyAccount = () => {
                           alt="사용자 등록 사진" 
                           className={styles.profileImage}
                         />
-                        <span className={styles.imageDescription}>현재 등록된 사진</span>
                       </div>
                     ) : (
                       <div className={styles.noPhoto}>
@@ -452,9 +457,6 @@ const MyAccount = () => {
 
         <div className={styles.menuSection}>
           <div className={styles.menuButtons}>
-            <button className={styles.menuButton} onClick={handleEditClick}>
-              내 정보 수정
-            </button>
             <button className={styles.menuButton} onClick={handleAdoptionHistory}>
               입양 신청 내역
             </button>
