@@ -78,8 +78,9 @@ const authMiddleware = async (req, res, next) => {
         }
 
         // 4. req.user에 사용자 정보 추가 (비밀번호 제외)
-        const { password_hash, ...userWithoutPassword } = user;
-        req.user = userWithoutPassword;
+        const userData = user.dataValues || user;
+        const { password_hash, ...userWithoutPassword } = userData;
+        req.user = { ...userWithoutPassword, userId: userData.user_id || userData.id };
         req.token = token;
 
         next();
@@ -121,8 +122,9 @@ const optionalAuthMiddleware = async (req, res, next) => {
                 if (userId) {
                     const user = await User.findByPk(userId);
                     if (user) {
-                        const { password_hash, ...userWithoutPassword } = user;
-                        req.user = userWithoutPassword;
+                        const userData = user.dataValues || user;
+                        const { password_hash, ...userWithoutPassword } = userData;
+                        req.user = { ...userWithoutPassword, userId: userData.user_id || userData.id };
                         req.token = token;
                     }
                 }

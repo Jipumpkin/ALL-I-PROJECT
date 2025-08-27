@@ -9,7 +9,8 @@ module.exports = (sequelize) => {
     },
     username: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
     email: {
       type: DataTypes.STRING(100),
@@ -39,6 +40,7 @@ module.exports = (sequelize) => {
   }, {
     tableName: 'users',
     timestamps: true,
+    paranoid: false,  // 소프트 삭제 비활성화 (deleted_at 컬럼 없음)
     createdAt: 'created_at',
     updatedAt: 'updated_at',
     
@@ -92,7 +94,7 @@ module.exports = (sequelize) => {
   /**
    * ID로 사용자 조회
    */
-  User.findByPk = async function(id) {
+  User.findUserByPk = async function(id) {
     return await this.findByPk(id, {
       attributes: { exclude: ['password_hash'] }
     });
@@ -102,7 +104,9 @@ module.exports = (sequelize) => {
    * Username 또는 Email로 사용자 검색 (로그인용)
    */
   User.findByUsernameOrEmail = async function(identifier) {
-    return await this.findOne({
+    console.log('🔍 User.findByUsernameOrEmail 검색 시작:', identifier);
+    
+    const user = await this.findOne({
       where: {
         [sequelize.Sequelize.Op.or]: [
           { username: identifier },
@@ -110,6 +114,27 @@ module.exports = (sequelize) => {
         ]
       }
     });
+    
+    if (user) {
+      console.log('👤 데이터베이스에서 조회된 사용자:');
+      console.log('  - user_id:', user.user_id);
+      console.log('  - username:', user.username);
+      console.log('  - email:', user.email);
+      console.log('📅 데이터베이스 created_at 원본 데이터:');
+      console.log('  - Raw created_at:', user.created_at);
+      console.log('  - Type of created_at:', typeof user.created_at);
+      console.log('  - created_at instanceof Date:', user.created_at instanceof Date);
+      console.log('  - created_at toString():', user.created_at ? user.created_at.toString() : 'null');
+      console.log('  - created_at toISOString():', user.created_at ? user.created_at.toISOString() : 'null');
+      console.log('  - created_at getTime():', user.created_at ? user.created_at.getTime() : 'null');
+      console.log('  - new Date(created_at):', user.created_at ? new Date(user.created_at) : 'null');
+      console.log('  - toLocaleDateString(ko-KR):', user.created_at ? new Date(user.created_at).toLocaleDateString('ko-KR') : 'null');
+      console.log('  - toLocaleString(ko-KR):', user.created_at ? new Date(user.created_at).toLocaleString('ko-KR') : 'null');
+    } else {
+      console.log('❌ 사용자를 찾을 수 없음:', identifier);
+    }
+    
+    return user;
   };
 
   /**
@@ -122,12 +147,36 @@ module.exports = (sequelize) => {
   };
 
   /**
+   * Email로 사용자 검색 (중복 체크용)
+   */
+  User.findByEmail = async function(email) {
+    return await this.findOne({
+      where: { email }
+    });
+  };
+
+  /**
    * 사용자 생성
    */
   User.createUser = async function(userData) {
+    console.log('🔍 User.createUser 입력 데이터:', userData);
+    
     const user = await this.create(userData);
+    
+    // 디버깅: 생성된 사용자의 created_at 확인
+    console.log('📅 생성된 사용자의 created_at 정보:');
+    console.log('  - Raw created_at:', user.created_at);
+    console.log('  - Type of created_at:', typeof user.created_at);
+    console.log('  - created_at toString():', user.created_at ? user.created_at.toString() : 'null');
+    console.log('  - JavaScript Date 변환:', user.created_at ? new Date(user.created_at) : 'null');
+    console.log('  - toLocaleDateString(ko-KR):', user.created_at ? new Date(user.created_at).toLocaleDateString('ko-KR') : 'null');
+    
     // 비밀번호 제외하고 반환
     const { password_hash, ...userWithoutPassword } = user.toJSON();
+    
+    console.log('📤 User.createUser 반환 데이터:', userWithoutPassword);
+    console.log('📤 반환 데이터의 created_at:', userWithoutPassword.created_at);
+    
     return userWithoutPassword;
   };
 
@@ -140,7 +189,9 @@ module.exports = (sequelize) => {
     });
     
     if (affectedRows > 0) {
-      return await this.findByPk(userId);
+      return await this.findByPk(userId, {
+        attributes: { exclude: ['password_hash'] }
+      });
     }
     return null;
   };

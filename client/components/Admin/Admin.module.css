@@ -1,0 +1,372 @@
+/* 로그인 컨테이너 */
+.loginContainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.loginBox {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.loginBox h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+  font-weight: 600;
+}
+
+.passwordInput {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.passwordInput:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.error {
+  background-color: #fee;
+  color: #c33;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  border: 1px solid #fcc;
+}
+
+.loginButton {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.loginButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.loginButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 메인 컨테이너 */
+.container {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+}
+
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.logoutButton {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.logoutButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 탭 */
+.tabs {
+  background: white;
+  padding: 0 40px;
+  display: flex;
+  border-bottom: 2px solid #e1e8ed;
+}
+
+.tab {
+  padding: 15px 30px;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.tab:hover {
+  color: #667eea;
+}
+
+.tab.active {
+  color: #667eea;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #667eea;
+}
+
+/* 컨텐츠 영역 */
+.content {
+  padding: 30px 40px;
+}
+
+.searchBar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.refreshButton {
+  padding: 12px 24px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.refreshButton:hover {
+  background: #5a67d8;
+}
+
+/* 테이블 */
+.tableContainer {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead {
+  background: #f8f9fa;
+}
+
+.table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #e1e8ed;
+}
+
+.table td {
+  padding: 15px;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.loading, .noData {
+  text-align: center;
+  padding: 40px !important;
+  color: #999;
+}
+
+/* 상태 표시 */
+.status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.deleted {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status.approved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.rejected {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* 버튼 스타일 */
+.viewButton, .deleteButton, .restoreButton {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.viewButton {
+  background: #17a2b8;
+  color: white;
+}
+
+.viewButton:hover {
+  background: #138496;
+}
+
+.deleteButton {
+  background: #dc3545;
+  color: white;
+}
+
+.deleteButton:hover {
+  background: #c82333;
+}
+
+.restoreButton {
+  background: #28a745;
+  color: white;
+}
+
+.restoreButton:hover {
+  background: #218838;
+}
+
+/* 입양 신청 내역 */
+.adoptionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.adoptionHeader h3 {
+  margin: 0;
+  color: #333;
+}
+
+.clearFilterButton {
+  padding: 8px 20px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.clearFilterButton:hover {
+  background: #5a6268;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .header {
+    padding: 15px 20px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .tabs {
+    padding: 0 20px;
+  }
+
+  .tab {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+
+  .content {
+    padding: 20px;
+  }
+
+  .table {
+    font-size: 14px;
+  }
+
+  .table th,
+  .table td {
+    padding: 10px;
+  }
+
+  .searchBar {
+    flex-direction: column;
+  }
+
+  .adoptionHeader {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

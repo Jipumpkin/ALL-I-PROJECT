@@ -13,6 +13,10 @@
   transition: all 0.3s;
   position: relative;
   cursor: pointer;
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .drop-zone input[type="file"] {
@@ -23,11 +27,23 @@
   height: 100%;
   opacity: 0;
   cursor: pointer;
+  z-index: 2;
 }
 
 .drop-zone.drag-over {
   border-color: #666;
   color: #666;
+}
+
+.drop-zone .preview-container {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .preview-container {
@@ -38,8 +54,24 @@
   justify-content: center;
 }
 
+.drop-zone.has-images {
+  cursor: default;
+}
+
 .preview-item {
   position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.preview-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.preview-item.selected {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 3px var(--color-primary, #f89c1e);
 }
 
 .preview-item img {
@@ -48,6 +80,37 @@
   object-fit: cover;
   border-radius: 8px;
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.add-more-btn {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.add-more-btn:hover {
+  border-color: var(--color-primary, #f89c1e);
+  background: rgba(248, 156, 30, 0.1);
+}
+
+.add-more-btn span {
+  font-size: 32px;
+  color: #999;
+  line-height: 1;
+}
+
+.add-more-btn p {
+  margin: 5px 0 0 0;
+  font-size: 14px;
+  color: #666;
 }
 
 .remove-btn {
@@ -63,4 +126,48 @@
   cursor: pointer;
   font-weight: bold;
   line-height: 20px;
+}
+
+/* 이미지 액션 버튼 스타일 */
+.image-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border, #ddd);
+}
+
+.apply-button {
+  background: var(--color-primary, #f89c1e);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md, 6px);
+  padding: 10px 20px;
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: background-color var(--transition-fast, 0.15s ease);
+  min-width: 80px;
+}
+
+.apply-button:hover {
+  background: var(--color-primary-hover, #e67e22);
+}
+
+.cancel-button {
+  background: var(--color-secondary, #6c757d);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md, 6px);
+  padding: 10px 20px;
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: background-color var(--transition-fast, 0.15s ease);
+  min-width: 80px;
+}
+
+.cancel-button:hover {
+  background: var(--color-secondary-hover, #5a6268);
 }

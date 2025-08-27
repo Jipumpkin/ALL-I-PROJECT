@@ -104,13 +104,31 @@ class UserService {
     const accessToken = jwtUtils.generateAccessToken(payload);
     const refreshToken = jwtUtils.generateRefreshToken(payload);
 
+    // 디버깅: 로그인 시 created_at 확인
+    console.log('📅 로그인 사용자의 created_at 정보:');
+    console.log('  - Raw created_at:', user.created_at);
+    console.log('  - Type of created_at:', typeof user.created_at);
+    console.log('  - created_at toString():', user.created_at ? user.created_at.toString() : 'null');
+    console.log('  - JavaScript Date 변환:', user.created_at ? new Date(user.created_at) : 'null');
+    console.log('  - toLocaleDateString(ko-KR):', user.created_at ? new Date(user.created_at).toLocaleDateString('ko-KR') : 'null');
+
+    const userResponse = {
+      id: user.user_id,
+      username: user.username,
+      email: user.email,
+      nickname: user.nickname,
+      gender: user.gender,
+      phone_number: user.phone_number,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      last_login_at: user.last_login_at
+    };
+
+    console.log('📤 로그인 응답 사용자 데이터:', userResponse);
+    console.log('📤 응답 데이터의 created_at:', userResponse.created_at);
+
     return {
-      user: {
-        id: user.user_id,
-        username: user.username,
-        email: user.email,
-        nickname: user.nickname
-      },
+      user: userResponse,
       tokens: {
         accessToken,
         refreshToken
@@ -123,6 +141,14 @@ class UserService {
    */
   static async checkUsernameAvailability(username) {
     const existingUser = await User.findByUsername(username);
+    return !existingUser; // 존재하지 않으면 true (사용 가능)
+  }
+
+  /**
+   * 이메일 중복 확인 서비스
+   */
+  static async checkEmailAvailability(email) {
+    const existingUser = await User.findByEmail(email);
     return !existingUser; // 존재하지 않으면 true (사용 가능)
   }
 

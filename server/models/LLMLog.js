@@ -25,14 +25,15 @@ module.exports = (sequelize) => {
     createdAt: 'created_at',
     updatedAt: false, // 스키마에 updated_at이 없음
     
-    indexes: [
-      {
-        fields: ['request_type']
-      },
-      {
-        fields: ['created_at']
-      }
-    ]
+    // 인덱스 설정 (기존 DB에 인덱스가 있어 임시 주석)
+    // indexes: [
+    //   {
+    //     fields: ['request_type']
+    //   },
+    //   {
+    //     fields: ['created_at']
+    //   }
+    // ]
   });
 
   // LLMLog는 다른 테이블과의 관계가 명확하지 않으므로 associate 함수 없음

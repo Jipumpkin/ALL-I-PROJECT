@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styles from "./Register.module.css";
 import ImageUploader from "../ImageUploader/ImageUploader";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../src/context/AuthContext";
-import axios from "axios";
+import api from "../../axios";
 
 const Register = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const formRef = useRef(null);
+  const errorRef = useRef(null);
   
   const [formData, setFormData] = useState({
     username: '',
@@ -21,11 +23,22 @@ const Register = () => {
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // 에러 발생시 상단으로 스크롤
+  useEffect(() => {
+    if (error && errorRef.current) {
+      errorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [error]);
   const [isUsernameChecked, setIsUsernameChecked] = useState(false);
   const [usernameCheckMessage, setUsernameCheckMessage] = useState('');
+  const [emailCheckMessage, setEmailCheckMessage] = useState('');
+  const [isEmailValid, setIsEmailValid] = useState(true);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [showEmailSuggestions, setShowEmailSuggestions] = useState(false);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0);
+  const [emailCheckTimer, setEmailCheckTimer] = useState(null);
+  const [nicknameError, setNicknameError] = useState('');
   
   // 자주 사용되는 이메일 도메인
   const emailDomains = [
@@ -58,8 +71,25 @@ const Register = () => {
       setIsUsernameChecked(false);
       setUsernameCheckMessage('');
     }
+
+    // 닉네임 유효성 검사
+    if (name === 'nickname') {
+      if (value === '') {
+        setNicknameError('');
+      } else if (!validateNickname(value)) {
+        if (value.length < 2) {
+          setNicknameError('닉네임은 2자 이상이어야 합니다.');
+        } else if (value.length > 20) {
+          setNicknameError('닉네임은 20자 이하여야 합니다.');
+        } else {
+          setNicknameError('닉네임은 한글과 영어만 사용할 수 있습니다.');
+        }
+      } else {
+        setNicknameError('');
+      }
+    }
     
-    // 이메일 필드 처리 - @ 입력 시 도메인 제안 표시
+    // 이메일 필드 처리 - @ 입력 시 도메인 제안 표시 및 중복 체크
     if (name === 'email') {
       if (value.includes('@') && !value.includes('.')) {
         setShowEmailSuggestions(true);
@@ -68,9 +98,41 @@ const Register = () => {
         setShowEmailSuggestions(false);
         setSelectedSuggestionIndex(0);
       }
+      
+      // 이메일 중복 체크 (디바운싱 적용)
+      if (emailCheckTimer) {
+        clearTimeout(emailCheckTimer);
+      }
+      
+      setEmailCheckMessage(''); // 입력 중에는 메시지 초기화
+      
+      // 유효한 이메일 형식일 때만 체크
+      if (value.includes('@') && value.includes('.')) {
+        const timer = setTimeout(() => {
+          checkEmailAvailability(value);
+        }, 500); // 500ms 디바운싱
+        setEmailCheckTimer(timer);
+      } else {
+        setIsEmailValid(true); // 형식이 불완전하면 일단 유효하다고 표시
+      }
     }
   };
 
+
+  // 닉네임 유효성 검사 함수
+  const validateNickname = (nickname) => {
+    if (!nickname) return false;
+    
+    // 한글과 영어만 허용 (공백 제외)
+    const nicknameRegex = /^[가-힣a-zA-Z]+$/;
+    
+    // 길이 검사 (2-20자)
+    if (nickname.length < 2 || nickname.length > 20) {
+      return false;
+    }
+    
+    return nicknameRegex.test(nickname);
+  };
 
   // 연락처 유효성 검사 함수
   const validatePhoneNumber = (phone) => {
@@ -105,10 +167,13 @@ const Register = () => {
     const atIndex = formData.email.indexOf('@');
     if (atIndex !== -1) {
       const localPart = formData.email.substring(0, atIndex + 1);
+      const newEmail = localPart + domain;
       setFormData({
         ...formData,
-        email: localPart + domain
+        email: newEmail
       });
+      // 도메인 선택 후 중복 체크
+      checkEmailAvailability(newEmail);
     }
     setShowEmailSuggestions(false);
     setSelectedSuggestionIndex(0);
@@ -128,11 +193,24 @@ const Register = () => {
 
     switch (e.key) {
       case 'ArrowDown':
-      case 'Tab':
         e.preventDefault();
         setSelectedSuggestionIndex(prev => 
           prev < emailDomains.length - 1 ? prev + 1 : 0
         );
+        break;
+      case 'Tab':
+        e.preventDefault();
+        if (e.shiftKey) {
+          // Shift + Tab: 위로 이동
+          setSelectedSuggestionIndex(prev => 
+            prev > 0 ? prev - 1 : emailDomains.length - 1
+          );
+        } else {
+          // Tab: 아래로 이동
+          setSelectedSuggestionIndex(prev => 
+            prev < emailDomains.length - 1 ? prev + 1 : 0
+          );
+        }
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -153,15 +231,40 @@ const Register = () => {
     }
   };
 
+  // 이메일 유효성 및 중복 체크 함수
+  const checkEmailAvailability = async (email) => {
+    if (!email || !email.includes('@') || !email.includes('.')) {
+      return;
+    }
+
+    try {
+      const response = await api.post('/api/users/auth/check-email', {
+        email: email
+      });
+      
+      if (response.data.success && response.data.available) {
+        setIsEmailValid(true);
+        setEmailCheckMessage('사용 가능한 이메일입니다.');
+      } else {
+        setIsEmailValid(false);
+        setEmailCheckMessage('이미 등록된 이메일입니다. 다른 이메일을 사용해주세요.');
+      }
+    } catch (error) {
+      setEmailCheckMessage('');
+    }
+  };
+
   // 아이디 중복체크 함수
   const checkUsernameDuplicate = async () => {
     if (!formData.username) {
       setUsernameCheckMessage('아이디를 입력해주세요.');
       return;
     }
+    
+    setError(''); // 중복체크시 기존 에러 초기화
 
     try {
-      const response = await axios.post('http://localhost:3003/api/users/auth/check-username', {
+      const response = await api.post('/api/users/auth/check-username', {
         username: formData.username
       });
       
@@ -194,6 +297,13 @@ const Register = () => {
       return;
     }
 
+    // 이메일 중복 확인
+    if (!isEmailValid && emailCheckMessage) {
+      setError('이미 등록된 이메일입니다. 다른 이메일을 사용해주세요.');
+      setIsLoading(false);
+      return;
+    }
+
     // 비밀번호 확인
     if (formData.password !== formData.confirmPassword) {
       setError('비밀번호가 일치하지 않습니다.');
@@ -204,6 +314,19 @@ const Register = () => {
     // 필수 필드 검증
     if (!formData.username || !formData.password || !formData.email || !formData.nickname || !formData.phone) {
       setError('아이디, 비밀번호, 이메일, 닉네임, 연락처는 필수 입력 항목입니다.');
+      setIsLoading(false);
+      return;
+    }
+
+    // 닉네임 유효성 검사
+    if (!validateNickname(formData.nickname)) {
+      if (formData.nickname.length < 2) {
+        setError('닉네임은 2자 이상이어야 합니다.');
+      } else if (formData.nickname.length > 20) {
+        setError('닉네임은 20자 이하여야 합니다.');
+      } else {
+        setError('닉네임은 한글과 영어만 사용할 수 있습니다.');
+      }
       setIsLoading(false);
       return;
     }
@@ -227,7 +350,7 @@ const Register = () => {
         phone_number: formData.phone || null
       };
 
-      const response = await axios.post('http://localhost:3003/api/register', requestData, {
+      const response = await api.post('/api/users/auth/register', requestData, {
         headers: {
           'Content-Type': 'application/json',
         }
@@ -239,8 +362,9 @@ const Register = () => {
         
         if (uploadedImages.length > 0) {
           try {
-            await axios.post(`http://localhost:3003/api/users/${userId}/images`, {
-              image_url: uploadedImages[0].src
+            await api.post(`/api/users/${userId}/images`, {
+              image_url: uploadedImages[0].src,
+              storage_type: 'url'
             });
           } catch (imageError) {
             console.error('사용자 이미지 추가 실패:', imageError);
@@ -248,8 +372,9 @@ const Register = () => {
         } else {
           // 이미지가 없으면 기본 이미지 사용
           try {
-            await axios.post(`http://localhost:3003/api/users/${userId}/images`, {
-              image_url: 'https://placehold.co/400x400/FF5733/FFFFFF?text=User+House+Image'
+            await api.post(`/api/users/${userId}/images`, {
+              image_url: 'https://placehold.co/400x400/FF5733/FFFFFF?text=User+House+Image',
+              storage_type: 'url'
             });
           } catch (imageError) {
             console.error('사용자 이미지 추가 실패:', imageError);
@@ -264,7 +389,22 @@ const Register = () => {
       }
     } catch (error) {
       console.error('회원가입 오류:', error);
-      if (error.response?.data?.errors) {
+      console.error('에러 응답 데이터:', error.response?.data);
+      
+      if (error.response?.status === 409) {
+        // 409 Conflict - 중복 데이터
+        const errorData = error.response.data;
+        if (errorData.field === 'username') {
+          setError('이미 사용 중인 아이디입니다. 다른 아이디를 선택해주세요.');
+          setIsUsernameChecked(false);
+        } else if (errorData.field === 'email') {
+          setError('이미 등록된 이메일입니다. 다른 이메일을 사용해주세요.');
+        } else if (errorData.message) {
+          setError(errorData.message);
+        } else {
+          setError('이미 존재하는 정보입니다. 다른 정보를 입력해주세요.');
+        }
+      } else if (error.response?.data?.errors) {
         const errors = error.response.data.errors;
         if (errors.username) {
           setError(errors.username);
@@ -284,14 +424,14 @@ const Register = () => {
   };
 
   return (
-    <div className={styles["register-container"]}>
+    <div className={styles["register-container"]} ref={formRef}>
       <h2>회원가입</h2>
       <h4 style={{ color: "var(--color-text-secondary)", textAlign: "center" }}>
         우리가족이 되어주세요!
       </h4>
 
       <form onSubmit={registerHandler}>
-        {error && <div className={styles["error-message"]}>{error}</div>}
+        {error && <div ref={errorRef} className={styles["error-message"]}>{error}</div>}
         
         {/* 아이디 */}
         <div className={styles["form-group"]}>
@@ -390,6 +530,11 @@ const Register = () => {
               </div>
             )}
           </div>
+          {emailCheckMessage && (
+            <div className={`${styles["email-check-message"]} ${isEmailValid ? styles["success"] : styles["error"]}`}>
+              {emailCheckMessage}
+            </div>
+          )}
         </div>
 
         {/* 닉네임 */}
@@ -401,9 +546,14 @@ const Register = () => {
             name="nickname"
             value={formData.nickname}
             onChange={handleChange}
-            placeholder="닉네임을 입력해주세요"
+            placeholder="닉네임을 입력해주세요 (한글, 영어 2-20자)"
             required
           />
+          {nicknameError && (
+            <div className={`${styles["email-check-message"]} ${styles["error"]}`}>
+              {nicknameError}
+            </div>
+          )}
         </div>
 
         {/* 성별 */}

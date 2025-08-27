@@ -38,9 +38,7 @@ const authLimiter = rateLimit({
     // 실패한 로그인만 카운트 (선택적)
     skipSuccessfulRequests: true,
     skipFailedRequests: false,
-    // 사용자 정의 스킵 조건
     skip: (req) => {
-        // 특정 IP나 환경에서는 제한 해제 (개발 환경 등)
         if (process.env.NODE_ENV === 'development' && req.ip === '127.0.0.1') {
             return true;
         }
@@ -69,10 +67,10 @@ const sensitiveActionLimiter = rateLimit({
  */
 const uploadLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15분
-    max: 10, // 15분간 10개 파일만 업로드 허용
+    max: 10, // 15분당 10회 업로드
     message: {
         success: false,
-        message: '파일 업로드 요청이 너무 많습니다. 잠시 후 다시 시도해주세요.',
+        message: '파일 업로드 한도를 초과했습니다. 잠시 후 다시 시도해주세요.',
         errorCode: 'UPLOAD_RATE_LIMITED',
         retryAfter: 900
     },

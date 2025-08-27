@@ -6,7 +6,7 @@ const mysql = require('mysql2/promise');
 const { pool } = require('../db/connection');
 
 // --- API 호출 및 데이터베이스 저장 함수 ---
-async function syncAnimalData(pool) {
+async function syncAnimalData() {
   console.log('🚀 최근 한 달간의 데이터 동기화를 시작합니다...');
 
   const serviceKey = process.env.PUBLICDATA_API_KEY;
@@ -115,6 +115,17 @@ async function syncAnimalData(pool) {
     });
 
     for (const animal of transformedData) {
+      // 중복 체크 먼저 수행
+      const [existingAnimal] = await connection.execute(
+        'SELECT animal_id FROM animals WHERE ext_id = ?',
+        [animal.ext_id]
+      );
+      
+      if (existingAnimal.length > 0) {
+        // 이미 존재하는 동물은 스킵
+        continue;
+      }
+
       const [shelterResult] = await connection.execute(
         `INSERT INTO shelters (shelter_name, address, region, contact_number, email, ext_id, created_at)
          VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP())

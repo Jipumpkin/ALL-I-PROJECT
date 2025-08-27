@@ -21,9 +21,20 @@
       "Read(/C:\\Users\\SAMSUNG\\Desktop\\newProject\\ALL-I-PROJECT\\.claude/**)",
       "Bash(npm install:*)",
       "Bash(taskkill:*)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Read(/C:\\Users\\SAMSUNG\\Desktop\\newProject\\ALL-I-PROJECT\\client\\components\\Register/**)",
+      "Bash(node:*)",
+      "Bash(curl:*)",
+      "Bash(npm run:*)",
+      "Bash(mysql:*)",
+      "Bash(npx eslint:*)",
+      "Bash(sed:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "C:\\Users\\SAMSUNG\\Desktop\\newProject\\ALL-I-PROJECT",
+      "C:\\c\\Users\\SAMSUNG\\Desktop\\newProject\\ALL-I-PROJECT"
+    ]
   }
 }

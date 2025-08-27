@@ -26,16 +26,25 @@ const Maker = () => {
     const userId = user?.id || user?.user_id;
     if (userId) {
       try {
-        const response = await fetch(`http://localhost:3003/api/users/${userId}/images`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success && data.data.length > 0) {
-            // 가장 최근에 업로드한 이미지 사용
-            setUserRegistrationImage(data.data[0].image_url);
-          }
+        console.log('🔍 사용자 이미지 가져오기 시작 - userId:', userId);
+        const response = await api.get(`/api/users/${userId}/images`);
+        console.log('📷 사용자 이미지 API 응답:', response.data);
+        
+        if (response.data.success && response.data.data && response.data.data.length > 0) {
+          // 가장 최근에 업로드한 이미지 사용
+          const imageUrl = response.data.data[0].storage_type === 'base64' && response.data.data[0].image_data 
+            ? response.data.data[0].image_data 
+            : response.data.data[0].image_url;
+          
+          console.log('✅ 사용자 등록 이미지 설정:', imageUrl ? imageUrl.substring(0, 50) + '...' : 'null');
+          setUserRegistrationImage(imageUrl);
+        } else {
+          console.log('❌ 사용자 등록 이미지 없음');
+          setUserRegistrationImage(null);
         }
       } catch (error) {
         console.error('사용자 이미지 가져오기 실패:', error);
+        setUserRegistrationImage(null);
       }
     }
   }, [user]);
@@ -198,11 +207,18 @@ const Maker = () => {
             onError={(e) => { e.target.src = '/images/unknown_animal.png'; }}
           />
         ) : (
-          <div className={styles.placeholderText}>
+          <div 
+            className={styles.placeholderText}
+            onClick={() => navigate('/animals')}
+            style={{ cursor: 'pointer' }}
+          >
             유기동물을 선택하여 합성하기를 시작하세요
+            <br />
+            <small style={{ color: '#666', fontSize: '0.9em' }}>클릭하여 유기동물 목록으로 이동</small>
           </div>
         )}
       </div>
+
 
       {/* 아이콘 버튼 3개 */}
       <div className={styles.iconButtonsContainer}>
@@ -225,11 +241,20 @@ const Maker = () => {
         className={styles.userImageContainer}
         onClick={() => setShowModal(true)}
       >
-        {userImageUrl ? (
-          <img src={userImageUrl} alt="사용자 이미지" className={styles.userImage} />
-        ) : (
-          <span className={styles.userImageText}>사용자 이미지</span>
-        )}
+        {(() => {
+          console.log('🖼️ 사용자 이미지 렌더링 상태:', {
+            userImageUrl: userImageUrl ? userImageUrl.substring(0, 50) + '...' : 'null',
+            userRegistrationImage: userRegistrationImage ? userRegistrationImage.substring(0, 50) + '...' : 'null'
+          });
+          
+          if (userImageUrl) {
+            return <img src={userImageUrl} alt="사용자 이미지" className={styles.userImage} />;
+          } else if (userRegistrationImage) {
+            return <img src={userRegistrationImage} alt="사용자 등록 이미지" className={styles.userImage} />;
+          } else {
+            return <span className={styles.userImageText}>사용자 이미지</span>;
+          }
+        })()}
       </div>
 
       {/* 이미지 변경 옵션 모달 */}
@@ -350,9 +375,16 @@ const Maker = () => {
             </div>
           </div>
         ) : (
-          <div className={styles.noAnimalSelected}>
+          <div 
+            className={styles.noAnimalSelected}
+            onClick={() => navigate('/animals')}
+            style={{ cursor: 'pointer' }}
+          >
             <p>유기동물을 선택하면 상세 정보가 여기에 표시됩니다.</p>
             <p>동물 목록에서 원하는 동물을 선택해주세요.</p>
+            <p style={{ color: '#007bff', fontSize: '0.9em', marginTop: '10px' }}>
+              👆 클릭하여 유기동물 목록으로 이동
+            </p>
           </div>
         )}
       </div>
