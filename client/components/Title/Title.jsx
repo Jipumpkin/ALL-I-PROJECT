@@ -5,12 +5,12 @@ import styles from './Title.module.css'
 import '../../src/assets/font.css'
 const Title = () => {
     const images = [
-        '/images/poster1.jpg',
-        '/images/poster2.jpg',
-        '/images/poster4.jpg',
-        '/images/poster5.jpg',
-        '/images/poster6.jpg',
-        '/images/hoochoo1.jpeg',
+        '/images/poster1.png',
+        '/images/poster2.png',
+        '/images/poster3.png',
+        '/images/poster4.png',
+        '/images/poster5.png',
+        '/images/poster6.png',
 
     ];
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
