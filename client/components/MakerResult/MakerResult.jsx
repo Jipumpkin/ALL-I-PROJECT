@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import api from '../../axios';
 import styles from './MakerResult.module.css';
 
 const MakerResult = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [shelterData, setShelterData] = useState({
+    shelter_name: '',
+    shelter_address: '',
+    shelter_contact_number: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
   
   // URL 파라미터에서 데이터 가져오기
   const action = searchParams.get('action') || 'food';
@@ -25,9 +33,63 @@ const MakerResult = () => {
   const specialMark = searchParams.get('specialMark') || '';
   const region = searchParams.get('region') || '';
   const rescued_at = searchParams.get('rescued_at') || '';
-  const shelter_name = searchParams.get('shelter_name') || '';
-  const shelter_address = searchParams.get('shelter_address') || '';
-  const shelter_contact_number = searchParams.get('shelter_contact_number') || '';
+  const animalId = searchParams.get('animalId') || '';
+  const original_image_url = searchParams.get('original_image_url') || '';
+  
+  // URL에서 가져온 보호소 정보
+  const urlShelterName = searchParams.get('shelter_name') || '';
+  const urlShelterAddress = searchParams.get('shelter_address') || '';
+  const urlShelterContact = searchParams.get('shelter_contact_number') || '';
+  
+  // 보호소 정보 로드
+  useEffect(() => {
+    const fetchShelterInfo = async () => {
+      // URL 파라미터에 보호소 정보가 있으면 사용
+      if (urlShelterName || urlShelterAddress || urlShelterContact) {
+        setShelterData({
+          shelter_name: urlShelterName,
+          shelter_address: urlShelterAddress,
+          shelter_contact_number: urlShelterContact
+        });
+        return;
+      }
+      
+      // 보호소 정보가 없고 animalId가 있으면 API에서 다시 조회
+      if (animalId && !urlShelterName) {
+        setLoading(true);
+        try {
+          const response = await api.get(`/animals/${animalId}`);
+          const animalData = response.data;
+          
+          if (animalData && animalData.shelter) {
+            setShelterData({
+              shelter_name: animalData.shelter.shelter_name || '정보 없음',
+              shelter_address: animalData.shelter.address || '정보 없음',
+              shelter_contact_number: animalData.shelter.contact_number || '정보 없음'
+            });
+          }
+        } catch (error) {
+          console.error('보호소 정보 조회 실패:', error);
+          setShelterData({
+            shelter_name: '정보 없음',
+            shelter_address: '정보 없음',
+            shelter_contact_number: '정보 없음'
+          });
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        // 기본값 설정
+        setShelterData({
+          shelter_name: '정보 없음',
+          shelter_address: '정보 없음',
+          shelter_contact_number: '정보 없음'
+        });
+      }
+    };
+    
+    fetchShelterInfo();
+  }, [animalId, urlShelterName, urlShelterAddress, urlShelterContact]);
 
   // 성별 매핑
   const genderMap = {
@@ -64,11 +126,11 @@ const MakerResult = () => {
     구조일자: formatDate(rescued_at) || '정보 없음'
   };
 
-  // 보호소 정보
+  // 보호소 정보 (state에서 가져오기)
   const shelterInfo = {
-    보호소명: shelter_name || '정보 없음',
-    주소: shelter_address || '정보 없음',
-    연락처: shelter_contact_number || '정보 없음'
+    보호소명: shelterData.shelter_name || '정보 없음',
+    주소: shelterData.shelter_address || '정보 없음',
+    연락처: shelterData.shelter_contact_number || '정보 없음'
   };
 
   const getActionMessage = (action) => {
@@ -177,57 +239,159 @@ const MakerResult = () => {
           <button 
             className={`${styles.actionButton} ${styles.primary}`}
             onClick={async () => {
+              if (!resultImage) {
+                return;
+              }
+
               try {
+                console.log('이미지 저장 시작:', resultImage);
+                
                 if (resultImage.startsWith('data:image/')) {
                   // base64 이미지인 경우 다운로드 링크 생성
+                  console.log('Base64 이미지 처리 중...');
                   const link = document.createElement('a');
                   link.href = resultImage;
                   link.download = `pawpaw-${action}-${Date.now()}.png`;
                   document.body.appendChild(link);
                   link.click();
                   document.body.removeChild(link);
-                  alert('이미지가 다운로드되었습니다!');
+                  console.log('이미지 다운로드 완료');
                 } else {
-                  // URL 이미지인 경우 fetch로 가져와서 다운로드
-                  const response = await fetch(resultImage);
-                  const blob = await response.blob();
-                  const url = window.URL.createObjectURL(blob);
-                  const link = document.createElement('a');
-                  link.href = url;
-                  link.download = `pawpaw-${action}-${Date.now()}.png`;
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                  window.URL.revokeObjectURL(url);
-                  alert('이미지가 다운로드되었습니다!');
+                  // URL 이미지인 경우
+                  console.log('URL 이미지 처리 중...', resultImage);
+                  
+                  // CORS 문제를 피하기 위해 canvas를 사용하여 이미지를 다운로드
+                  const img = new Image();
+                  img.crossOrigin = 'anonymous';
+                  
+                  img.onload = function() {
+                    try {
+                      const canvas = document.createElement('canvas');
+                      const ctx = canvas.getContext('2d');
+                      
+                      canvas.width = img.naturalWidth;
+                      canvas.height = img.naturalHeight;
+                      
+                      ctx.drawImage(img, 0, 0);
+                      
+                      canvas.toBlob((blob) => {
+                        if (blob) {
+                          const url = window.URL.createObjectURL(blob);
+                          const link = document.createElement('a');
+                          link.href = url;
+                          link.download = `pawpaw-${action}-${Date.now()}.png`;
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                          window.URL.revokeObjectURL(url);
+                          console.log('이미지 다운로드 완료');
+                        } else {
+                          throw new Error('Blob 생성 실패');
+                        }
+                      }, 'image/png');
+                    } catch (canvasError) {
+                      console.error('Canvas 처리 실패:', canvasError);
+                      // Canvas 방법이 실패하면 직접 링크 방법 시도
+                      const link = document.createElement('a');
+                      link.href = resultImage;
+                      link.download = `pawpaw-${action}-${Date.now()}.png`;
+                      link.target = '_blank';
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                      console.log('대체 방법으로 다운로드 시도');
+                    }
+                  };
+                  
+                  img.onerror = function() {
+                    console.error('이미지 로드 실패');
+                    // 이미지 로드가 실패하면 직접 링크 방법 시도
+                    const link = document.createElement('a');
+                    link.href = resultImage;
+                    link.download = `pawpaw-${action}-${Date.now()}.png`;
+                    link.target = '_blank';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    console.log('대체 방법으로 다운로드 시도');
+                  };
+                  
+                  img.src = resultImage;
                 }
               } catch (error) {
                 console.error('이미지 저장 실패:', error);
-                alert('이미지 저장에 실패했습니다.');
+                // 최종 백업 방법: 새 탭에서 이미지 열기
+                try {
+                  window.open(resultImage, '_blank');
+                  console.log('새 창에서 이미지 열기');
+                } catch (fallbackError) {
+                  console.error('백업 방법도 실패:', fallbackError);
+                }
               }
             }}
+            disabled={!resultImage}
           >
             저장하기
           </button>
           <button 
             className={`${styles.actionButton} ${styles.secondary}`}
-            onClick={() => {
-              // 새 창에서 이미지 보기
-              if (resultImage) {
-                window.open(resultImage, '_blank');
-              }
-            }}
-            disabled={!resultImage}
+            onClick={() => setShowImageModal(true)}
           >
             크게 보기
           </button>
           <button 
             className={`${styles.actionButton} ${styles.tertiary}`}
-            onClick={() => navigate('/maker')}
+            onClick={() => {
+              // 기존 동물 정보를 유지하여 다시 시도
+              const animalInfo = {
+                species,
+                gender,
+                age,
+                colorCd,
+                specialMark,
+                region,
+                rescued_at,
+                animalId,
+                shelter_name: urlShelterName || shelterData.shelter_name,
+                shelter_address: urlShelterAddress || shelterData.shelter_address,
+                shelter_contact_number: urlShelterContact || shelterData.shelter_contact_number,
+                image_url: original_image_url || resultImage // 원본 이미지 우선, 없으면 결과 이미지
+              };
+              
+              console.log('다시 시도 버튼 클릭 - 동물 정보:', animalInfo);
+              
+              // 페이지 이동 시 상단으로 스크롤
+              window.scrollTo(0, 0);
+              
+              navigate('/maker', { 
+                state: { 
+                  animal: animalInfo 
+                } 
+              });
+            }}
           >
             다시 시도
           </button>
         </div>
+
+        {/* 이미지 모달 */}
+        {showImageModal && (
+          <div className={styles.modalOverlay} onClick={() => setShowImageModal(false)}>
+            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+              <button 
+                className={styles.modalCloseButton}
+                onClick={() => setShowImageModal(false)}
+              >
+                ×
+              </button>
+              <img 
+                src={resultImage} 
+                alt="결과 이미지 크게보기" 
+                className={styles.modalImage}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

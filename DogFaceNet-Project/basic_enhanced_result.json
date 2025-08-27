@@ -1,0 +1,36 @@
+{
+  "timestamp": "2025-08-27T09:48:26.091689",
+  "total_detections": 3,
+  "detections": [
+    {
+      "method": "HoughCircles",
+      "bbox": [
+        151,
+        101,
+        98,
+        98
+      ],
+      "confidence": 1.0
+    },
+    {
+      "method": "profile_face_equalized",
+      "bbox": [
+        143,
+        70,
+        163,
+        163
+      ],
+      "confidence": 0.89816875
+    },
+    {
+      "method": "HoughCircles",
+      "bbox": [
+        183,
+        103,
+        60,
+        60
+      ],
+      "confidence": 0.75
+    }
+  ]
+}

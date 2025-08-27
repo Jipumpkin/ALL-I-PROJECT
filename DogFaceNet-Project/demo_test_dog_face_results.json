@@ -1,0 +1,21 @@
+{
+  "source_image": "test_dog_face.jpg",
+  "timestamp": "2025-08-27T10:29:43.997574",
+  "methods_used": [
+    "OpenCV_Haar"
+  ],
+  "total_detections": 1,
+  "results": [
+    {
+      "method": "OpenCV_Haar",
+      "bbox": [
+        67,
+        57,
+        268,
+        268
+      ],
+      "confidence": 0.75,
+      "type": "face"
+    }
+  ]
+}
