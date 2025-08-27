@@ -1,32 +1,40 @@
-// server/index.js (최종 수정본)
+// server/index.js
 
-// ✅ 다른 어떤 코드보다도 이 라인이 가장 위에 있어야 합니다.
+// ✅ 최상단에서 환경변수 로드
 require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const morgan = require('morgan');
 const cron = require('node-cron');
 const bodyParser = require('body-parser');
 
 // Sequelize 초기화
 const { initializeDatabase } = require('./models');
 
-// services 파일의 함수를 불러옵니다.
+// services
 const { syncAnimalData } = require('./services/animalSync');
+
+// 미들웨어
+const { apiLogger, errorHandler, notFoundHandler } = require('./middleware');
+const { apiLimiter, authLimiter } = require('./middleware/rateLimiter');
+
+// 컨트롤러
+const AuthController = require('./controllers/auth/AuthController');
 
 const app = express();
 const PORT = process.env.PORT || 3003; // Changed back to 3003 for frontend compatibility
 
 // CORS 보안 설정 - 개발환경과 프로덕션 분리
 const corsOptions = {
-    origin: process.env.NODE_ENV === 'production' 
-        ? process.env.FRONTEND_URL || 'https://your-domain.com'
-        : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174'], // React, Vite 개발서버
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Admin-Token']
+  origin:
+    process.env.NODE_ENV === 'production'
+      ? process.env.FRONTEND_URL || 'https://your-domain.com'
+      : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174'], // React, Vite 개발서버
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Admin-Token'],
 };
-
 app.use(cors(corsOptions));
 
 // Request 크기 제한 및 보안 설정
@@ -40,6 +48,13 @@ app.use(bodyParser.urlencoded({
     limit: '10mb'
 }));
 
+// 로깅
+app.use(morgan('dev'));
+app.use(apiLogger);
+
+// 정적 파일
+app.use('/uploads', express.static('uploads'));
+
 // 기본 보안 헤더 추가
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -49,24 +64,16 @@ app.use((req, res, next) => {
     next();
 });
 
-// 미들웨어 적용
-const { apiLogger, errorHandler, notFoundHandler } = require('./middleware');
-const { apiLimiter, authLimiter } = require('./middleware/rateLimiter');
-
 // Rate limiting 적용 (모든 API 요청) - 임시 비활성화
 // app.use('/api/', apiLimiter);
-app.use(apiLogger);
 
-// 테스트 라우트
+// 헬스체크
 app.get('/api/test', (req, res) => {
-    console.log('🔍 /api/test 요청 받음');
-    res.json({ message: 'Mock API 테스트 성공!' });
+  console.log('🔍 /api/test 요청 받음');
+  res.json({ message: 'API 서버 테스트 성공!' });
 });
 
-// Mock API 라우트 (프론트엔드 호환용) - 새로운 컨트롤러 사용  
-const AuthController = require('./controllers/auth/AuthController');
-
-// 인증 관련 엔드포인트에 엄격한 Rate Limiting 적용 - 임시 비활성화
+// 인증 엔드포인트에 엄격한 Rate Limiting 적용 - 임시 비활성화
 app.post('/api/login', /* authLimiter, */ (req, res) => {
     console.log('🔍 /api/login 요청 받음 (실제 DB):', req.body);
     console.log('🌐 클라이언트 요청 정보:');
@@ -106,19 +113,26 @@ app.post('/api/login', /* authLimiter, */ (req, res) => {
 });
 
 app.post('/api/register', /* authLimiter, */ (req, res) => {
-    console.log('🔍 /api/register 요청 받음 (실제 DB):', req.body);
-    AuthController.register(req, res);
+  console.log('🔍 /api/register 요청 받음 (실제 DB):', req.body);
+  AuthController.register(req, res);
+});
+
+app.post('/api/check-username', /* authLimiter, */ (req, res) => {
+  console.log('🔍 /api/check-username 요청 받음:', req.body);
+  AuthController.checkUsername(req, res);
+});
+
+app.post('/api/check-email', /* authLimiter, */ (req, res) => {
+  console.log('🔍 /api/check-email 요청 받음:', req.body);
+  AuthController.checkEmail(req, res);
 });
 
 // --- 라우트 설정 ---
 app.get('/health', (_, res) => res.json({ ok: true }));
-// The /api/test route is already defined above, so removing the duplicate here.
-// app.get('/api/test', (req, res) => res.json({ message: 'API 테스트 성공!' }));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/animals', require('./routes/animalRoutes'));
-app.use('/api/admin', require('./routes/adminRoutes')); // 관리자 라우트 추가
-// The /api/auth route is handled by AuthController above, so removing the duplicate here.
-// app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/images', require('./routes/imageRoutes'));   // HEAD 측 라우트 유지
+app.use('/api/admin', require('./routes/adminRoutes'));    // dev 측 라우트 유지
 
 // 404 및 에러 핸들러 (라우트 뒤에 배치)
 app.use(notFoundHandler);
@@ -141,16 +155,15 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
+// 서버 기동
 const server = app.listen(PORT, async () => {
-    // Sequelize 데이터베이스 초기화
-    try {
-        await initializeDatabase();
-        console.log('🎉 Sequelize 데이터베이스 초기화 완료');
-    } catch (error) {
-        console.error('💥 Sequelize 데이터베이스 초기화 실패:', error.message);
-        // If Sequelize initialization fails, it's critical, so exit.
-        process.exit(1);
-    }
+  try {
+    await initializeDatabase();
+    console.log('🎉 Sequelize 데이터베이스 초기화 완료');
+  } catch (error) {
+    console.error('💥 Sequelize 데이터베이스 초기화 실패:', error.message);
+    process.exit(1);
+  }
 
     console.log(`✅ 서버가 ${PORT}번 포트에서 정상적으로 시작되었습니다!`);
     console.log(`🌐 서버 주소: http://localhost:${PORT}`);
@@ -158,7 +171,12 @@ const server = app.listen(PORT, async () => {
     console.log('   - GET  /api/test');
     console.log('   - POST /api/login');
     console.log('   - POST /api/register');
-    console.log('   - /api/users/* (userRoutes)');
+    console.log('   - POST /api/check-username');
+    console.log('   - POST /api/check-email');
+    console.log('   - /api/users/*');
+    console.log('   - /api/animals/*');
+    console.log('   - /api/images/*');
+    console.log('   - /api/admin/*');
 
     // 개발환경에서는 매번 동기화하지 않음
     if (process.env.NODE_ENV !== 'development') {
@@ -173,6 +191,7 @@ const server = app.listen(PORT, async () => {
         console.log('🔧 개발환경: 서버 시작 시 데이터 동기화를 스킵합니다.');
     }
 
+    // 매일 자정 동기화
     cron.schedule('0 0 * * *', async () => {
         console.log('🔄 정기 데이터 동기화 시작...');
         try {

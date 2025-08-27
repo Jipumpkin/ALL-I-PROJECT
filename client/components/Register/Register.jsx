@@ -247,7 +247,7 @@ const Register = () => {
   const checkEmailAvailability = async (email) => {
     if (!email || !email.includes("@") || !email.includes(".")) return;
     try {
-      const response = await api.post("/api/users/auth/check-email", { email });
+      const response = await api.post("/check-email", { email });
       if (response.data.success && response.data.available) {
         setIsEmailValid(true);
         setEmailCheckMessage("사용 가능한 이메일입니다.");
@@ -269,7 +269,7 @@ const Register = () => {
     }
     setError("");
     try {
-      const response = await api.post("/api/users/auth/check-username", {
+      const response = await api.post("/check-username", {
         username: formData.username,
       });
       if (response.data.success && response.data.available) {
@@ -368,7 +368,7 @@ const Register = () => {
         phone_number: formData.phone || null,
       };
 
-      const response = await api.post("/api/users/auth/register", requestData, {
+      const response = await api.post("/register", requestData, {
         headers: { "Content-Type": "application/json" },
       });
 
@@ -386,7 +386,7 @@ const Register = () => {
             uploadedImages?.[0]?.src;
 
           try {
-            await api.post(`/api/users/${userId}/images`, {
+            await api.post(`/users/${userId}/images`, {
               image_url:
                 primaryUrl ||
                 "https://placehold.co/400x400/FF5733/FFFFFF?text=User+House+Image",

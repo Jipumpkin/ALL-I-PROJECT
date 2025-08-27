@@ -27,7 +27,7 @@ const Maker = () => {
     if (userId) {
       try {
         console.log('🔍 사용자 이미지 가져오기 시작 - userId:', userId);
-        const response = await api.get(`/api/users/${userId}/images`);
+        const response = await api.get(`/users/${userId}/images`);
         console.log('📷 사용자 이미지 API 응답:', response.data);
         
         if (response.data.success && response.data.data && response.data.data.length > 0) {
@@ -97,7 +97,7 @@ const Maker = () => {
       // 특정 동물 정보 가져오기
       const fetchSelectedAnimal = async () => {
         try {
-          const response = await api.get(`/api/animals/${animalId}`);
+          const response = await api.get(`/animals/${animalId}`);
           if (response.data) {
             setSelectedAnimal(response.data);
           }
