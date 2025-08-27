@@ -1,30 +1,39 @@
 :root {
   /* Colors */
-  --color-primary: #f89c1e;
-  --color-primary-hover: #e67e22;
-  --color-primary-light: rgba(248, 156, 30, 0.1);
-  --color-primary-dark: #d68910;
+  --color-primary: #FF5C1C;
+  --color-primary-hover: #e6501a;
+  --color-primary-light: rgba(255, 92, 28, 0.1);
+  --color-primary-dark: #cc4916;
 
-  --color-secondary: #6c757d;
-  --color-secondary-hover: #5a6268;
-  --color-secondary-light: #adb5bd;
+  --color-secondary: #4CD4A1;
+  --color-secondary-hover: #42c094;
+  --color-secondary-light: #2C9C7C;
 
   --color-danger: #dc3545;
   --color-danger-hover: #c82333;
 
-  --color-success: #28a745;
-  --color-success-hover: #218838;
+  --color-success: #4CD4A1;
+  --color-success-hover: #42c094;
 
-  --color-text-primary: #1c1e21;
+  --color-text-primary: #222222;
   --color-text-secondary: #606770;
   --color-text-light: #666;
   --color-text-muted: #999;
 
   --color-bg-white: #ffffff;
   --color-bg-light: #f8f9fa;
-  --color-bg-dark: #343a40;
+  --color-bg-dark: #424242;
   --color-bg-overlay: rgba(0, 0, 0, 0.2);
   --color-bg-glass: rgba(255, 255, 255, 0.95);
+  
+  /* New button colors */
+  --color-button-main: #4CD4A1;
+  --color-button-main-hover: #42c094;
+  --color-button-sub: #2C9C7C;
+  --color-button-sub-hover: #267a66;
+  --color-button-logout: #424242;
+  --color-button-logout-hover: #363636;
+  --color-button-text: #FFFFFF;
 
   --color-border: #dddfe2;
   --color-border-light: #eee;

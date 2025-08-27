@@ -64,8 +64,8 @@ h2 {
 .login-button {
   width: 100%;
   padding: 12px;
-  background-color: var(--color-primary);
-  color: white;
+  background-color: var(--color-button-main);
+  color: var(--color-button-text);
   border: none;
   border-radius: var(--border-radius-md);
   font-size: 18px;
@@ -76,7 +76,7 @@ h2 {
 }
 
 .login-button:hover:not(:disabled) {
-  background-color: var(--color-primary-hover);
+  background-color: var(--color-button-main-hover);
 }
 
 .login-links {

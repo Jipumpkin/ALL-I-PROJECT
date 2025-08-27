@@ -106,8 +106,8 @@
 .menu-btn {
   width: 100%;
   padding: var(--spacing-md);
-  background-color: #95d5b2;
-  color: white;
+  background-color: var(--color-button-main);
+  color: var(--color-button-text);
   border: none;
   border-radius: var(--border-radius-md);
   font-size: var(--font-size-base);
@@ -122,13 +122,13 @@
 }
 
 .menu-btn:hover:not(:disabled) {
-  background-color: #74c69d;
+  background-color: var(--color-button-main-hover);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
 .menu-btn:focus {
-  outline: 2px solid #95d5b2;
+  outline: 2px solid var(--color-button-main);
   outline-offset: 2px;
 }
 
@@ -195,11 +195,11 @@
 }
 
 .logout-btn {
-  background-color: var(--color-secondary) !important;
+  background-color: var(--color-button-logout) !important;
 }
 
 .logout-btn:hover:not(:disabled) {
-  background-color: var(--color-secondary-hover) !important;
+  background-color: var(--color-button-logout-hover) !important;
 }
 
 /* 모바일 대응 */

@@ -13,6 +13,7 @@ const { initializeDatabase } = require('./models');
 
 // services
 const { syncAnimalData } = require('./services/animalSync');
+const { pool } = require('./db/connection');
 
 // 미들웨어
 const { apiLogger, errorHandler, notFoundHandler } = require('./middleware');
@@ -24,16 +25,16 @@ const AuthController = require('./controllers/auth/AuthController');
 const app = express();
 const PORT = process.env.PORT || 3003;
 
-// CORS
+// CORS 보안 설정 - 개발환경과 프로덕션 분리
 const corsOptions = {
-  origin:
-    process.env.NODE_ENV === 'production'
-      ? process.env.FRONTEND_URL || 'https://your-domain.com'
-      : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174'],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Admin-Token'],
+    origin: process.env.NODE_ENV === 'production' 
+        ? process.env.FRONTEND_URL || 'https://your-domain.com'
+        : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'], // React, Vite 개발서버
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Admin-Token']
 };
+
 app.use(cors(corsOptions));
 
 // 기본 파서 (body-parser 대체)
@@ -47,13 +48,13 @@ app.use(apiLogger);
 // 정적 파일
 app.use('/uploads', express.static('uploads'));
 
-// 기본 보안 헤더
-app.use((_, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  next();
+// 기본 보안 헤더 추가
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    next();
 });
 
 // 헬스체크
@@ -87,8 +88,8 @@ app.post('/api/check-email', authLimiter, (req, res) => {
 app.get('/health', (_, res) => res.json({ ok: true }));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/animals', require('./routes/animalRoutes'));
-app.use('/api/images', require('./routes/imageRoutes'));   // HEAD 측 라우트 유지
-app.use('/api/admin', require('./routes/adminRoutes'));    // dev 측 라우트 유지
+app.use('/api/images', require('./routes/imageRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 // 404 및 에러 핸들러
 app.use(notFoundHandler);

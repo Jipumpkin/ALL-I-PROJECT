@@ -9,7 +9,8 @@ const BravestAnimals = () => {
     const fetchOldestAnimals = async () => {
       try {
         const response = await axios.get('/api/animals/oldest');
-        setAnimals(response.data);
+        console.log('API Response for oldest animals:', response.data); // Log the whole response data
+        setAnimals(response.data.animals);
       } catch (err) {
         console.error("Error fetching oldest animals:", err);
       }
@@ -24,7 +25,7 @@ const BravestAnimals = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>용감한 아이들</h2>
+      <h2 className={styles.title}>가장 오래 가족을 기다린 친구들</h2>
       <p className={styles.subtitle}>가장 오랜 시간 가족을 기다리고 있어요</p>
       <div className={styles.grid}>
         {animals.map(animal => (

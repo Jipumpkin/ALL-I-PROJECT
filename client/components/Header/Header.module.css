@@ -28,6 +28,32 @@
   align-items: center;
   gap: var(--spacing-md);
   padding: var(--spacing-sm);
+  transition: var(--transition-fast);
+}
+
+.logo-container:hover {
+  transform: scale(1.02);
+}
+
+.logo-container:hover .imgFoot img {
+  animation: bounce 0.6s ease-in-out;
+}
+
+.logo-container:hover .logo-text {
+  color: var(--color-primary-hover);
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.imgFoot img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: brightness(1.1) contrast(1.05);
+  transition: var(--transition-fast);
 }
 
 .logo-text {
@@ -36,11 +62,6 @@
   font-family: var(--font-family-heading);
   color: var(--color-primary);
   transition: var(--transition-fast);
-}
-
-.logo-text:hover {
-  color: var(--color-primary-hover);
-  transform: scale(1.02);
 }
 
 .hamburger-menu {

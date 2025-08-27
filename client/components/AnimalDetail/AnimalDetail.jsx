@@ -35,13 +35,6 @@ const AnimalDetail = () => {
     }
   };
 
-  const handleAdoptionApplyClick = () => {
-    if (auth.isAuthenticated()) {
-      navigate(`/adoption-apply`, { state: { animal: animal } });
-    } else {
-      navigate('/login');
-    }
-  };
 
   if (loading) {
     return <div className={styles.container}><p>로딩 중...</p></div>;
@@ -124,10 +117,10 @@ const AnimalDetail = () => {
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>보호소 이름</div>
             <div className={styles.infoValue}>
-              {animal.shelter_name || '정보 없음'}
-              {animal.shelter_name && (
+              {animal.shelter?.shelter_name || '정보 없음'}
+              {animal.shelter?.shelter_name && (
                 <a 
-                  href={`https://www.google.com/search?q=${encodeURIComponent(animal.shelter_name)}`} 
+                  href={`https://www.google.com/search?q=${encodeURIComponent(animal.shelter.shelter_name)}`} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className={styles.shortcutButton}
@@ -139,11 +132,11 @@ const AnimalDetail = () => {
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>주소</div>
-            <div className={styles.infoValue}>{animal.shelter_address || '정보 없음'}</div>
+            <div className={styles.infoValue}>{animal.shelter?.address || '정보 없음'}</div>
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>연락처</div>
-            <div className={styles.infoValue}>{animal.shelter_contact_number || '정보 없음'}</div>
+            <div className={styles.infoValue}>{animal.shelter?.contact_number || '정보 없음'}</div>
           </div>
         </div>
       </div>
@@ -151,9 +144,6 @@ const AnimalDetail = () => {
       <div className={styles.buttonContainer}>
         <button className={styles.actionButton} onClick={handleMakerClick}>
           이미지 합성
-        </button>
-        <button className={styles.actionButton} onClick={handleAdoptionApplyClick}>
-          입양 신청하기
         </button>
       </div>
     </div>
