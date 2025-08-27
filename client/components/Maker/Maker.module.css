@@ -96,7 +96,7 @@
   color: #64748b;
   font-weight: 600;
   text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: #6b7280;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -124,7 +124,7 @@
 .userImageContainer {
   width: 100%;
   height: 17rem;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
+  background: #f8f9fa;
   border-radius: 1rem;
   display: flex;
   align-items: center;
@@ -207,7 +207,7 @@
   min-height: 72px; /* 필요 시 높이 조절 */
   cursor: pointer;
   background: #ffffff;
-  color: #d97706; /* 아이콘 컬러 */
+  color: #6b7280; /* 아이콘 컬러 */
   transition: background-color 0.15s ease, transform 0.05s ease;
   padding: 0;
   border: none;
@@ -219,7 +219,7 @@
 
 .iconButton:hover,
 .iconButton.active {
-  background-color: #fff7ed;
+  background-color: #f8f9fa;
 }
 
 .iconButton:active {
@@ -272,17 +272,17 @@
 }
 
 .modalOptionButton.primary {
-  background-color: #3b82f6;
+  background-color: #6b7280;
   color: #ffffff;
   margin-bottom: 0.5rem;
 }
 
 .modalOptionButton.primary:hover {
-  background-color: #2563eb;
+  background-color: #4b5563;
 }
 
 .modalOptionButton.secondary {
-  background-color: #d97706;
+  background-color: #6b7280;
   color: #ffffff;
   margin-bottom: 0.5rem;
   cursor: pointer;
@@ -292,7 +292,7 @@
 }
 
 .modalOptionButton.secondary:hover {
-  background-color: #b45309;
+  background-color: #4b5563;
 }
 
 .modalOptionButton.tertiary {
@@ -419,8 +419,8 @@
 .resultHeader {
   padding: 2rem 2rem 1rem;
   text-align: center;
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-  color: white;
+  background: #f8f9fa;
+  color: #374151;
   border-radius: 1rem 1rem 0 0;
 }
 
@@ -495,22 +495,22 @@
 }
 
 .resultActionButton.primary {
-  background-color: #f97316;
+  background-color: #6b7280;
   color: white;
 }
 
 .resultActionButton.primary:hover {
-  background-color: #ea580c;
+  background-color: #4b5563;
   transform: translateY(-1px);
 }
 
 .resultActionButton.secondary {
-  background-color: #3b82f6;
+  background-color: #6b7280;
   color: white;
 }
 
 .resultActionButton.secondary:hover {
-  background-color: #2563eb;
+  background-color: #4b5563;
   transform: translateY(-1px);
 }
 
@@ -620,7 +620,7 @@
 }
 
 .animalCard:hover {
-  border-color: #f97316;
+  border-color: #6b7280;
   transform: translateY(-2px);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
 }

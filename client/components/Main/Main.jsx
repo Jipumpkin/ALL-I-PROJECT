@@ -13,10 +13,14 @@ const Main = () => {
   useEffect(() => {
     const fetchAnimals = async () => {
       try {
-        // 백엔드 API 엔드포인트를 /api/animals/list로 수정합니다.
+        console.log('🔥 Main.jsx: 동물 데이터 요청 시작 - /animals?filter=all&page=1');
         const response = await api.get('/animals?filter=all&page=1');
+        console.log('✅ Main.jsx: 동물 데이터 응답 성공:', response.data);
+        console.log('📊 Main.jsx: 받은 동물 수:', response.data.animals?.length || 0);
         setAnimals(response.data.animals);
       } catch (err) {
+        console.error('❌ Main.jsx: 동물 데이터 요청 실패:', err.message);
+        console.error('❌ Main.jsx: 에러 상세:', err);
         setError(err);
       } finally {
         setLoading(false);

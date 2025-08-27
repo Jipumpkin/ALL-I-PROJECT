@@ -76,6 +76,8 @@ const uploadLimiter = rateLimit({
     errorCode: 'UPLOAD_RATE_LIMITED',
     retryAfter: 15 * 60,
   },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 module.exports = {

@@ -1,9 +1,55 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./Intro.module.css";
 import ScrollAnimation from "../ScrollAnimation/ScrollAnimation";
 
+// Icons
+const IconShower = () => <span>🚿</span>;
+const IconBowl = () => <span>🍽️</span>;
+const IconScissors = () => <span>✂️</span>;
+const IconPaw = () => <span>🐾</span>;
+
+// FeatureCard component
+const FeatureCard = ({ icon, title, desc, tag }) => (
+  <div className={styles.featureCard}>
+    <div className={styles.featureCardHead}>
+      <div className={styles.featureCardIcon}>{icon}</div>
+      <span className={styles.featureCardTag}>{tag}</span>
+    </div>
+    <div className={styles.featureCardTitle}>{title}</div>
+    <div className={styles.featureCardDesc}>{desc}</div>
+  </div>
+);
+
 
 export default function PawPawIntro() {
+  const navigate = useNavigate();
+  const features = [
+    {
+      icon: <IconShower />,
+      title: "씻기기",
+      desc: "입양 후 첫 목욕을 시뮬레이션하며 케어 팁을 배워요.",
+      tag: "케어",
+    },
+    {
+      icon: <IconBowl />,
+      title: "밥 주기",
+      desc: "사료량과 급여 주기를 가이드로 체크해요.",
+      tag: "영양",
+    },
+    {
+      icon: <IconScissors />,
+      title: "미용",
+      desc: "브러싱과 발바닥 케어 루틴을 연습해요.",
+      tag: "그루밍",
+    },
+    {
+      icon: <IconPaw />,
+      title: "산책",
+      desc: "적정 산책 시간과 사회화 체크리스트 제공.",
+      tag: "일상",
+    },
+  ];
 
   const steps = [
     {
@@ -105,6 +151,41 @@ export default function PawPawIntro() {
         </div>
       </section>
 
+      {/* Features */}
+      <ScrollAnimation animation="fadeInUp">
+        <section
+          id="features"
+          className={`${styles.container} ${styles.features}`}
+        >
+          <div className={styles.sectionHead}>
+            <h2>하루 시뮬레이션</h2>
+          </div>
+          <div className={styles.grid4}>
+            {features.map((f, index) => (
+              <ScrollAnimation key={f.title} animation="scaleIn" delay={index * 100}>
+                <FeatureCard
+                  icon={f.icon}
+                  title={f.title}
+                  desc={f.desc}
+                  tag={f.tag}
+                />
+              </ScrollAnimation>
+            ))}
+          </div>
+          <div className={styles.gameButtonContainer}>
+            <button 
+              className={styles.startGameButton}
+              onClick={() => navigate('/care-game')}
+            >
+              <span className={styles.gameButtonIcon}>🎮</span>
+              <span className={styles.gameButtonText}>
+                <strong>케어 시뮬레이션 시작!</strong>
+              </span>
+              <span className={styles.gameButtonArrow}>→</span>
+            </button>
+          </div>
+        </section>
+      </ScrollAnimation>
 
       {/* Steps */}
       <section id="how" className={`${styles.container} ${styles.steps}`}>

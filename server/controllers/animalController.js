@@ -4,11 +4,16 @@ const db = require('../config/database');
 
 // 유기동물 목록 조회 (필터링 및 페이지네이션)
 exports.getAnimals = async (req, res) => {
+    console.log('🔥 animalController.getAnimals 호출됨!');
+    console.log('   요청 쿼리:', req.query);
+    console.log('   요청 시간:', new Date().toISOString());
+    
     const { filter, page = 1, shelter_id, region } = req.query;
     const limit = 12;
     const offset = (page - 1) * limit;
 
     try {
+        console.log('🔄 데이터베이스 쿼리 시작...');
         const pool = await db.getPool();
         let whereClauses = [];
         let params = [];

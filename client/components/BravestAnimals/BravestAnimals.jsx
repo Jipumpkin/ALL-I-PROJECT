@@ -10,10 +10,14 @@ const BravestAnimals = () => {
   useEffect(() => {
     const fetchOldestAnimals = async () => {
       try {
+        console.log('🔥 BravestAnimals.jsx: 가장 오래된 동물 데이터 요청 시작 - /api/animals/oldest');
         const response = await axios.get('/api/animals/oldest');
+        console.log('✅ BravestAnimals.jsx: 가장 오래된 동물 데이터 응답 성공:', response.data);
+        console.log('📊 BravestAnimals.jsx: 받은 동물 수:', response.data.animals?.length || 0);
         setAnimals(response.data.animals);
       } catch (err) {
-        console.error("Error fetching oldest animals:", err);
+        console.error("❌ BravestAnimals.jsx: 가장 오래된 동물 데이터 요청 실패:", err.message);
+        console.error("❌ BravestAnimals.jsx: 에러 상세:", err);
       }
     };
 

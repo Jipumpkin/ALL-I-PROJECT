@@ -45,15 +45,6 @@ const AnimalDetail = () => {
     }
   };
 
-  const handleImageClick = () => {
-    setShowImageModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowImageModal(false);
-  };
-
-  
 
   if (loading) {
     return <div className={styles.container}><p>로딩 중...</p></div>;
@@ -112,8 +103,6 @@ const AnimalDetail = () => {
               console.log('unknown_animal.png 로드됨. isImageBroken 상태 유지');
             }
           }}
-          onClick={handleImageClick}
-          style={{ cursor: 'pointer' }}
         />
       </div>
 
@@ -186,28 +175,6 @@ const AnimalDetail = () => {
         </button>
       </div>
 
-      {/* 이미지 모달 */}
-      {showImageModal && (
-        <div className={styles.imageModalOverlay} onClick={handleCloseModal}>
-          <div className={styles.imageModalContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.imageModalClose} onClick={handleCloseModal}>
-              ×
-            </button>
-            <img 
-              src={animal.image_url} 
-              alt={animal.species} 
-              className={styles.imageModalImage}
-              onError={(e) => { 
-                e.target.src = '/images/unknown_animal.png'; 
-                setIsImageBroken(true);
-              }}
-              onLoad={() => {
-                setIsImageBroken(false);
-              }}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };

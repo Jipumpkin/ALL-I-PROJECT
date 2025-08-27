@@ -57,7 +57,9 @@
   border-bottom: 1px solid var(--color-border-light);
   display: flex;
   align-items: center;
+  justify-content: space-between;
   transition: var(--transition-fast);
+  position: relative;
 }
 
 .infoItem:hover {
@@ -79,6 +81,37 @@
   display: inline-block;
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-sm);
+}
+
+.editIcon {
+  font-size: 20px;
+  padding: var(--spacing-sm);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--border-radius-md);
+  transition: var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  margin-left: var(--spacing-sm);
+}
+
+.editIcon:hover {
+  background-color: var(--color-primary-light);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-sm);
+}
+
+.editIcon:active {
+  transform: scale(0.95);
+}
+
+.editIcon:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .menuSection {

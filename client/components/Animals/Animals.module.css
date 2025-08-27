@@ -34,10 +34,15 @@
 }
 
 .filterButtons button.active {
-  background-color: #6c757d;
-  color: white;
-  border-color: #6c757d;
+  background-color: var(--color-button-main);
+  color: var(--color-button-text);
+  border-color: var(--color-button-main);
   font-weight: bold;
+}
+
+.filterButtons button.active:hover {
+  background-color: var(--color-button-main-hover);
+  border-color: var(--color-button-main-hover);
 }
 
 /* --- 보호소 필터 드롭다운 스타일 (새로 추가) --- */

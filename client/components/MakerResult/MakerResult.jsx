@@ -176,18 +176,34 @@ const MakerResult = () => {
         <div className={styles.resultActions}>
           <button 
             className={`${styles.actionButton} ${styles.primary}`}
-            onClick={() => {
-              if (resultImage.startsWith('data:image/')) {
-                // base64 이미지인 경우 다운로드 링크 생성
-                const link = document.createElement('a');
-                link.href = resultImage;
-                link.download = `care-synthesis-${action}-${Date.now()}.png`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                alert('이미지가 다운로드되었습니다!');
-              } else {
-                alert('이미지가 저장되었습니다!');
+            onClick={async () => {
+              try {
+                if (resultImage.startsWith('data:image/')) {
+                  // base64 이미지인 경우 다운로드 링크 생성
+                  const link = document.createElement('a');
+                  link.href = resultImage;
+                  link.download = `pawpaw-${action}-${Date.now()}.png`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  alert('이미지가 다운로드되었습니다!');
+                } else {
+                  // URL 이미지인 경우 fetch로 가져와서 다운로드
+                  const response = await fetch(resultImage);
+                  const blob = await response.blob();
+                  const url = window.URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.download = `pawpaw-${action}-${Date.now()}.png`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  window.URL.revokeObjectURL(url);
+                  alert('이미지가 다운로드되었습니다!');
+                }
+              } catch (error) {
+                console.error('이미지 저장 실패:', error);
+                alert('이미지 저장에 실패했습니다.');
               }
             }}
           >

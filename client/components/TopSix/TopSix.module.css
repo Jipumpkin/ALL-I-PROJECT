@@ -67,10 +67,11 @@
 
 .info-item {
   flex-shrink: 0;
-  width: 100px;
-  height: 100px;
-  border: none;
-  box-shadow: none;
+  width: 218.66px !important;
+  height: 164px !important;
+  border: 2px solid var(--color-border-light);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -78,6 +79,7 @@
   transition: var(--transition-fast);
   cursor: pointer;
   background-color: transparent;
+  position: relative;
 }
 
 .info-item:hover {
@@ -92,16 +94,20 @@
 }
 
 .info-item-image { /* New class for the image */
-  width: 100px; /* Match info-item width/height */
-  height: 100px;
-  object-fit: cover;
-  object-position: center 25%; /* 동물 얼굴 포커스 */
-  border: 2px solid var(--color-border-light); /* Add border to image */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center 30% !important; /* 동물 얼굴 포커스 */
+  border: none;
   border-radius: 12px; /* Rounded corners instead of circular */
-  box-shadow: var(--shadow-sm); /* Add shadow to image */
+  box-shadow: none;
   transition: var(--transition-fast);
   opacity: 0.8;
   filter: brightness(1.1) contrast(1.05) saturate(1.1);
+  display: block !important;
 }
 
 .info-item:hover .info-item-image { /* Apply hover effects to the image */
@@ -166,13 +172,18 @@
   }
   
   .info-item {
-    width: 80px;
-    height: 80px;
+    width: 175px !important;
+    height: 131px !important;
   }
   
   .info-item-image {
-    width: 80px;
-    height: 80px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
   }
   
   .scroll-button {
@@ -189,13 +200,18 @@
   }
   
   .info-item {
-    width: 70px;
-    height: 70px;
+    width: 131px !important;
+    height: 98px !important;
   }
   
   .info-item-image {
-    width: 70px;
-    height: 70px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
   }
   
   .scroll-button {

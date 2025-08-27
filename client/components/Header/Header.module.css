@@ -19,37 +19,65 @@
   transition: var(--transition-fast);
 }
 
-.brand-desc {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-  margin: 0;
-  line-height: var(--line-height-relaxed);
-}
-
 .header a:focus {
   outline: none;
 }
 
 .logo-container {
   display: flex;
-  flex-direction: column; /* Changed to column to stack brand-name and brand-desc */
-  align-items: flex-start; /* Align text to the start */
-}
-
-.logo-text {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  font-family: var(--font-family-secondary);
-  color: var(--color-success);
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
   transition: var(--transition-fast);
-  display: block;
-  margin-bottom: var(--spacing-sm);
 }
 
-.logo-text:hover {
-  color: var(--color-success-hover);
+.brand-logo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--spacing-sm);
+  margin-bottom: 0;
+  transition: var(--transition-fast);
+}
+
+.brand-name {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-black);
+  font-family: var(--font-family-heading);
+  color: var(--color-primary);
+  margin: 0;
+  transition: var(--transition-fast);
+}
+
+.logo-container:hover {
   transform: scale(1.02);
 }
+
+.brand-logo:hover {
+  transform: scale(1.02);
+}
+
+.brand-logo:hover .foot-icon {
+  animation: bounce 0.6s ease-in-out;
+}
+
+.brand-logo:hover .brand-name {
+  color: var(--color-primary-hover);
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.foot-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: brightness(1.1) contrast(1.05);
+  transition: var(--transition-fast);
+}
+
 
 .hamburger-menu {
   display: flex;
@@ -119,7 +147,7 @@
     margin-bottom: var(--spacing-sm);
   }
   
-  .logo-text {
+  .brand-name {
     font-size: var(--font-size-xl);
   }
   

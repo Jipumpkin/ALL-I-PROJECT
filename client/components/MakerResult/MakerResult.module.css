@@ -16,16 +16,16 @@
 .body {
   font-family: "Inter", sans-serif;
   background-color: #f7fafc;
-  padding: 0;
+  padding: 1rem;
 }
 
 .resultContainer {
-  max-width: 28rem;
+  max-width: 42rem;
   margin: auto;
   margin-bottom: 3rem;
-  background-color: transparent;
+  background-color: #ffffff;
   padding: 1.5rem;
-  border-radius: 0;
+  border-radius: 1.5rem;
 }
 
 .resultHeader {
@@ -71,7 +71,7 @@
 
 .resultImageContainer {
   width: 100%;
-  height: 12rem;
+  height: 17rem;
   background-color: #e2e8f0;
   border-radius: 1rem;
   display: flex;
@@ -185,22 +185,22 @@
 }
 
 .actionButton.primary {
-  background-color: #f97316;
+  background-color: #6b7280;
   color: white;
 }
 
 .actionButton.primary:hover {
-  background-color: #ea580c;
+  background-color: #4b5563;
   transform: translateY(-1px);
 }
 
 .actionButton.secondary {
-  background-color: #3b82f6;
+  background-color: #6b7280;
   color: white;
 }
 
 .actionButton.secondary:hover {
-  background-color: #2563eb;
+  background-color: #4b5563;
   transform: translateY(-1px);
 }
 
@@ -218,7 +218,7 @@
 /* AI 합성 정보 스타일 */
 .aiLabel {
   font-size: 0.75rem;
-  background: linear-gradient(135deg, #f97316, #ea580c);
+  background: #6b7280;
   color: white;
   padding: 0.25rem 0.5rem;
   border-radius: 0.5rem;
@@ -286,7 +286,7 @@
 
 .promptSummary {
   font-size: 0.8rem;
-  color: #3b82f6;
+  color: #6b7280;
   cursor: pointer;
   padding: 0.25rem 0;
   border-bottom: 1px solid #e2e8f0;
@@ -294,7 +294,7 @@
 }
 
 .promptSummary:hover {
-  color: #2563eb;
+  color: #4b5563;
 }
 
 .aiPromptText {
@@ -351,7 +351,7 @@
   }
   
   .resultImageContainer {
-    height: 10rem;
+    height: 17rem;
   }
   
   .actionButton {
