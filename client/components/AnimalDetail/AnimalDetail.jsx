@@ -35,13 +35,7 @@ const AnimalDetail = () => {
     }
   };
 
-  const handleAdoptionApplyClick = () => {
-    if (auth.isAuthenticated()) {
-      navigate(`/adoption-apply`, { state: { animal: animal } });
-    } else {
-      navigate('/login');
-    }
-  };
+  
 
   if (loading) {
     return <div className={styles.container}><p>로딩 중...</p></div>;
@@ -152,9 +146,7 @@ const AnimalDetail = () => {
         <button className={styles.actionButton} onClick={handleMakerClick}>
           이미지 합성
         </button>
-        <button className={styles.actionButton} onClick={handleAdoptionApplyClick}>
-          입양 신청하기
-        </button>
+        
       </div>
     </div>
   );

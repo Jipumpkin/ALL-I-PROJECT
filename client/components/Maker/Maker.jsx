@@ -437,10 +437,10 @@ const Maker = () => {
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>보호소 이름</div>
                 <div className={styles.infoValue}>
-                  {selectedAnimal.shelter_name || '정보 없음'}
-                  {selectedAnimal.shelter_name && (
+                  {selectedAnimal.shelter?.shelter_name || '정보 없음'}
+                  {selectedAnimal.shelter?.shelter_name && (
                     <a 
-                      href={`https://www.google.com/search?q=${encodeURIComponent(selectedAnimal.shelter_name)}`} 
+                      href={`https://www.google.com/search?q=${encodeURIComponent(selectedAnimal.shelter.shelter_name)}`} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className={styles.shortcutButton}
@@ -452,11 +452,11 @@ const Maker = () => {
               </div>
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>주소</div>
-                <div className={styles.infoValue}>{selectedAnimal.shelter_address || '정보 없음'}</div>
+                <div className={styles.infoValue}>{selectedAnimal.shelter?.address || '정보 없음'}</div>
               </div>
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>연락처</div>
-                <div className={styles.infoValue}>{selectedAnimal.shelter_contact_number || '정보 없음'}</div>
+                <div className={styles.infoValue}>{selectedAnimal.shelter?.contact_number || '정보 없음'}</div>
               </div>
             </div>
           </div>

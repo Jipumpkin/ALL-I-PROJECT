@@ -101,13 +101,13 @@
 
 .buttonContainer {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   margin-top: 20px;
 }
 
 .actionButton {
   display: block;
-  width: 48%;
+  width: 100%;
   padding: 15px;
   background-color: #007bff;
   color: white;

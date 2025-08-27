@@ -18,7 +18,7 @@ import MyAccount from "../components/MyAccount/MyAccount";
 import AdoptionHistory from "../components/AdoptionHistory/AdoptionHistory";
 import Intro from "../components/Intro/Intro";
 import Animals from "../components/Animals/Animals";
-import AdoptionApply from "../components/AdoptionApply/AdoptionApply";
+
 import NotFound from "../components/NotFound/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import ShelterMap from "../components/ShelterMap/ShelterMap";
@@ -63,11 +63,7 @@ function App() {
               <AdoptionHistory />
             </ProtectedRoute>
           } />
-          <Route path="/adoption-apply" element={
-            <ProtectedRoute>
-              <AdoptionApply />
-            </ProtectedRoute>
-          } />
+          
           <Route path="/account-delete" element={
             <ProtectedRoute>
               <AccountD />

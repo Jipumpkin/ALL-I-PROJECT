@@ -19,23 +19,31 @@
   transition: var(--transition-fast);
 }
 
+.brand-desc {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin: 0;
+  line-height: var(--line-height-relaxed);
+}
+
 .header a:focus {
   outline: none;
 }
 
 .logo-container {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-sm);
+  flex-direction: column; /* Changed to column to stack brand-name and brand-desc */
+  align-items: flex-start; /* Align text to the start */
 }
 
 .logo-text {
   font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-black);
-  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-secondary);
   color: var(--color-primary);
   transition: var(--transition-fast);
+  display: block;
+  margin-bottom: var(--spacing-sm);
 }
 
 .logo-text:hover {
