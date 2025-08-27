@@ -124,10 +124,10 @@ const AnimalDetail = () => {
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>보호소 이름</div>
             <div className={styles.infoValue}>
-              {animal.shelter_name || '정보 없음'}
-              {animal.shelter_name && (
+              {animal.shelter?.shelter_name || '정보 없음'}
+              {animal.shelter?.shelter_name && (
                 <a 
-                  href={`https://www.google.com/search?q=${encodeURIComponent(animal.shelter_name)}`} 
+                  href={`https://www.google.com/search?q=${encodeURIComponent(animal.shelter.shelter_name)}`} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className={styles.shortcutButton}
@@ -139,11 +139,11 @@ const AnimalDetail = () => {
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>주소</div>
-            <div className={styles.infoValue}>{animal.shelter_address || '정보 없음'}</div>
+            <div className={styles.infoValue}>{animal.shelter?.address || '정보 없음'}</div>
           </div>
           <div className={styles.infoRow}>
             <div className={styles.infoLabel}>연락처</div>
-            <div className={styles.infoValue}>{animal.shelter_contact_number || '정보 없음'}</div>
+            <div className={styles.infoValue}>{animal.shelter?.contact_number || '정보 없음'}</div>
           </div>
         </div>
       </div>

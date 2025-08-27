@@ -11,6 +11,12 @@ const MakerResult = () => {
   const petName = searchParams.get('petName') || '몽이';
   const resultImage = searchParams.get('resultImage') || "https://placehold.co/600x600/f97316/FFFFFF?text=Result+Image";
   
+  // AI 합성 결과 데이터
+  const breedInfo = searchParams.get('breedInfo') || '';
+  const aiPrompt = searchParams.get('aiPrompt') || '';
+  const processingTime = searchParams.get('processingTime') || 0;
+  const errorMessage = searchParams.get('error') || '';
+  
   // 선택된 동물 정보
   const species = searchParams.get('species') || '';
   const gender = searchParams.get('gender') || '';
@@ -82,7 +88,18 @@ const MakerResult = () => {
     <div className={styles.body}>
       <div className={styles.resultContainer}>
         <div className={styles.resultHeader}>
-          <h1 className={styles.resultTitle}>{getActionMessage(action)}</h1>
+          <h1 className={styles.resultTitle}>
+            {errorMessage ? '처리 중 오류가 발생했습니다' : getActionMessage(action)}
+            {breedInfo && !errorMessage && <span className={styles.aiLabel}> (AI 생성)</span>}
+          </h1>
+          {errorMessage && (
+            <p className={styles.errorMessage}>{errorMessage}</p>
+          )}
+          {processingTime > 0 && !errorMessage && (
+            <p className={styles.processingInfo}>
+              처리 시간: {(processingTime / 1000).toFixed(1)}초
+            </p>
+          )}
         </div>
         <div className={styles.resultImageContainer}>
           <img 
@@ -134,14 +151,59 @@ const MakerResult = () => {
           </div>
         </div>
 
+        {/* AI 합성 정보 섹션 */}
+        {(breedInfo || aiPrompt) && !errorMessage && (
+          <div className={styles.aiInfoSection}>
+            <h3 className={styles.infoTitle}>AI 합성 정보</h3>
+            {breedInfo && (
+              <div className={styles.aiInfoBox}>
+                <h4 className={styles.aiInfoSubtitle}>견종 인식 결과:</h4>
+                <p className={styles.aiInfoText}>{breedInfo}</p>
+              </div>
+            )}
+            {aiPrompt && (
+              <div className={styles.aiInfoBox}>
+                <h4 className={styles.aiInfoSubtitle}>AI 프롬프트:</h4>
+                <details className={styles.promptDetails}>
+                  <summary className={styles.promptSummary}>프롬프트 보기</summary>
+                  <p className={styles.aiPromptText}>{aiPrompt}</p>
+                </details>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className={styles.resultActions}>
           <button 
             className={`${styles.actionButton} ${styles.primary}`}
             onClick={() => {
-              alert('이미지가 저장되었습니다!');
+              if (resultImage.startsWith('data:image/')) {
+                // base64 이미지인 경우 다운로드 링크 생성
+                const link = document.createElement('a');
+                link.href = resultImage;
+                link.download = `care-synthesis-${action}-${Date.now()}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                alert('이미지가 다운로드되었습니다!');
+              } else {
+                alert('이미지가 저장되었습니다!');
+              }
             }}
           >
             저장하기
+          </button>
+          <button 
+            className={`${styles.actionButton} ${styles.secondary}`}
+            onClick={() => {
+              // 새 창에서 이미지 보기
+              if (resultImage) {
+                window.open(resultImage, '_blank');
+              }
+            }}
+            disabled={!resultImage}
+          >
+            크게 보기
           </button>
           <button 
             className={`${styles.actionButton} ${styles.tertiary}`}
