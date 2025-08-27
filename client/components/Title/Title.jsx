@@ -55,20 +55,20 @@ const Title = () => {
         <nav className={styles["nav"]}>
             <ol>
                 <li>
-                    <Link to="/intro" onClick={() => window.scrollTo(0, 0)}><img src="../images/nav_icon_info.png" alt="info"/></Link>
+                    <Link to="/intro" onClick={() => window.scrollTo(0, 0)}><img src="..\images\query.png" alt="info"/></Link>
                     소개
                 </li>
-                <li><Link to="https://www.animals.or.kr/support/intro"><img src="../images/nav_icon_donate.png" alt="info"/>
+                <li><Link to="https://www.animals.or.kr/support/intro"><img src="..\images\high_priority.png" alt="info"/>
                     </Link>
                     소식
                 </li>
-                <li><Link to="https://kipfri.com/index.php/campaign"><img src="../images/nav_icon_campaign.png" alt="info"/>
+                <li><Link to="https://kipfri.com/index.php/campaign"><img src="..\images\web_advertising.png" alt="info"/>
                     </Link>
                     캠페인
                 </li>
-                <li><Link to="https://likalika.com/"><img src="../images/nav_icon_store.png" alt="info"/>
+                <li><Link to="https://likalika.com/"><img src="..\images\shopping_basket.png" alt="info"/>
                     </Link>
-                    애견샵
+                    반려동물용품샵
                 </li>
                 
             </ol>
