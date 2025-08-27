@@ -54,6 +54,8 @@
 .infoRow {
   display: flex;
   padding: 10px 0;
+  align-items: flex-start;
+  min-height: 2em;
 }
 
 .infoLabel {
@@ -69,24 +71,32 @@
   flex-grow: 1;
   padding-left: 15px;
   color: #333;
-  display: flex; /* Add this */
-  justify-content: space-between; /* Add this */
-  align-items: center; /* Add this */
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  line-height: 1.4;
+  min-height: 1.4em;
+  white-space: normal;
 }
 
 .shortcutButton {
-  width: 24px; /* Adjust size as needed */
-  height: 24px; /* Adjust size as needed */
-  font-size: 16px; /* Adjust icon size as needed */
-  border: none; /* Remove border */
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+  border: none;
   border-radius: 3px;
   text-decoration: none;
-  color: white; /* Icon color */
-  background-color: #28a745; /* Green color */
+  color: white;
+  background-color: #28a745;
   margin-left: 10px;
-  display: flex; /* Add flexbox */
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  align-self: flex-start;
 }
 
 .shortcutButton:hover {
@@ -109,8 +119,13 @@
   display: block;
   width: 200px;
   padding: 15px;
+<<<<<<< HEAD
   background-color: var(--color-button-main);
   color: var(--color-button-text);
+=======
+  background-color: #218838;
+  color: white;
+>>>>>>> origin/backend-Ayeong
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -120,6 +135,7 @@
 }
 
 .actionButton:hover {
+<<<<<<< HEAD
   background-color: var(--color-button-main-hover);
   transform: translateY(-1px);
 }
@@ -130,6 +146,9 @@
 
 .actionButton.secondary:hover {
   background-color: var(--color-primary-hover);
+=======
+  background-color: #1e7e34;
+>>>>>>> origin/backend-Ayeong
 }
 
 /* 이미지 모달 스타일 */

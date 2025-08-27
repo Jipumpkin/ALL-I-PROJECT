@@ -34,9 +34,15 @@
 }
 
 .filterButtons button.active {
+<<<<<<< HEAD
   background-color: var(--color-button-main);
   color: var(--color-button-text);
   border-color: var(--color-button-main);
+=======
+  background-color: #6c757d;
+  color: white;
+  border-color: #6c757d;
+>>>>>>> origin/backend-Ayeong
   font-weight: bold;
 }
 
@@ -60,6 +66,17 @@
   border: 1px solid #ccc;
   font-size: 14px;
   flex: 1;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.shelterFilter select:focus {
+  outline: none;
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+.shelterFilter select:hover {
+  border-color: var(--color-success);
 }
 
 /* -------------------------------------- */
@@ -76,14 +93,23 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
   background-color: white;
   position: relative;
 }
 
 .animalCard:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 20px rgba(40, 167, 69, 0.2);
+  border-color: var(--color-success);
+}
+
+.animalCard:hover .animalCardLink {
+  color: var(--color-success);
+}
+
+.animalCard:hover .animalInfo strong {
+  color: var(--color-success-hover);
 }
 
 
@@ -92,6 +118,11 @@
   color: inherit;
   display: block;
   position: relative;
+  transition: color 0.2s ease;
+}
+
+.animalCardLink:hover {
+  text-decoration: none;
 }
 
 .animalImage {

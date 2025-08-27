@@ -95,8 +95,13 @@ img {
   height: 36px;
   padding: 0 14px;
   border-radius: 12px;
+<<<<<<< HEAD
   border: 1px solid #FBC02D;
   background: #FBC02D;
+=======
+  border: 1px solid #28a745;
+  background: #28a745;
+>>>>>>> origin/backend-Ayeong
   color: #fff;
   font-weight: 600;
   cursor: pointer;
@@ -120,10 +125,17 @@ img {
 }
 
 .btn:hover {
+<<<<<<< HEAD
   background: #F9A825;
   border-color: #F9A825;
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(251, 192, 45, 0.3);
+=======
+  background: #218838;
+  border-color: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+>>>>>>> origin/backend-Ayeong
 }
 
 .btn:hover::before {
@@ -137,13 +149,22 @@ img {
 }
 .btnOutline {
   background: #fff;
+<<<<<<< HEAD
   color: #FBC02D;
   border-color: #FBC02D;
+=======
+  color: #28a745;
+  border-color: #28a745;
+>>>>>>> origin/backend-Ayeong
 }
 .btnOutline:hover {
   background: #fff5f3;
   transform: translateY(-2px);
+<<<<<<< HEAD
   box-shadow: 0 8px 25px rgba(251, 192, 45, 0.15);
+=======
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.15);
+>>>>>>> origin/backend-Ayeong
 }
 .btnGhost {
   background: transparent;
@@ -151,12 +172,21 @@ img {
   border-color: #e2e8f0;
 }
 .btnSecondary {
+<<<<<<< HEAD
   background: #FBC02D;
   border-color: #FBC02D;
 }
 .btnSecondary:hover {
   background: #F9A825;
   border-color: #F9A825;
+=======
+  background: #28a745;
+  border-color: #28a745;
+}
+.btnSecondary:hover {
+  background: #218838;
+  border-color: #218838;
+>>>>>>> origin/backend-Ayeong
 }
 
 @media (min-width: 768px) {
@@ -229,6 +259,8 @@ img {
   overflow: hidden;
   background: #ffffff;
   box-shadow: 0 8px 30px rgba(16, 24, 40, 0.08);
+  width: 85%;
+  margin: 0 auto;
 }
 .heroCard img {
   width: 100%;
@@ -296,8 +328,13 @@ img {
 
 .featureCard:hover {
   transform: translateY(-8px) scale(1.02);
+<<<<<<< HEAD
   box-shadow: 0 20px 40px rgba(251, 192, 45, 0.15);
   border-color: #FBC02D;
+=======
+  box-shadow: 0 20px 40px rgba(255, 120, 73, 0.15);
+  border-color: #28a745;
+>>>>>>> origin/backend-Ayeong
 }
 
 .featureCard:hover::before {

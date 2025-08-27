@@ -8,7 +8,7 @@ exports.getAnimals = async (req, res) => {
     console.log('   요청 쿼리:', req.query);
     console.log('   요청 시간:', new Date().toISOString());
     
-    const { filter, page = 1, shelter_id } = req.query;
+    const { filter, page = 1, shelter_id, region } = req.query;
     const limit = 12;
     const offset = (page - 1) * limit;
 
@@ -30,6 +30,12 @@ exports.getAnimals = async (req, res) => {
                 params.push('%개%');
                 params.push('%고양이%');
             }
+        }
+
+        // 지역 필터 추가 (animals 테이블의 region 필드 사용)
+        if (region && region !== 'all') {
+            whereClauses.push("region LIKE ?");
+            params.push(`%${region}%`);
         }
 
         if (shelter_id && shelter_id !== 'all') {
