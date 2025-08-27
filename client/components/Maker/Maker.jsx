@@ -82,6 +82,9 @@ const Maker = () => {
       observer.observe(currentImageContainer);
     }
 
+    // 컴포넌트 마운트 시 화면 상단으로 스크롤
+    window.scrollTo(0, 0);
+    
     // 컴포넌트 마운트 시 사용자 등록 이미지 가져오기
     fetchUserRegistrationImage();
 
@@ -198,20 +201,7 @@ const Maker = () => {
     }
 
     const petName = selectedAnimal.species || '동물';
-    let message = '';
-    switch (action) {
-      case 'food':
-        message = `AI가 밥 먹는 모습을 생성하고 있습니다...\n잠시만 기다려주세요!`;
-        break;
-      case 'shower':
-        message = `AI가 목욕하는 모습을 생성하고 있습니다...\n잠시만 기다려주세요!`;
-        break;
-      case 'grooming':
-        message = `AI가 미용하는 모습을 생성하고 있습니다...\n잠시만 기다려주세요!`;
-        break;
-      default:
-        message = 'AI가 이미지를 생성하고 있습니다...';
-    }
+    const message = '이미지 합성을 생성하고 있습니다...\n잠시만 기다려주세요!';
     
     setLoadingMessage(message);
     setCurrentAction(action);
@@ -233,6 +223,7 @@ const Maker = () => {
           aiPrompt: aiResult.prompt || '',
           processingTime: aiResult.processingTime || 0,
           // 동물 정보 추가
+          animalId: selectedAnimal.animal_id || '', // 동물 ID 추가
           species: selectedAnimal.species || '',
           gender: selectedAnimal.gender || '',
           age: selectedAnimal.age || '',
@@ -240,9 +231,10 @@ const Maker = () => {
           specialMark: selectedAnimal.specialMark || '',
           region: selectedAnimal.region || '',
           rescued_at: selectedAnimal.rescued_at || '',
-          shelter_name: selectedAnimal.shelter_name || '',
-          shelter_address: selectedAnimal.shelter_address || '',
-          shelter_contact_number: selectedAnimal.shelter_contact_number || ''
+          shelter_name: selectedAnimal.shelter?.shelter_name || '',
+          shelter_address: selectedAnimal.shelter?.address || '',
+          shelter_contact_number: selectedAnimal.shelter?.contact_number || '',
+          original_image_url: selectedAnimal.image_url || '' // 원본 동물 이미지 URL 추가
         });
         navigate(`/maker/result?${params.toString()}`);
       } else {
@@ -253,6 +245,7 @@ const Maker = () => {
           resultImage: selectedAnimal.image_url || "https://placehold.co/600x600/f97316/FFFFFF?text=AI+Synthesis+Failed",
           error: 'AI 합성에 실패하여 원본 이미지를 표시합니다.',
           // 동물 정보 추가
+          animalId: selectedAnimal.animal_id || '', // 동물 ID 추가
           species: selectedAnimal.species || '',
           gender: selectedAnimal.gender || '',
           age: selectedAnimal.age || '',
@@ -260,9 +253,10 @@ const Maker = () => {
           specialMark: selectedAnimal.specialMark || '',
           region: selectedAnimal.region || '',
           rescued_at: selectedAnimal.rescued_at || '',
-          shelter_name: selectedAnimal.shelter_name || '',
-          shelter_address: selectedAnimal.shelter_address || '',
-          shelter_contact_number: selectedAnimal.shelter_contact_number || ''
+          shelter_name: selectedAnimal.shelter?.shelter_name || '',
+          shelter_address: selectedAnimal.shelter?.address || '',
+          shelter_contact_number: selectedAnimal.shelter?.contact_number || '',
+          original_image_url: selectedAnimal.image_url || '' // 원본 동물 이미지 URL 추가
         });
         navigate(`/maker/result?${params.toString()}`);
       }

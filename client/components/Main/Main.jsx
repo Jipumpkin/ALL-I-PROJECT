@@ -10,6 +10,16 @@ const Main = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // 배열을 랜덤하게 섞는 함수
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   useEffect(() => {
     const fetchAnimals = async () => {
       try {
@@ -17,7 +27,9 @@ const Main = () => {
         const response = await api.get('/animals?filter=all&page=1');
         console.log('✅ Main.jsx: 동물 데이터 응답 성공:', response.data);
         console.log('📊 Main.jsx: 받은 동물 수:', response.data.animals?.length || 0);
-        setAnimals(response.data.animals);
+        // 받아온 동물 목록을 랜덤하게 섞기
+        const shuffledAnimals = shuffleArray(response.data.animals);
+        setAnimals(shuffledAnimals);
       } catch (err) {
         console.error('❌ Main.jsx: 동물 데이터 요청 실패:', err.message);
         console.error('❌ Main.jsx: 에러 상세:', err);

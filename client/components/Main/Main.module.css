@@ -33,7 +33,7 @@
     background: #fff;
 }
 
-/* 🎨 호버 시 그라데이션 오버레이 효과 - 카드에 따뜻한 색감 추가 */
+/* 🎨 호버 시 그라데이션 오버레이 효과 - 카드에 브랜드 색감 추가 */
 .animal-card::before {
     content: '';
     position: absolute;
@@ -41,7 +41,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(255, 120, 73, 0.08) 0%, rgba(255, 120, 73, 0.03) 100%);
+    background: linear-gradient(135deg, rgba(251, 192, 45, 0.08) 0%, rgba(76, 212, 161, 0.05) 100%);
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -51,8 +51,8 @@
 /* 🚀 호버 애니메이션: 위로 떠오르며 확대되는 효과 */
 .animal-card:hover {
     transform: translateY(-12px) scale(1.03);
-    box-shadow: 0 20px 40px rgba(255, 120, 73, 0.15);
-    border-color: #ff7849;
+    box-shadow: 0 20px 40px rgba(251, 192, 45, 0.15), 0 8px 20px rgba(76, 212, 161, 0.1);
+    border-color: var(--color-primary);
 }
 
 .animal-card:hover::before {
@@ -91,9 +91,34 @@ body {
 }
 
 .animal-card-link {
-    text-decoration: none; /* 밑줄 제거 */
-    color: inherit; /* 부모 요소의 글자색 상속 (파란색 제거) */
-    display: block; /* 카드 전체를 클릭 가능하게 */
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    position: relative;
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animal-card-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    border-radius: 2px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animal-card-link:hover {
+    text-decoration: none;
+    color: var(--color-text-primary);
+}
+
+.animal-card-link:hover::after {
+    width: 80%;
 }
 
 /* Mobile responsive improvements */
