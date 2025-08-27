@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Node.js 백엔드 연동용 CLI 스크립트
 케어 이미지 합성을 위한 커맨드라인 인터페이스
@@ -11,9 +12,16 @@ Node.js에서 subprocess로 호출 가능
 import argparse
 import json
 import sys
+import os
 from pathlib import Path
 from api_synthesizer import CareImageSynthesizer, get_supported_activities
 import traceback
+
+# UTF-8 출력 설정
+if sys.platform == 'win32':
+    import codecs
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.detach())
+    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.detach())
 
 def main():
     parser = argparse.ArgumentParser(description='케어 이미지 합성 CLI')
@@ -72,6 +80,7 @@ def main():
         
         # 합성기 초기화 및 실행
         synthesizer = CareImageSynthesizer()
+        synthesizer.quiet = args.quiet  # quiet 모드 설정
         
         # 출력 디렉토리 설정 (필요시)
         if args.output:

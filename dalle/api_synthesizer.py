@@ -43,6 +43,7 @@ class CareImageSynthesizer:
     
     def __init__(self):
         """초기화"""
+        self.quiet = False  # quiet 모드 설정
         self.setup_openai_client()
         self.results_dir = Path("results")
         self.results_dir.mkdir(exist_ok=True)
@@ -55,7 +56,8 @@ class CareImageSynthesizer:
                 raise ValueError("OPENAI_API_KEY not found in environment variables")
             
             self.client = OpenAI(api_key=api_key)
-            print("✅ OpenAI API 클라이언트 초기화 완료")
+            if not getattr(self, 'quiet', False):
+                print("✅ OpenAI API 클라이언트 초기화 완료")
             
         except Exception as e:
             print(f"❌ OpenAI API 설정 실패: {e}")
@@ -205,7 +207,8 @@ CRITICAL: The animal must be recognizable as the exact same individual from the 
     def generate_dalle_image(self, prompt: str, size: str = "1024x1024") -> Tuple[Optional[Image.Image], Optional[str]]:
         """DALL-E로 이미지 생성"""
         try:
-            print(f"🎨 DALL-E로 {size} 이미지 생성 중...")
+            if not self.quiet:
+                print(f"🎨 DALL-E로 {size} 이미지 생성 중...")
             
             response = self.client.images.generate(
                 model="dall-e-3",
@@ -221,7 +224,8 @@ CRITICAL: The animal must be recognizable as the exact same individual from the 
             image_response = requests.get(image_url)
             image = Image.open(BytesIO(image_response.content))
             
-            print("✅ 이미지 생성 완료")
+            if not self.quiet:
+                print("✅ 이미지 생성 완료")
             return image, image_url
             
         except Exception as e:
@@ -272,7 +276,8 @@ CRITICAL: The animal must be recognizable as the exact same individual from the 
             Dict containing success status, image path, metadata, and any errors
         """
         try:
-            print(f"🐕💝 케어 활동 이미지 합성 시작: {care_activity}")
+            if not self.quiet:
+                print(f"🐕💝 케어 활동 이미지 합성 시작: {care_activity}")
             
             if care_activity not in self.CARE_ACTIVITIES:
                 return {
@@ -282,19 +287,23 @@ CRITICAL: The animal must be recognizable as the exact same individual from the 
                 }
             
             # 1. 동물 이미지 분석
-            print("1️⃣ 동물 이미지 분석 중...")
+            if not self.quiet:
+                print("1️⃣ 동물 이미지 분석 중...")
             animal_analysis = self.analyze_animal_with_gpt4v(animal_image_data)
             
             # 2. 커스텀 공간 분석
-            print("2️⃣ 커스텀 공간 분석 중...")
+            if not self.quiet:
+                print("2️⃣ 커스텀 공간 분석 중...")
             space_analysis = self.analyze_custom_space(custom_space_data)
             
             # 3. 케어 프롬프트 생성
-            print("3️⃣ 케어 시나리오 프롬프트 생성 중...")
+            if not self.quiet:
+                print("3️⃣ 케어 시나리오 프롬프트 생성 중...")
             care_prompt = self.create_care_prompt(animal_analysis, space_analysis, care_activity)
             
             # 4. DALL-E 이미지 합성
-            print("4️⃣ DALL-E 이미지 합성 중...")
+            if not self.quiet:
+                print("4️⃣ DALL-E 이미지 합성 중...")
             synthesized_image, image_url = self.generate_dalle_image(care_prompt)
             
             if not synthesized_image:
@@ -304,7 +313,8 @@ CRITICAL: The animal must be recognizable as the exact same individual from the 
                 }
             
             # 5. 결과 저장
-            print("5️⃣ 결과 저장 중...")
+            if not self.quiet:
+                print("5️⃣ 결과 저장 중...")
             metadata = {
                 "activity": care_activity,
                 "animal_analysis": animal_analysis,
@@ -316,7 +326,8 @@ CRITICAL: The animal must be recognizable as the exact same individual from the 
             
             save_result = self.save_synthesis_result(synthesized_image, metadata)
             
-            print(f"✅ {care_activity} 케어 이미지 합성 완료!")
+            if not self.quiet:
+                print(f"✅ {care_activity} 케어 이미지 합성 완료!")
             
             return {
                 "success": True,

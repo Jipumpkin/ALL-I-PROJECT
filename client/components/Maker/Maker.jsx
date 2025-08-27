@@ -9,6 +9,7 @@ const Maker = () => {
   const [userImageUrl, setUserImageUrl] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showLoadingModal, setShowLoadingModal] = useState(false);
+  const [progressStage, setProgressStage] = useState(0); // 진행 단계 (0-4)
   const [loadingMessage, setLoadingMessage] = useState('');
   const [currentAction, setCurrentAction] = useState('');
   const [buttonStyle, setButtonStyle] = useState({});
@@ -160,50 +161,98 @@ const Maker = () => {
       console.log('🐕 동물 이미지:', selectedAnimal.image_url);
       console.log('🏠 공간 이미지:', currentUserImage.substring(0, 50) + '...');
 
-      // AbortController 생성하여 요청 취소 가능하도록 설정
-      abortControllerRef.current = new AbortController();
+      // 케어 활동 매핑
+      const activityMap = {
+        'food': '밥주기',
+        'shower': '씻기기', 
+        'grooming': '미용하기'
+      };
+      const careActivity = activityMap[action] || action;
 
-      // AI 서버에 합성 요청
-      const response = await fetch('http://localhost:3001/api/ai/care-synthesis-url', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          dogImageUrl: selectedAnimal.image_url,
-          spaceImageUrl: currentUserImage,
-          activity: action
-        }),
-        signal: abortControllerRef.current.signal
+      // 케어 합성 API 요청 (타임아웃 3분)
+      const response = await api.post('/ai/care/synthesize', {
+        animal_id: selectedAnimal.animal_id,
+        user_id: user?.id || user?.user_id,
+        care_activity: careActivity,
+        space_image_base64: currentUserImage
+      }, {
+        timeout: 180000 // 3분 (180초)
+      }
       });
 
-      if (!response.ok) {
-        throw new Error(`AI 서버 응답 오류: ${response.status}`);
-      }
-
-      const result = await response.json();
-
-      if (result.success) {
-        console.log('✅ AI 합성 완료!');
+      if (response.data.success) {
+        console.log('✅ 케어 이미지 합성 완료!');
         return {
-          resultImage: result.data.resultImage,
-          breedInfo: result.data.breedInfo,
-          prompt: result.data.prompt,
-          processingTime: result.data.processingTime
+          resultImage: response.data.image_url,
+          breedInfo: {
+            species: response.data.animal_info?.species,
+            gender: response.data.animal_info?.gender,
+            age: response.data.animal_info?.age
+          },
+          prompt: `${careActivity} 케어 활동`,
+          processingTime: '1-2분'
         };
       } else {
-        console.error('AI 합성 실패:', result.error);
-        alert(`AI 합성에 실패했습니다: ${result.error}`);
+        console.error('케어 합성 실패:', response.data.error);
+        alert(`케어 이미지 합성에 실패했습니다: ${response.data.error}`);
         return null;
       }
 
     } catch (error) {
-      if (error.name === 'AbortError') {
-        console.log('AI 합성이 사용자에 의해 취소되었습니다.');
-        return 'cancelled';
+      console.error('케어 이미지 합성 중 오류:', error);
+      
+      if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+        const userChoice = confirm(
+          '⏰ DALL-E 이미지 생성에 시간이 오래 걸리고 있습니다.\n\n' +
+          '🔄 "확인" - 다시 시도하기\n' +
+          '🏠 "취소" - 동물 목록으로 돌아가기\n\n' +
+          '💡 팁: 고품질 AI 이미지 생성은 보통 30초-2분 정도 소요됩니다.'
+        );
+        
+        if (!userChoice) {
+          navigate('/animals');
+        }
+      } else if (error.response?.status === 408) {
+        const userChoice = confirm(
+          '⏰ 서버 처리 시간이 초과되었습니다.\n\n' +
+          '🔄 "확인" - 다시 시도하기\n' +
+          '🏠 "취소" - 동물 목록으로 돌아가기'
+        );
+        
+        if (!userChoice) {
+          navigate('/animals');
+        }
+      } else if (error.response?.status === 402) {
+        const userChoice = confirm(
+          '💳 AI 서비스 할당량이 부족합니다.\n\n' +
+          '🔄 "확인" - 다시 시도하기\n' +
+          '🏠 "취소" - 동물 목록으로 돌아가기'
+        );
+        
+        if (!userChoice) {
+          navigate('/animals');
+        }
+      } else if (error.response?.data?.error) {
+        const userChoice = confirm(
+          `❌ 케어 이미지 합성 실패: ${error.response.data.error}\n\n` +
+          '🔄 "확인" - 다시 시도하기\n' +
+          '🏠 "취소" - 동물 목록으로 돌아가기'
+        );
+        
+        if (!userChoice) {
+          navigate('/animals');
+        }
+      } else {
+        const userChoice = confirm(
+          '❌ 케어 이미지 합성 중 오류가 발생했습니다.\n\n' +
+          '🔄 "확인" - 다시 시도하기\n' +
+          '🏠 "취소" - 동물 목록으로 돌아가기'
+        );
+        
+        if (!userChoice) {
+          navigate('/animals');
+        }
       }
-      console.error('AI 합성 중 오류:', error);
-      alert('AI 서버 연결에 실패했습니다. AI 서버가 실행 중인지 확인해주세요.');
       return null;
     }
   };
@@ -215,17 +264,25 @@ const Maker = () => {
       return;
     }
 
-    // 동물 이미지가 깨진 상태인지 확인
-    if (isAnimalImageBroken) {
-      alert('합성할 동물의 이미지가 존재하지 않습니다.');
-      return;
-    }
-
     const petName = selectedAnimal.species || '동물';
-    const message = '이미지 합성을 생성하고 있습니다...\n잠시만 기다려주세요!';
+    let message = '';
+    switch (action) {
+      case 'food':
+        message = `🍽️ DALL-E가 ${petName}의 행복한 밥먹기 모습을 생성하고 있습니다...\n\n⏱️ 예상 시간: 30초 ~ 2분\n💡 고품질 AI 이미지 생성 중이니 잠시만 기다려주세요!`;
+        break;
+      case 'shower':
+        message = `🛁 DALL-E가 ${petName}의 깔끔한 목욕 모습을 생성하고 있습니다...\n\n⏱️ 예상 시간: 30초 ~ 2분\n💡 고품질 AI 이미지 생성 중이니 잠시만 기다려주세요!`;
+        break;
+      case 'grooming':
+        message = `✂️ DALL-E가 ${petName}의 아름다운 미용 모습을 생성하고 있습니다...\n\n⏱️ 예상 시간: 30초 ~ 2분\n💡 고품질 AI 이미지 생성 중이니 잠시만 기다려주세요!`;
+        break;
+      default:
+        message = '🎨 DALL-E가 특별한 이미지를 생성하고 있습니다...\n\n⏱️ 예상 시간: 30초 ~ 2분';
+    }
     
     setLoadingMessage(message);
     setCurrentAction(action);
+    setProgressStage(0); // 진행 단계 초기화
     setShowLoadingModal(true);
     
     try {
@@ -233,6 +290,7 @@ const Maker = () => {
       const aiResult = await performAICareSynthesis(action);
       
       setShowLoadingModal(false);
+      setProgressStage(0);
       
       if (aiResult === 'cancelled') {
         // 사용자가 취소한 경우 - 아무것도 하지 않음
@@ -289,6 +347,7 @@ const Maker = () => {
     } catch (error) {
       console.error('처리 중 오류:', error);
       setShowLoadingModal(false);
+      setProgressStage(0);
       alert('처리 중 오류가 발생했습니다.');
     }
   };
@@ -310,8 +369,10 @@ const Maker = () => {
   return (
     <div className={styles.mainContainer}>
 
-      {/* 선택한 유기동물 이미지 영역 */}
-      <div className={styles.petImagePlaceholder}>
+      {/* 케어 이미지 합성 컨텐츠 */}
+      <div className={styles.careSynthesisContent}>
+          {/* 선택한 유기동물 이미지 영역 */}
+          <div className={styles.petImagePlaceholder}>
         {selectedAnimal ? (
           <img 
             src={selectedAnimal.image_url} 
@@ -334,7 +395,7 @@ const Maker = () => {
             onClick={() => navigate('/animals')}
             style={{ cursor: 'pointer' }}
           >
-            유기동물을 선택하여 합성하기를 시작하세요
+            유기동물을 선택하여 케어하기를 시작하세요
             <br />
             <small style={{ color: '#666', fontSize: '0.9em' }}>클릭하여 유기동물 목록으로 이동</small>
           </div>
@@ -342,41 +403,50 @@ const Maker = () => {
       </div>
 
 
-      {/* 아이콘 버튼 3개 */}
+      {/* 케어 활동 선택 버튼들 */}
       <div className={styles.iconButtonsContainer}>
         <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('food')}>
-          <img src="/images/Bob.png" alt="dog icon" style={{ width: '95%', height: '95%', objectFit: 'contain' }} />
+          <img src="/images/Bob.png" alt="밥주기" style={{ width: '95%', height: '95%', objectFit: 'contain' }} />
+          <span className={styles.buttonLabel}>밥주기</span>
         </button>
-        <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('shower')}> 
-          <img src="/images/ShowerBut.png" alt="shower icon"
-          style={{width:"95%", height:"95%", objectFit:"contain"}}/>
+        <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('shower')}>
+          <img src="/images/Wash.png" alt="씻기기" style={{ width: '95%', height: '95%', objectFit: 'contain' }} />
+          <span className={styles.buttonLabel}>씻기기</span>
         </button>
-        <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('grooming')}> 
-          <img src="/images/pretty.png" alt="grooming icon"
-          style={{width:"95%", height:"95%", objectFit:"contain"}} />
+        <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('grooming')}>
+          <img src="/images/Beauty.png" alt="미용하기" style={{ width: '95%', height: '95%', objectFit: 'contain' }} />
+          <span className={styles.buttonLabel}>미용하기</span>
         </button>
       </div>
 
-      {/* 사용자 이미지 영역 */}
-      <div
-        ref={imageContainerRef}
-        className={styles.userImageContainer}
-        onClick={() => setShowModal(true)}
-      >
-        {(() => {
-          console.log('🖼️ 사용자 이미지 렌더링 상태:', {
-            userImageUrl: userImageUrl ? userImageUrl.substring(0, 50) + '...' : 'null',
-            userRegistrationImage: userRegistrationImage ? userRegistrationImage.substring(0, 50) + '...' : 'null'
-          });
-          
-          if (userImageUrl) {
-            return <img src={userImageUrl} alt="사용자 이미지" className={styles.userImage} />;
-          } else if (userRegistrationImage) {
-            return <img src={userRegistrationImage} alt="사용자 등록 이미지" className={styles.userImage} />;
-          } else {
-            return <span className={styles.userImageText}>사용자 이미지</span>;
-          }
-        })()}
+      {/* 사용자 공간 이미지 영역 */}
+      <div className={styles.spaceImageSection}>
+        <h3 className={styles.sectionTitle}>당신의 공간</h3>
+        <div
+          ref={imageContainerRef}
+          className={styles.userImageContainer}
+          onClick={() => setShowModal(true)}
+        >
+          {(() => {
+            console.log('🖼️ 사용자 이미지 렌더링 상태:', {
+              userImageUrl: userImageUrl ? userImageUrl.substring(0, 50) + '...' : 'null',
+              userRegistrationImage: userRegistrationImage ? userRegistrationImage.substring(0, 50) + '...' : 'null'
+            });
+            
+            if (userImageUrl) {
+              return <img src={userImageUrl} alt="사용자 공간" className={styles.userImage} />;
+            } else if (userRegistrationImage) {
+              return <img src={userRegistrationImage} alt="사용자 등록 공간" className={styles.userImage} />;
+            } else {
+              return (
+                <div className={styles.uploadPrompt}>
+                  <p>공간 이미지를 업로드하세요</p>
+                  <span className={styles.userImageText}>클릭하여 이미지 선택</span>
+                </div>
+              );
+            }
+          })()}
+        </div>
       </div>
 
       {/* 이미지 변경 옵션 모달 */}
@@ -430,86 +500,47 @@ const Maker = () => {
         </div>
       )}
 
-      {/* 유기동물 정보 테이블 */}
-      <div className={styles.infoTableContainer}>
-        {selectedAnimal ? (
-          <div className={styles.infoWrapper}>
-            <div className={styles.infoTable}>
-              <h3 className={styles.tableTitle}>동물 정보</h3>
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>품종</div>
-                <div className={styles.infoValue}>{selectedAnimal.species}</div>
-              </div>
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>성별</div>
-                <div className={styles.infoValue}>{getGenderText(selectedAnimal.gender)}</div>
-              </div>
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>출생년도</div>
-                <div className={styles.infoValue}>{selectedAnimal.age}</div>
-              </div>
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>색상</div>
-                <div className={styles.infoValue}>{selectedAnimal.colorCd || '정보 없음'}</div>
-              </div>
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>특이사항</div>
-                <div className={styles.infoValue}>{selectedAnimal.specialMark || '없음'}</div>
-              </div>
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>구조 지역</div>
-                <div className={styles.infoValue}>{selectedAnimal.region}</div>
-              </div>
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>구조 일자</div>
-                <div className={styles.infoValue}>{formatDate(selectedAnimal.rescued_at)}</div>
-              </div>
+      {/* 선택된 동물 정보 */}
+      {selectedAnimal && (
+        <div className={styles.animalInfoSection}>
+          <h3 className={styles.sectionTitle}>선택된 동물</h3>
+          <div className={styles.animalInfoCard}>
+            <div className={styles.animalInfoRow}>
+              <span className={styles.infoLabel}>종류:</span>
+              <span className={styles.infoValue}>{selectedAnimal.species || '정보 없음'}</span>
             </div>
-
-            <hr className={styles.divider} />
-
-            <div className={styles.infoTable}>
-              <h3 className={styles.tableTitle}>보호소 정보</h3>
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>보호소 이름</div>
-                <div className={styles.infoValue}>
-                  {selectedAnimal.shelter?.shelter_name || '정보 없음'}
-                  {selectedAnimal.shelter?.shelter_name && (
-                    <a 
-                      href={`https://www.google.com/search?q=${encodeURIComponent(selectedAnimal.shelter.shelter_name)}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className={styles.shortcutButton}
-                    >
-                      &#x2197;
-                    </a>
-                  )}
-                </div>
-              </div>
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>주소</div>
-                <div className={styles.infoValue}>{selectedAnimal.shelter?.address || '정보 없음'}</div>
-              </div>
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>연락처</div>
-                <div className={styles.infoValue}>{selectedAnimal.shelter?.contact_number || '정보 없음'}</div>
-              </div>
+            <div className={styles.animalInfoRow}>
+              <span className={styles.infoLabel}>성별:</span>
+              <span className={styles.infoValue}>
+                {selectedAnimal.gender === 'male' ? '수컷' : selectedAnimal.gender === 'female' ? '암컷' : '정보 없음'}
+              </span>
+            </div>
+            <div className={styles.animalInfoRow}>
+              <span className={styles.infoLabel}>나이:</span>
+              <span className={styles.infoValue}>{selectedAnimal.age || '정보 없음'}</span>
+            </div>
+            <div className={styles.animalInfoRow}>
+              <span className={styles.infoLabel}>지역:</span>
+              <span className={styles.infoValue}>{selectedAnimal.region || '정보 없음'}</span>
+            </div>
+            <div className={styles.animalInfoRow}>
+              <span className={styles.infoLabel}>보호소:</span>
+              <span className={styles.infoValue}>
+                {selectedAnimal.shelter?.shelter_name || '정보 없음'}
+                {selectedAnimal.shelter?.contact_number && (
+                  <a 
+                    href={`tel:${selectedAnimal.shelter.contact_number}`}
+                    style={{ marginLeft: '10px', color: '#007bff', textDecoration: 'none' }}
+                  >
+                    📞 {selectedAnimal.shelter.contact_number}
+                  </a>
+                )}
+              </span>
             </div>
           </div>
-        ) : (
-          <div 
-            className={styles.noAnimalSelected}
-            onClick={() => navigate('/animals')}
-            style={{ cursor: 'pointer' }}
-          >
-            <p>유기동물을 선택하면 상세 정보가 여기에 표시됩니다.</p>
-            <p>동물 목록에서 원하는 동물을 선택해주세요.</p>
-            <p style={{ color: '#007bff', fontSize: '0.9em', marginTop: '10px' }}>
-              👆 클릭하여 유기동물 목록으로 이동
-            </p>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
+        </div>
     </div>
   );
 };
