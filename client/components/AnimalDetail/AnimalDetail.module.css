@@ -119,13 +119,8 @@
   display: block;
   width: 200px;
   padding: 15px;
-<<<<<<< HEAD
   background-color: var(--color-button-main);
   color: var(--color-button-text);
-=======
-  background-color: #218838;
-  color: white;
->>>>>>> origin/backend-Ayeong
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -135,7 +130,6 @@
 }
 
 .actionButton:hover {
-<<<<<<< HEAD
   background-color: var(--color-button-main-hover);
   transform: translateY(-1px);
 }
@@ -146,9 +140,6 @@
 
 .actionButton.secondary:hover {
   background-color: var(--color-primary-hover);
-=======
-  background-color: #1e7e34;
->>>>>>> origin/backend-Ayeong
 }
 
 /* 이미지 모달 스타일 */

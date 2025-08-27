@@ -34,15 +34,9 @@
 }
 
 .filterButtons button.active {
-<<<<<<< HEAD
   background-color: var(--color-button-main);
   color: var(--color-button-text);
   border-color: var(--color-button-main);
-=======
-  background-color: #6c757d;
-  color: white;
-  border-color: #6c757d;
->>>>>>> origin/backend-Ayeong
   font-weight: bold;
 }
 

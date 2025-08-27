@@ -169,8 +169,6 @@ export default function PawPawIntro() {
           </div>
         </section>
       </ScrollAnimation>
-=======
->>>>>>> origin/backend-Ayeong
 
       {/* Steps */}
       <section id="how" className={`${styles.container} ${styles.steps}`}>

@@ -106,13 +106,7 @@
 .menu-btn {
   width: 100%;
   padding: var(--spacing-md);
-<<<<<<< HEAD
-  background-color: var(--color-button-main);
-  color: var(--color-button-text);
-=======
-  background-color: var(--color-success);
-  color: white;
->>>>>>> origin/backend-Ayeong
+
   border: none;
   border-radius: var(--border-radius-md);
   font-size: var(--font-size-base);
@@ -127,21 +121,13 @@
 }
 
 .menu-btn:hover:not(:disabled) {
-<<<<<<< HEAD
-  background-color: var(--color-button-main-hover);
-=======
-  background-color: var(--color-success-hover);
->>>>>>> origin/backend-Ayeong
+
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
 .menu-btn:focus {
-<<<<<<< HEAD
-  outline: 2px solid var(--color-button-main);
-=======
-  outline: 2px solid var(--color-success);
->>>>>>> origin/backend-Ayeong
+
   outline-offset: 2px;
 }
 

@@ -39,11 +39,9 @@
   font-weight: var(--font-weight-bold);
   font-family: var(--font-family-secondary);
   color: var(--color-success);
->>>>>>> origin/backend-Ayeong
   transition: var(--transition-fast);
 }
 
-<<<<<<< HEAD
 .brand-logo {
   display: flex;
   align-items: center;
@@ -62,11 +60,11 @@
   transition: var(--transition-fast);
 }
 
-.logo-container:hover {
-=======
 .logo-text:hover {
   color: var(--color-success-hover);
->>>>>>> origin/backend-Ayeong
+}
+
+.logo-container:hover {
   transform: scale(1.02);
 }
 
