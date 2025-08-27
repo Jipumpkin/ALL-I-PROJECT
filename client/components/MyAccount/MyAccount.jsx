@@ -294,6 +294,7 @@ const MyAccount = () => {
                   ✏️
                 </button>
               )}
+              
             </div>
             {isEditing ? (
               <>
@@ -326,7 +327,7 @@ const MyAccount = () => {
                     onChange={(e) => handleInputChange('gender', e.target.value)}
                     className={styles.editSelect}
                   >
-                    <option value="">선택하지 않음</option>
+                    <option value="unknown">선택하지 않음</option>
                     <option value="male">남성</option>
                     <option value="female">여성</option>
                   </select>
@@ -414,26 +415,12 @@ const MyAccount = () => {
                 <div className={styles.infoItem}>
                   <strong>닉네임:</strong> 
                   <span>{user.nickname || '설정되지 않음'}</span>
-                  <button 
-                    className={styles.editIcon}
-                    onClick={() => setIsEditing(true)}
-                    title="닉네임 수정"
-                    aria-label="닉네임 수정"
-                  >
-                    ✏️
-                  </button>
+                  
                 </div>
                 <div className={styles.infoItem}>
                   <strong>연락처:</strong> 
                   <span>{user.phone_number || '설정되지 않음'}</span>
-                  <button 
-                    className={styles.editIcon}
-                    onClick={() => setIsEditing(true)}
-                    title="연락처 수정"
-                    aria-label="연락처 수정"
-                  >
-                    ✏️
-                  </button>
+                  
                 </div>
                 <div className={styles.infoItem}>
                   <strong>성별:</strong> 
@@ -442,14 +429,7 @@ const MyAccount = () => {
                      user.gender === 'female' ? '여성' : 
                      user.gender === 'other' ? '기타' : '설정되지 않음'}
                   </span>
-                  <button 
-                    className={styles.editIcon}
-                    onClick={() => setIsEditing(true)}
-                    title="성별 수정"
-                    aria-label="성별 수정"
-                  >
-                    ✏️
-                  </button>
+                  
                 </div>
                 <div className={styles.infoItem}>
                   <strong>등록 사진:</strong>
@@ -473,14 +453,7 @@ const MyAccount = () => {
                       </div>
                     )}
                   </div>
-                  <button 
-                    className={styles.editIcon}
-                    onClick={() => setIsEditing(true)}
-                    title="프로필 사진 수정"
-                    aria-label="프로필 사진 수정"
-                  >
-                    📷
-                  </button>
+                  
                 </div>
               </>
             )}
