@@ -133,6 +133,7 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/animals', require('./routes/animalRoutes'));
 app.use('/api/images', require('./routes/imageRoutes'));   // HEAD 측 라우트 유지
 app.use('/api/admin', require('./routes/adminRoutes'));    // dev 측 라우트 유지
+app.use('/api/ai', require('./routes/aiRoutes'));          // AI 라우트 추가
 
 // 404 및 에러 핸들러 (라우트 뒤에 배치)
 app.use(notFoundHandler);
