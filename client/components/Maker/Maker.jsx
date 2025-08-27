@@ -136,8 +136,62 @@ const Maker = () => {
     }
   };
 
-  // 아이콘 클릭 핸들러
-  const handleIconClick = (action) => {
+  // AI 케어 합성 함수
+  const performAICareSynthesis = async (action) => {
+    try {
+      // 사용자 이미지 (공간 이미지로 사용)
+      const currentUserImage = userImageUrl || userRegistrationImage;
+      if (!currentUserImage) {
+        alert('사용자 이미지를 먼저 설정해주세요!');
+        return null;
+      }
+
+      console.log('🎨 AI 케어 합성 시작:', action);
+      console.log('🐕 동물 이미지:', selectedAnimal.image_url);
+      console.log('🏠 공간 이미지:', currentUserImage.substring(0, 50) + '...');
+
+      // AI 서버에 합성 요청
+      const response = await fetch('http://localhost:3001/api/ai/care-synthesis-url', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          dogImageUrl: selectedAnimal.image_url,
+          spaceImageUrl: currentUserImage,
+          activity: action
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`AI 서버 응답 오류: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('✅ AI 합성 완료!');
+        return {
+          resultImage: result.data.resultImage,
+          breedInfo: result.data.breedInfo,
+          prompt: result.data.prompt,
+          processingTime: result.data.processingTime
+        };
+      } else {
+        console.error('AI 합성 실패:', result.error);
+        alert(`AI 합성에 실패했습니다: ${result.error}`);
+        return null;
+      }
+
+    } catch (error) {
+      console.error('AI 합성 중 오류:', error);
+      alert('AI 서버 연결에 실패했습니다. AI 서버가 실행 중인지 확인해주세요.');
+      return null;
+    }
+  };
+
+  // 아이콘 클릭 핸들러 (AI 합성 연동)
+  const handleIconClick = async (action) => {
     if (!selectedAnimal) {
       alert('유기동물 목록에서 동물을 선택하고 오세요!');
       return;
@@ -147,44 +201,76 @@ const Maker = () => {
     let message = '';
     switch (action) {
       case 'food':
-        message = `밥 먹는 중\n조금만 기다려주세요!`;
+        message = `AI가 밥 먹는 모습을 생성하고 있습니다...\n잠시만 기다려주세요!`;
         break;
       case 'shower':
-        message = `목욕 하는 중\n조금만 기다려주세요!`;
+        message = `AI가 목욕하는 모습을 생성하고 있습니다...\n잠시만 기다려주세요!`;
         break;
       case 'grooming':
-        message = `미용 하는 중\n조금만 기다려주세요!`;
+        message = `AI가 미용하는 모습을 생성하고 있습니다...\n잠시만 기다려주세요!`;
         break;
       default:
-        message = '처리 중입니다...';
+        message = 'AI가 이미지를 생성하고 있습니다...';
     }
     
     setLoadingMessage(message);
     setCurrentAction(action);
     setShowLoadingModal(true);
     
-    // 3초 후 로딩 모달 닫고 결과 페이지로 이동
-    timerRef.current = setTimeout(() => {
+    try {
+      // 실제 AI 합성 실행
+      const aiResult = await performAICareSynthesis(action);
+      
       setShowLoadingModal(false);
-      // URL 파라미터로 데이터 전달 (selectedAnimal 정보 포함)
-      const params = new URLSearchParams({
-        action: action,
-        petName: petName,
-        resultImage: selectedAnimal.image_url || "https://placehold.co/600x600/f97316/FFFFFF?text=Result+Image",
-        // 동물 정보 추가
-        species: selectedAnimal.species || '',
-        gender: selectedAnimal.gender || '',
-        age: selectedAnimal.age || '',
-        colorCd: selectedAnimal.colorCd || '',
-        specialMark: selectedAnimal.specialMark || '',
-        region: selectedAnimal.region || '',
-        rescued_at: selectedAnimal.rescued_at || '',
-        shelter_name: selectedAnimal.shelter_name || '',
-        shelter_address: selectedAnimal.shelter_address || '',
-        shelter_contact_number: selectedAnimal.shelter_contact_number || ''
-      });
-      navigate(`/maker/result?${params.toString()}`);
-    }, 3000);
+      
+      if (aiResult) {
+        // AI 합성 성공 - 결과와 함께 결과 페이지로 이동
+        const params = new URLSearchParams({
+          action: action,
+          petName: petName,
+          resultImage: aiResult.resultImage, // AI가 생성한 이미지
+          breedInfo: aiResult.breedInfo || '',
+          aiPrompt: aiResult.prompt || '',
+          processingTime: aiResult.processingTime || 0,
+          // 동물 정보 추가
+          species: selectedAnimal.species || '',
+          gender: selectedAnimal.gender || '',
+          age: selectedAnimal.age || '',
+          colorCd: selectedAnimal.colorCd || '',
+          specialMark: selectedAnimal.specialMark || '',
+          region: selectedAnimal.region || '',
+          rescued_at: selectedAnimal.rescued_at || '',
+          shelter_name: selectedAnimal.shelter_name || '',
+          shelter_address: selectedAnimal.shelter_address || '',
+          shelter_contact_number: selectedAnimal.shelter_contact_number || ''
+        });
+        navigate(`/maker/result?${params.toString()}`);
+      } else {
+        // AI 합성 실패 - 원본 이미지로 대체
+        const params = new URLSearchParams({
+          action: action,
+          petName: petName,
+          resultImage: selectedAnimal.image_url || "https://placehold.co/600x600/f97316/FFFFFF?text=AI+Synthesis+Failed",
+          error: 'AI 합성에 실패하여 원본 이미지를 표시합니다.',
+          // 동물 정보 추가
+          species: selectedAnimal.species || '',
+          gender: selectedAnimal.gender || '',
+          age: selectedAnimal.age || '',
+          colorCd: selectedAnimal.colorCd || '',
+          specialMark: selectedAnimal.specialMark || '',
+          region: selectedAnimal.region || '',
+          rescued_at: selectedAnimal.rescued_at || '',
+          shelter_name: selectedAnimal.shelter_name || '',
+          shelter_address: selectedAnimal.shelter_address || '',
+          shelter_contact_number: selectedAnimal.shelter_contact_number || ''
+        });
+        navigate(`/maker/result?${params.toString()}`);
+      }
+    } catch (error) {
+      console.error('처리 중 오류:', error);
+      setShowLoadingModal(false);
+      alert('처리 중 오류가 발생했습니다.');
+    }
   };
 
   const handleCancelLoading = () => {

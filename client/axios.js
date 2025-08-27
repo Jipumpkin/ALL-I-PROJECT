@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const API_BASE_URL = 'http://localhost:3005';
+
 const api = axios.create({
     // Vite 프록시를 사용하므로 상대 경로로 설정합니다.
     // 이렇게 하면 모든 요청이 Vite 개발 서버를 통해 전달되고,
