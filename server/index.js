@@ -14,6 +14,7 @@ const { initializeDatabase } = require('./models');
 
 // services 파일의 함수를 불러옵니다.
 const { syncAnimalData } = require('./services/animalSync');
+const { pool } = require('./db/connection');
 
 const app = express();
 const PORT = process.env.PORT || 3003; // Changed back to 3003 for frontend compatibility
@@ -31,11 +32,11 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Request 크기 제한 및 보안 설정
-app.use(bodyParser.json({ 
+app.use(bodyParser.json({
     charset: 'utf-8', 
     limit: '10mb' // API 요청 크기 제한
 }));
-app.use(bodyParser.urlencoded({ 
+app.use(bodyParser.urlencoded({
     extended: true, 
     charset: 'utf-8',
     limit: '10mb'
@@ -215,7 +216,7 @@ const server = app.listen(PORT, async () => {
         console.log('🔄 정기 데이터 동기화 시작...');
         try {
             // Assuming syncAnimalData will be adapted to Sequelize
-            await syncAnimalData(); // Removed 'pool' argument
+            await syncAnimalData(pool); // Removed 'pool' argument
             console.log('✅ 정기 데이터 동기화 완료');
         } catch (error) {
             console.error('❌ 정기 데이터 동기화 실패:', error);

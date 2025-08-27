@@ -13,16 +13,14 @@ const apiLimiter = rateLimit({
         errorCode: 'RATE_LIMITED',
         retryAfter: Math.ceil(RATE_LIMIT.WINDOW_MS / 1000)
     },
-<<<<<<< HEAD
+  
     standardHeaders: true, // `RateLimit-*` 헤더 반환
     legacyHeaders: false, // `X-RateLimit-*` 헤더 비활성화
     // IP 기반 제한 (IPv6 호환)
     // keyGenerator: (req) => req.ip, // 임시 주석처리
     // 요청 성공 여부에 관계없이 카운트
-=======
     standardHeaders: true,
     legacyHeaders: false,
->>>>>>> dev
     skipSuccessfulRequests: false,
     skipFailedRequests: false
 });
@@ -41,11 +39,9 @@ const authLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-<<<<<<< HEAD
+
     // keyGenerator: (req) => req.ip, // 임시 주석처리
     // 실패한 로그인만 카운트 (선택적)
-=======
->>>>>>> dev
     skipSuccessfulRequests: true,
     skipFailedRequests: false,
     skip: (req) => {
@@ -82,8 +78,10 @@ const uploadLimiter = rateLimit({
         success: false,
         message: '파일 업로드 한도를 초과했습니다. 잠시 후 다시 시도해주세요.',
         errorCode: 'UPLOAD_RATE_LIMITED',
-        retryAfter: Math.ceil(15 * 60)
-    }
+        retryAfter: 900
+    },
+    standardHeaders: true,
+    legacyHeaders: false
 });
 
 module.exports = {

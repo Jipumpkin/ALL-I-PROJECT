@@ -4,63 +4,289 @@
   align-items: center;
   justify-content: center;
   padding: 40px;
-  min-height: 200px;
+  min-height: 300px; /* 늘어난 높이 */
+  overflow: hidden; /* 거품이 넘치지 않도록 */
 }
 
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #ff7849;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+.bathtub {
+  width: 150px;
+  height: 90px;
+  background-color: #f0f8ff; /* 연한 하늘색 */
+  border: 5px solid #b0c4de; /* 연한 철강색 */
+  border-bottom: none;
+  border-radius: 20px 20px 0 0;
   position: relative;
+  overflow: hidden;
 }
 
-.spinner::before {
-  content: '';
+.water {
   position: absolute;
-  top: 50%;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  background-color: #add8e6; /* 밝은 파랑 */
+  border-radius: 0 0 15px 15px;
+}
+
+.dogShower {
+  position: absolute;
+  bottom: 20px;
   left: 50%;
-  width: 8px;
-  height: 8px;
-  background: #ff7849;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 50px;
+  animation: gentleBob 3s ease-in-out infinite;
+}
+
+.dogHead {
+  width: 100%;
+  height: 100%;
+  background-color: #deb887; /* 튼튼한 나무색 */
+  border-radius: 50% 50% 40% 40%;
+  position: relative;
+  border: 3px solid #8b4513; /* 안장 갈색 */
+}
+
+.ears {
+  position: absolute;
+  top: -10px;
+  width: 100%;
+}
+
+.ear {
+  width: 20px;
+  height: 30px;
+  background-color: #a0522d; /* 황토색 */
   border-radius: 50%;
-  transform: translate(-50%, -50%);
-  animation: pulse 1.5s ease-in-out infinite;
+  position: absolute;
+  border: 3px solid #8b4513;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.ear.left {
+  left: -5px;
+  transform: rotate(-30deg);
 }
 
-@keyframes pulse {
-  0%, 100% { 
-    transform: translate(-50%, -50%) scale(1); 
-    opacity: 1; 
+.ear.right {
+  right: -5px;
+  transform: rotate(30deg);
+}
+
+.eyes {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.eye {
+  width: 6px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  animation: blink 4s infinite;
+}
+
+.nose {
+  position: absolute;
+  top: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 5px;
+  background-color: #000;
+  border-radius: 50%;
+}
+
+.bubbles {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+}
+
+.bubble {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: rise 4s infinite;
+  bottom: -20px;
+}
+
+/* 거품 애니메이션 */
+@keyframes rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
   }
-  50% { 
-    transform: translate(-50%, -50%) scale(1.5); 
-    opacity: 0.3; 
+  50% {
+    transform: translateY(-80px) scale(1.2);
+  }
+  100% {
+    transform: translateY(-160px) scale(0);
+    opacity: 0;
+  }
+}
+
+/* 강아지 움직임 애니메이션 */
+@keyframes gentleBob {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+}
+
+/* 눈 깜빡임 애니메이션 */
+@keyframes blink {
+  0%, 90%, 100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
   }
 }
 
 .message {
-  margin-top: 16px;
-  color: #666;
-  font-size: 14px;
+  margin-top: 24px;
+  color: #555;
+  font-size: 16px;
+  font-weight: 600;
   text-align: center;
 }
 
-/* 작은 로딩 스피너 */
-.small {
-  width: 20px;
-  height: 20px;
-  border-width: 2px;
+/* Food Animation Styles */
+.foodContainer {
+  width: 150px;
+  height: 120px;
+  position: relative;
 }
 
-.small + .message {
-  margin-top: 8px;
-  font-size: 12px;
+.dogFood {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 50px;
+  animation: eat 1.5s infinite;
+}
+
+.bowl {
+  width: 80px;
+  height: 40px;
+  background: #b0c4de;
+  border: 3px solid #708090;
+  border-radius: 0 0 30px 30px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.food {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #8B4513;
+  border-radius: 50%;
+  bottom: 10px;
+  animation: fall 1.5s infinite;
+}
+
+@keyframes eat {
+  0%, 100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+  20% { transform: translateX(-50%) translateY(-15px) rotate(-10deg); }
+  60% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+  80% { transform: translateX(-50%) translateY(-15px) rotate(10deg); }
+}
+
+@keyframes fall {
+  0%, 60%, 100% { opacity: 1; transform: translateY(0); }
+  20% { opacity: 0; transform: translateY(20px); }
+}
+
+/* Grooming Animation Styles */
+.groomingContainer {
+  width: 180px;
+  height: 160px; /* Kept height for spacing */
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dogHeadGrooming {
+  width: 60px;  /* Same as other dogs */
+  height: 50px; /* Same as other dogs */
+  position: relative;
+}
+
+/* Repurpose scissors as a container for the animation */
+.scissors {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  animation: moveAndSnip 3s ease-in-out infinite;
+}
+
+.scissorBlade {
+  width: 50px;
+  height: 6px;
+  background: #708090;
+  border: 1px solid #36454f;
+  border-radius: 3px;
+  position: absolute;
+  top: 30px;
+  left: 60px;
+  transform-origin: -10% 50%; /* Pivot from behind */
+}
+
+.scissorBlade.one {
+  animation: snip-one 0.7s infinite;
+}
+
+.scissorBlade.two {
+  animation: snip-two 0.7s infinite;
+}
+
+/* Handles are not part of the blade div anymore */
+.scissorHandle {
+  width: 18px;
+  height: 18px;
+  border: 4px solid #36454f;
+  border-radius: 50%;
+  position: absolute;
+  top: 22px;
+  left: 45px;
+}
+
+.scissorHandle.one {
+  transform: translateY(-8px);
+}
+.scissorHandle.two {
+  transform: translateY(8px);
+}
+
+@keyframes snip-one {
+  0%, 100% { transform: rotate(25deg); }
+  50% { transform: rotate(10deg); }
+}
+
+@keyframes snip-two {
+  0%, 100% { transform: rotate(-25deg); }
+  50% { transform: rotate(-10deg); }
+}
+
+@keyframes moveAndSnip {
+  0% { transform: translateX(-20px) translateY(5px) rotate(20deg); }
+  50% { transform: translateX(20px) translateY(-5px) rotate(-20deg); }
+  100% { transform: translateX(-20px) translateY(5px) rotate(20deg); }
 }

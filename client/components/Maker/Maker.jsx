@@ -3,12 +3,14 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../src/context/AuthContext';
 import api from '../../axios';
 import styles from './Maker.module.css';
+import Loading from '../Loading/Loading.jsx';
 
 const Maker = () => {
   const [userImageUrl, setUserImageUrl] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
+  const [currentAction, setCurrentAction] = useState('');
   const [buttonStyle, setButtonStyle] = useState({});
   const [userRegistrationImage, setUserRegistrationImage] = useState(null);
   const [selectedAnimal, setSelectedAnimal] = useState(null);
@@ -212,6 +214,7 @@ const Maker = () => {
     }
     
     setLoadingMessage(message);
+    setCurrentAction(action);
     setShowLoadingModal(true);
     
     try {
@@ -386,12 +389,7 @@ const Maker = () => {
             >
               ×
             </button>
-            <div className={styles.loadingSpinner}></div>
-            <div className={styles.loadingMessage}>
-              {loadingMessage.split('\n').map((line, index) => (
-                <div key={index}>{line}</div>
-              ))}
-            </div>
+                        <Loading message={loadingMessage} animationType={currentAction} />
           </div>
         </div>
       )}
