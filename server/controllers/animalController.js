@@ -4,7 +4,7 @@ const db = require('../config/database');
 
 // 유기동물 목록 조회 (필터링 및 페이지네이션)
 exports.getAnimals = async (req, res) => {
-    const { filter, page = 1, shelter_id } = req.query;
+    const { filter, page = 1, shelter_id, region } = req.query;
     const limit = 12;
     const offset = (page - 1) * limit;
 
@@ -25,6 +25,12 @@ exports.getAnimals = async (req, res) => {
                 params.push('%개%');
                 params.push('%고양이%');
             }
+        }
+
+        // 지역 필터 추가 (animals 테이블의 region 필드 사용)
+        if (region && region !== 'all') {
+            whereClauses.push("region LIKE ?");
+            params.push(`%${region}%`);
         }
 
         if (shelter_id && shelter_id !== 'all') {

@@ -18,7 +18,12 @@
 }
 
 .pagination button.active {
-  background-color: #007bff;
+  background-color: #6c757d;
   color: white;
-  border-color: #007bff;
+  border-color: #6c757d;
+}
+
+.pagination button:hover:not(:disabled):not(.active) {
+  background-color: #f8f9fa;
+  border-color: #6c757d;
 }

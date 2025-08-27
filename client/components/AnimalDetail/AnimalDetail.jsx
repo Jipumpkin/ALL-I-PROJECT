@@ -11,6 +11,7 @@ const AnimalDetail = () => {
   const [animal, setAnimal] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   useEffect(() => {
     const fetchAnimal = async () => {
@@ -33,6 +34,14 @@ const AnimalDetail = () => {
     } else {
       navigate('/login');
     }
+  };
+
+  const handleImageClick = () => {
+    setShowImageModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowImageModal(false);
   };
 
   
@@ -76,7 +85,14 @@ const AnimalDetail = () => {
   return (
     <div className={styles.container}>
       <div className={styles.profileSection}>
-        <img src={animal.image_url} alt={animal.species} className={styles.profileImage} onError={(e) => { e.target.src = '/images/unknown_animal.png'; }} />
+        <img 
+          src={animal.image_url} 
+          alt={animal.species} 
+          className={styles.profileImage} 
+          onError={(e) => { e.target.src = '/images/unknown_animal.png'; }}
+          onClick={handleImageClick}
+          style={{ cursor: 'pointer' }}
+        />
       </div>
 
       <div className={styles.infoWrapper}>
@@ -146,8 +162,24 @@ const AnimalDetail = () => {
         <button className={styles.actionButton} onClick={handleMakerClick}>
           이미지 합성
         </button>
-        
       </div>
+
+      {/* 이미지 모달 */}
+      {showImageModal && (
+        <div className={styles.imageModalOverlay} onClick={handleCloseModal}>
+          <div className={styles.imageModalContent} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.imageModalClose} onClick={handleCloseModal}>
+              ×
+            </button>
+            <img 
+              src={animal.image_url} 
+              alt={animal.species} 
+              className={styles.imageModalImage}
+              onError={(e) => { e.target.src = '/images/unknown_animal.png'; }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
