@@ -172,7 +172,7 @@ export default function PawPawIntro() {
                 <span
                   className={`${styles.heroLabel} ${styles.heroLabelLight}`}
                 >
-                  Adopt, don’t shop
+                  Adopt, don't shop
                 </span>
               </div>
             </div>

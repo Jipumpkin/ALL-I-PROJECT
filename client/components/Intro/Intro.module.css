@@ -229,6 +229,8 @@ img {
   overflow: hidden;
   background: #ffffff;
   box-shadow: 0 8px 30px rgba(16, 24, 40, 0.08);
+  width: 85%;
+  margin: 0 auto;
 }
 .heroCard img {
   width: 100%;

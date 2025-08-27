@@ -6,7 +6,7 @@ import api from '../../axios';
 import styles from './Animals.module.css';
 import Pagination from '../Pagination/Pagination';
 import ScrollAnimation from '../ScrollAnimation/ScrollAnimation';
-import Loading from '../Loading/Loading';
+import SimpleLoading from '../SimpleLoading/SimpleLoading';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 
 const Animals = () => {
@@ -20,7 +20,10 @@ const Animals = () => {
   const [error, setError] = useState(null);
   const [shelters, setShelters] = useState([]);
   const [regions, setRegions] = useState([]);
-  const [selectedRegion, setSelectedRegion] = useState('all');
+  const [selectedRegion, setSelectedRegion] = useState(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('region') || 'all';
+  });
   const [userImages, setUserImages] = useState([]);
 
   // ✅ 초기 queryParams
@@ -30,8 +33,38 @@ const Animals = () => {
       filter: params.get('filter') || 'all',
       page: parseInt(params.get('page'), 10) || 1,
       shelter_id: params.get('shelter_id') || 'all',
+      region: params.get('region') || 'all',
     };
   });
+
+  // 깨진 문자 정제 함수
+  const cleanText = (text) => {
+    if (!text) return text;
+    // 깨진 문자(□, �, ��) 제거
+    return text.replace(/[□�]/g, '').trim();
+  };
+
+  // 지역을 도/특별시 단위로 추출
+  const extractMainRegion = (regionOrAddress) => {
+    const text = cleanText(regionOrAddress);
+    if (!text) return '기타';
+    
+    // 주요 지역 패턴 추출 (도, 특별시, 광역시, 특별자치시, 특별자치도)
+    const patterns = [
+      /^([가-힣]+특별자치도)/,   // ~특별자치도 (우선 매칭)
+      /^([가-힣]+도)/,  // ~도
+      /^([가-힣]+특별시)/,  // ~특별시  
+      /^([가-힣]+광역시)/,  // ~광역시
+      /^([가-힣]+특별자치시)/   // ~특별자치시
+    ];
+    
+    for (const pattern of patterns) {
+      const match = text.match(pattern);
+      if (match) return match[1];
+    }
+    
+    return '기타';
+  };
 
   // 보호소 목록 가져오기
   useEffect(() => {
@@ -39,7 +72,14 @@ const Animals = () => {
       try {
         const response = await axios.get('/api/animals/shelters');
         setShelters(response.data);
-        const uniqueRegions = [...new Set(response.data.map(s => s.region))];
+        
+        // 도/특별시 단위로 지역 그룹화
+        const mainRegions = response.data.map(s => 
+          extractMainRegion(s.address || s.region)
+        );
+        const uniqueRegions = [...new Set(mainRegions)]
+          .filter(region => region !== '강원도' && region !== '전라북도') // 구 지역명 제외
+          .sort();
         setRegions(uniqueRegions);
       } catch (err) {
         console.error("보호소 목록을 불러오는 데 실패했습니다.", err);
@@ -79,8 +119,14 @@ const Animals = () => {
   };
 
   const handleRegionChange = (e) => {
-    setSelectedRegion(e.target.value);
-    setQueryParams(prev => ({ ...prev, shelter_id: 'all', page: 1 }));
+    const newRegion = e.target.value;
+    setSelectedRegion(newRegion);
+    setQueryParams(prev => ({ 
+      ...prev, 
+      shelter_id: 'all', 
+      region: newRegion,
+      page: 1 
+    }));
   };
 
   const handleShelterChange = (e) => {
@@ -96,8 +142,22 @@ const Animals = () => {
   const genderMap = { male: '수컷', female: '암컷', unknown: '불명' };
 
   const filteredShelters = selectedRegion === 'all'
-    ? shelters
-    : shelters.filter(shelter => shelter.region === selectedRegion);
+    ? shelters.map(shelter => ({
+        ...shelter,
+        shelter_name: cleanText(shelter.shelter_name),
+        region: cleanText(shelter.region)
+      })).sort((a, b) => a.shelter_name.localeCompare(b.shelter_name))
+    : shelters
+        .filter(shelter => {
+          const mainRegion = extractMainRegion(shelter.address || shelter.region);
+          return mainRegion === selectedRegion;
+        })
+        .map(shelter => ({
+          ...shelter,
+          shelter_name: cleanText(shelter.shelter_name),
+          region: cleanText(shelter.region)
+        }))
+        .sort((a, b) => a.shelter_name.localeCompare(b.shelter_name));
 
   // ✅ 최종 UI
   return (
@@ -135,7 +195,7 @@ const Animals = () => {
       </div>
 
       {/* 🔄 로딩 */}
-      {loading && <Loading message="동물들을 찾고 있어요..." />}
+      {loading && <SimpleLoading message="페이지 로딩중" />}
 
       {/* ❌ 에러 */}
       {error && <ErrorMessage message={`데이터를 불러오는 중 오류가 발생했습니다: ${error.message}`} />}
@@ -160,7 +220,7 @@ const Animals = () => {
                     />
                     <div className={styles.animalInfo}>
                       <p><strong>품종:</strong> {animal.species}</p>
-                      <p><strong>생년:</strong> {animal.age}</p>
+                      <p><strong>출생년도:</strong> {animal.age}</p>
                       <p><strong>성별:</strong> {genderMap[animal.gender] || '정보 없음'}</p>
                       <p><strong>구조지역:</strong> {animal.region}</p>
                     </div>
