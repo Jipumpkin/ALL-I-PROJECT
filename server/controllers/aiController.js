@@ -231,24 +231,38 @@ The scene should naturally combine this rescued ${animal.species} with a loving 
             // 케어 활동별 프롬프트 템플릿 (더 구체적이고 정확한 변화)
             const carePrompts = {
                 '씻기기': {
-                    action: 'being gently washed with warm water, fur becoming fluffy and clean after bath',
-                    mood: '목욕 후 털이 보송보송해지고 피부가 건강해진 상태로, 깨끗함에 만족하며 꼬리를 살랑살랑 흔들고 밝고 신뢰하는 눈빛',
-                    scene: 'cozy bathroom scene with warm water, soap bubbles, fluffy towels, bathing supplies',
-                    visualChange: 'fur becomes noticeably fluffier and cleaner, dirt completely removed, skin healthy and pink, sparkling clean appearance'
+                    action: 'freshly bathed and sparkling clean, fur soft, fluffy, and gleaming with cleanliness',
+                    mood: '목욕 후 털이 보송보송해지고 피부가 건강해진 상태로, 만족스럽게 웃으며 꼬리를 살랑살랑 흔들고 밝고 신뢰하는 눈빛',
+                    scene: 'digital art illustration style, cozy bathroom with soft misty steam and soap bubbles floating around',
+                    visualChange: 'tiny water droplets catching the light on clean fur, wearing a small fluffy towel or cute bow, bright and cheerful atmosphere, smiling contentedly',
+                    artStyle: 'digital art illustration, bright and cheerful style with sparkling effects'
                 },
                 '밥주기': {
-                    action: 'eating nutritious food happily with full belly, showing brighter eyes and healthier coat shine',
-                    mood: '영양가 있는 사료를 맛있게 먹고 배가 든든해진 상태로, 눈이 더 밝아지고 털에 윤기가 나며 건강해 보이는 모습',
-                    scene: 'warm dining area with food bowls filled with nutritious food, comfortable eating space',
-                    visualChange: 'eating with obvious satisfaction, fuller belly, brighter and more alert eyes, coat developing healthy shine'
+                    action: 'well-fed, plump, and healthy-looking with a satisfied, almost sleepy expression and full belly',
+                    mood: '영양가 있는 사료를 충분히 먹고 배가 든든해진 상태로, 만족스럽고 나른한 표정을 지으며 포만감에 행복해하는 모습',
+                    scene: 'professional photograph with warm and soft lighting, creating cozy atmosphere',
+                    visualChange: 'plump and healthy appearance with full belly, clean food bowl or half-eaten treat nearby, satisfied and content expression',
+                    artStyle: 'professional photograph, warm and soft lighting highlighting plumpness and contentment'
                 },
                 '미용하기': {
-                    action: 'after professional grooming with neatly trimmed fur and clean shaped nails',
-                    mood: '전문적인 그루밍을 받고 털이 예쁘게 다듬어지고 발톱이 깔끔해진 상태로, 자신감 있고 우아한 모습을 보이며 완전한 만족감을 표현',
-                    scene: 'professional pet salon with grooming tools, brushes, scissors, bright and clean environment',
-                    visualChange: 'fur neatly trimmed and professionally styled, nails properly cut and shaped, overall well-groomed and elegant appearance'
+                    action: 'beautifully groomed with perfectly trimmed and styled coat, reflecting luxurious well-cared-for appearance',
+                    mood: '전문적인 그루밍을 받고 완벽하게 다듬어진 털과 우아한 자세로, 자신감 있고 품격 있는 모습을 보이며 스타일리시한 액세서리로 포인트',
+                    scene: 'highly detailed cinematic portrait in clean minimalist studio setting with soft professional lighting',
+                    visualChange: 'perfectly trimmed and styled coat, elegant posture, wearing stylish bandana collar or hair accessory, luxurious appearance',
+                    artStyle: 'highly detailed cinematic portrait, professional studio photography style'
                 }
             };
+            
+            // 산책하기는 별도 추가 (4가지 케어 중 하나가 아님)
+            if (careActivity === '산책하기' || careActivity === 'walk') {
+                carePrompts['산책하기'] = {
+                    action: 'energetic and happy, running playfully through sunlit field of flowers with ears or tail in motion',
+                    mood: '신나게 뛰어놀며 활기차고 행복한 모습으로, 눈에는 기쁨과 흥분이 가득하며 자유롭게 달리는 모습',
+                    scene: 'vibrant painterly style action shot in sunlit field with flowers and trees casting long shadows',
+                    visualChange: 'ears or tail in motion showing movement, eyes full of joy and excitement, sunlight streaming through trees creating warmth and adventure',
+                    artStyle: 'vibrant painterly style, action shot with warm sunlight and sense of adventure'
+                };
+            }
 
             const promptConfig = carePrompts[careActivity];
             if (!promptConfig) {
@@ -294,9 +308,9 @@ Scene requirements:
 - Mood: ${promptConfig.mood}
 - Setting: ${promptConfig.scene}
 - Visual Changes: ${promptConfig.visualChange}
-- Style: Photorealistic, warm and cozy atmosphere, soft natural lighting
+- Style: ${promptConfig.artStyle || 'Photorealistic, warm and cozy atmosphere, soft natural lighting'}
 - Emotion: Show the deep bond and trust between the animal and caregiver
-- Quality: High detail, professional pet photography style
+- Quality: High detail, professional ${careActivity === '씻기기' ? 'digital art illustration' : 'pet photography'} style
 - Specific Details: Focus on the visible transformation and improvements from the care activity
 
 Make it heartwarming and show the specific positive changes this care activity brought to this rescued animal.`
