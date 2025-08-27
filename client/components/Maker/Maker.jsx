@@ -14,8 +14,10 @@ const Maker = () => {
   const [buttonStyle, setButtonStyle] = useState({});
   const [userRegistrationImage, setUserRegistrationImage] = useState(null);
   const [selectedAnimal, setSelectedAnimal] = useState(null);
+  const [isAnimalImageBroken, setIsAnimalImageBroken] = useState(false);
   const imageContainerRef = useRef(null);
   const timerRef = useRef(null);
+  const abortControllerRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -93,6 +95,7 @@ const Maker = () => {
     if (animalFromState) {
       // location.state로 전달된 동물 정보 사용 (더 빠름)
       setSelectedAnimal(animalFromState);
+      setIsAnimalImageBroken(false); // 새로운 동물 선택 시 broken 상태 초기화
     } else if (animalId) {
       // 특정 동물 정보 가져오기
       const fetchSelectedAnimal = async () => {
@@ -100,6 +103,7 @@ const Maker = () => {
           const response = await api.get(`/animals/${animalId}`);
           if (response.data) {
             setSelectedAnimal(response.data);
+            setIsAnimalImageBroken(false); // 새로운 동물 선택 시 broken 상태 초기화
           }
         } catch (error) {
           console.error('선택된 동물 정보 가져오기 실패:', error);
@@ -114,6 +118,9 @@ const Maker = () => {
       }
       if (timerRef.current) {
         clearTimeout(timerRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
     };
   }, [user, location, fetchUserRegistrationImage]);
@@ -150,6 +157,9 @@ const Maker = () => {
       console.log('🐕 동물 이미지:', selectedAnimal.image_url);
       console.log('🏠 공간 이미지:', currentUserImage.substring(0, 50) + '...');
 
+      // AbortController 생성하여 요청 취소 가능하도록 설정
+      abortControllerRef.current = new AbortController();
+
       // AI 서버에 합성 요청
       const response = await fetch('http://localhost:3001/api/ai/care-synthesis-url', {
         method: 'POST',
@@ -160,7 +170,8 @@ const Maker = () => {
           dogImageUrl: selectedAnimal.image_url,
           spaceImageUrl: currentUserImage,
           activity: action
-        })
+        }),
+        signal: abortControllerRef.current.signal
       });
 
       if (!response.ok) {
@@ -184,6 +195,10 @@ const Maker = () => {
       }
 
     } catch (error) {
+      if (error.name === 'AbortError') {
+        console.log('AI 합성이 사용자에 의해 취소되었습니다.');
+        return 'cancelled';
+      }
       console.error('AI 합성 중 오류:', error);
       alert('AI 서버 연결에 실패했습니다. AI 서버가 실행 중인지 확인해주세요.');
       return null;
@@ -194,6 +209,12 @@ const Maker = () => {
   const handleIconClick = async (action) => {
     if (!selectedAnimal) {
       alert('유기동물 목록에서 동물을 선택하고 오세요!');
+      return;
+    }
+
+    // 동물 이미지가 깨진 상태인지 확인
+    if (isAnimalImageBroken) {
+      alert('합성할 동물의 이미지가 존재하지 않습니다.');
       return;
     }
 
@@ -222,6 +243,11 @@ const Maker = () => {
       const aiResult = await performAICareSynthesis(action);
       
       setShowLoadingModal(false);
+      
+      if (aiResult === 'cancelled') {
+        // 사용자가 취소한 경우 - 아무것도 하지 않음
+        return;
+      }
       
       if (aiResult) {
         // AI 합성 성공 - 결과와 함께 결과 페이지로 이동
@@ -274,9 +300,16 @@ const Maker = () => {
   };
 
   const handleCancelLoading = () => {
+    // AI 합성 요청 취소
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      console.log('AI 합성 요청이 취소되었습니다.');
+    }
+    
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
+    
     setShowLoadingModal(false);
   };
 
@@ -290,7 +323,16 @@ const Maker = () => {
             src={selectedAnimal.image_url} 
             alt={selectedAnimal.species}
             className={styles.petImage}
-            onError={(e) => { e.target.src = '/images/unknown_animal.png'; }}
+            onError={(e) => { 
+              e.target.src = '/images/unknown_animal.png'; 
+              setIsAnimalImageBroken(true);
+            }}
+            onLoad={() => {
+              // 이미지가 정상적으로 로드되면 broken 상태 해제
+              if (isAnimalImageBroken) {
+                setIsAnimalImageBroken(false);
+              }
+            }}
           />
         ) : (
           <div 

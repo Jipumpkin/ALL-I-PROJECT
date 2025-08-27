@@ -40,14 +40,14 @@
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
   font-family: var(--font-family-secondary);
-  color: var(--color-primary);
+  color: var(--color-success);
   transition: var(--transition-fast);
   display: block;
   margin-bottom: var(--spacing-sm);
 }
 
 .logo-text:hover {
-  color: var(--color-primary-hover);
+  color: var(--color-success-hover);
   transform: scale(1.02);
 }
 
@@ -72,16 +72,16 @@
 }
 
 .hamburger-menu:hover {
-  background-color: var(--color-primary-light);
+  background-color: rgba(40, 167, 69, 0.1);
 }
 
 .hamburger-menu:focus {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-success);
   outline-offset: 2px;
 }
 
 .hamburger-menu[aria-expanded="true"] {
-  background-color: var(--color-primary-light);
+  background-color: rgba(40, 167, 69, 0.1);
 }
 
 .bar {
@@ -94,12 +94,12 @@
 }
 
 .hamburger-menu:hover .bar {
-  background-color: var(--color-primary);
+  background-color: var(--color-success);
 }
 
 .hamburger-menu.active .bar:nth-child(1) {
   transform: rotate(45deg) translate(7px, 7px);
-  background-color: var(--color-primary);
+  background-color: var(--color-success);
 }
 
 .hamburger-menu.active .bar:nth-child(2) {
@@ -109,7 +109,7 @@
 
 .hamburger-menu.active .bar:nth-child(3) {
   transform: rotate(-45deg) translate(7px, -7px);
-  background-color: var(--color-primary);
+  background-color: var(--color-success);
 }
 
 /* Mobile improvements */

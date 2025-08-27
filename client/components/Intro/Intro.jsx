@@ -92,7 +92,7 @@ export default function PawPawIntro() {
           </div>
           <div className={styles.heroVisual}>
             <div className={styles.heroCard}>
-              <img src="/images/hoochoo1.jpeg" alt="" />
+              <img src="images\child-puppy.png" alt="" />
               <div className={styles.heroCardFooter}>
                 <span
                   className={`${styles.heroLabel} ${styles.heroLabelLight}`}

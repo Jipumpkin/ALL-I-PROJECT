@@ -95,8 +95,8 @@ img {
   height: 36px;
   padding: 0 14px;
   border-radius: 12px;
-  border: 1px solid #ff7849;
-  background: #ff7849;
+  border: 1px solid #28a745;
+  background: #28a745;
   color: #fff;
   font-weight: 600;
   cursor: pointer;
@@ -120,10 +120,10 @@ img {
 }
 
 .btn:hover {
-  background: #e5653f;
-  border-color: #e5653f;
+  background: #218838;
+  border-color: #218838;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 120, 73, 0.3);
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
 }
 
 .btn:hover::before {
@@ -137,13 +137,13 @@ img {
 }
 .btnOutline {
   background: #fff;
-  color: #ff7849;
-  border-color: #ff7849;
+  color: #28a745;
+  border-color: #28a745;
 }
 .btnOutline:hover {
   background: #fff5f3;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 120, 73, 0.15);
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.15);
 }
 .btnGhost {
   background: transparent;
@@ -151,12 +151,12 @@ img {
   border-color: #e2e8f0;
 }
 .btnSecondary {
-  background: #ff7849;
-  border-color: #ff7849;
+  background: #28a745;
+  border-color: #28a745;
 }
 .btnSecondary:hover {
-  background: #e5653f;
-  border-color: #e5653f;
+  background: #218838;
+  border-color: #218838;
 }
 
 @media (min-width: 768px) {
@@ -229,6 +229,8 @@ img {
   overflow: hidden;
   background: #ffffff;
   box-shadow: 0 8px 30px rgba(16, 24, 40, 0.08);
+  width: 85%;
+  margin: 0 auto;
 }
 .heroCard img {
   width: 100%;
@@ -297,7 +299,7 @@ img {
 .featureCard:hover {
   transform: translateY(-8px) scale(1.02);
   box-shadow: 0 20px 40px rgba(255, 120, 73, 0.15);
-  border-color: #ff7849;
+  border-color: #28a745;
 }
 
 .featureCard:hover::before {
