@@ -43,7 +43,7 @@ const LoginModal = ({ setIsOpen }) => {
             <div className={styles["menu-buttons"]}>
               <button className={styles["menu-btn"]} onClick={() => handleNavigate('/maker')}>합성하기</button>
               <button className={styles["menu-btn"]} onClick={() => handleNavigate('/animals')}>유기동물</button>
-              <button className={styles["menu-btn"]} onClick={() => handleNavigate('/adoption-apply')}>입양 신청하기</button>
+              
               <button className={styles["menu-btn"]} onClick={() => handleNavigate('/my-account')}>마이페이지</button>
               <button className={`${styles["menu-btn"]} ${styles["logout-btn"]}`} onClick={handleLogout}>로그아웃</button>
             </div>

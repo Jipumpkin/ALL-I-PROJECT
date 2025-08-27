@@ -4,11 +4,11 @@ const mysql = require('mysql2/promise');
 
 // ✅ process.env 변수 이름에 'REMOTE_' 접두사를 추가하여 .env 파일을 직접 읽도록 수정
 const dbConfig = {
-    host: process.env.REMOTE_DB_HOST,
-    user: process.env.REMOTE_DB_USER,
-    password: process.env.REMOTE_DB_PASSWORD,
-    database: process.env.REMOTE_DB_NAME,
-    port: parseInt(process.env.REMOTE_DB_PORT, 10) || 3306,
+    host: process.env.REMOTE_REMOTE_DB_HOST || '192.168.1.96',
+    user: process.env.REMOTE_REMOTE_DB_USER || 'alli_admin',
+    password: process.env.REMOTE_REMOTE_DB_PASSWORD || '250801',
+    database: process.env.REMOTE_REMOTE_DB_NAME || 'alli_core',
+    port: parseInt(process.env.REMOTE_REMOTE_DB_PORT, 10) || 3307 || 3306,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,

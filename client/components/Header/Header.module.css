@@ -19,6 +19,13 @@
   transition: var(--transition-fast);
 }
 
+.brand-desc {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin: 0;
+  line-height: var(--line-height-relaxed);
+}
+
 .header a:focus {
   outline: none;
 }
@@ -58,10 +65,12 @@
 
 .logo-text {
   font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-black);
-  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-secondary);
   color: var(--color-primary);
   transition: var(--transition-fast);
+  display: block;
+  margin-bottom: var(--spacing-sm);
 }
 
 .hamburger-menu {

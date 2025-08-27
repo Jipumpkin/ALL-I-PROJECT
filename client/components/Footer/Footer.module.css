@@ -36,6 +36,12 @@
   transition: var(--transition-fast);
 }
 
+.brand-name {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
 .brand-logo:hover {
   transform: scale(1.02);
 }

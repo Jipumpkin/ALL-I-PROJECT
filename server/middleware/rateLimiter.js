@@ -33,6 +33,7 @@ const authLimiter = rateLimit({
     retryAfter: Math.ceil(RATE_LIMIT.AUTH_WINDOW_MS / 1000),
   },
   standardHeaders: true,
+  standardHeaders: true,
   legacyHeaders: false,
   // keyGenerator: (req) => req.ip, // 필요시 지정
   skipSuccessfulRequests: true,  // 성공 요청은 카운트 안 함
