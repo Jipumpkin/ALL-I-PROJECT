@@ -188,9 +188,6 @@ export default function PawPawIntro() {
         >
           <div className={styles.sectionHead}>
             <h2>하루 시뮬레이션</h2>
-            <p className={styles.sectionSubtitle}>
-              🐕 귀여운 유기동물과 함께하는 특별한 하루를 체험해보세요!
-            </p>
           </div>
           <div className={styles.grid4}>
             {features.map((f, index) => (
@@ -211,8 +208,7 @@ export default function PawPawIntro() {
             >
               <span className={styles.gameButtonIcon}>🎮</span>
               <span className={styles.gameButtonText}>
-                <strong>케어 시뮬레이션 게임 시작!</strong>
-                <small>프린세스 메이커 스타일의 반려동물 키우기</small>
+                <strong>케어 시뮬레이션 시작!</strong>
               </span>
               <span className={styles.gameButtonArrow}>→</span>
             </button>

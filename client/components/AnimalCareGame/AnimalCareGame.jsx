@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../axios';
 import styles from './AnimalCareGame.module.css';
 
-// 케어 애니메이션 디스플레이 컴포넌트 (포우 게임 스타일)
+// 케어 애니메이션 디스플레이 컴포넌트
 const CareAnimationDisplay = ({ careType, animalName, animalSpecies }) => {
   const [animationFrame, setAnimationFrame] = useState(0);
   
@@ -157,10 +157,10 @@ const AnimalCareGame = () => {
   const [currentCareType, setCurrentCareType] = useState('');
   const [animalMood, setAnimalMood] = useState('normal'); // dirty, normal, happy, clean, beautiful
   
-  // 이미지 생성 관련 상태
-  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  const [generatedImage, setGeneratedImage] = useState(null);
-  const [showImageGeneration, setShowImageGeneration] = useState(false);
+  // AI 생성 이미지 관련 상태
+  const [generatedImages, setGeneratedImages] = useState({}); // careType별 생성된 이미지들
+  const [currentDisplayImage, setCurrentDisplayImage] = useState(''); // 현재 표시 중인 이미지
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false); // 이미지 생성 중 상태
   
   // 돌본 동물들과 기록 관련 상태
   const [careHistory, setCareHistory] = useState([]);
@@ -265,8 +265,68 @@ const AnimalCareGame = () => {
     }
   };
 
-  // 케어 활동 실행 (애니메이션 포함)
-  const performCare = (careType) => {
+  // AI 이미지 생성 함수
+  const generateCareImage = async (careType, currentStats, mood) => {
+    try {
+      console.log(`🎨 ${careType} AI 이미지 생성 시작...`);
+      setIsGeneratingImage(true);
+      
+      // 케어 활동 한국어 매핑
+      const careTypeMapping = {
+        'wash': '씻기기',
+        'feed': '밥주기', 
+        'groom': '미용하기',
+        'walk': '산책하기'
+      };
+      
+      const koreanCareType = careTypeMapping[careType];
+      
+      const requestData = {
+        animalData: selectedAnimal,
+        careActivity: koreanCareType,
+        careStats: currentStats,
+        animalMood: mood,
+        completedTasks: completedTasks
+      };
+
+      console.log('📤 AI 이미지 생성 요청 데이터:', requestData);
+
+      const response = await api.post('/ai/generate-care-image', requestData);
+      
+      if (response.data.success && response.data.image_path) {
+        console.log('✅ AI 이미지 생성 성공:', response.data.image_path);
+        
+        // 생성된 이미지를 케어 타입별로 저장
+        setGeneratedImages(prev => ({
+          ...prev,
+          [careType]: {
+            url: response.data.image_path,
+            timestamp: new Date().toISOString(),
+            activity: koreanCareType,
+            mood: mood,
+            stats: currentStats
+          }
+        }));
+        
+        // 현재 표시할 이미지를 새로 생성된 이미지로 설정
+        setCurrentDisplayImage(response.data.image_path);
+        
+        return response.data.image_path;
+      } else {
+        console.warn('⚠️ AI 이미지 생성 실패, mock 모드:', response.data);
+        return null;
+      }
+      
+    } catch (error) {
+      console.error('❌ AI 이미지 생성 에러:', error);
+      return null;
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
+  // 케어 활동 실행 (애니메이션 + AI 이미지 생성)
+  const performCare = async (careType) => {
     if (gameEnded || timeLeft <= 0 || showCareAnimation) return;
     
     const effect = careEffects[careType];
@@ -278,19 +338,26 @@ const AnimalCareGame = () => {
     // 케어 애니메이션 시작
     setCurrentCareType(careType);
     setShowCareAnimation(true);
+    setMessage(`${effect.icon} ${careType === 'wash' ? '씻기는' : careType === 'feed' ? '밥을 주는' : careType === 'groom' ? '미용하는' : '산책하는'} 중...`);
+    
+    // 새로운 스탯 미리 계산 (AI 생성용)
+    const newStats = { ...careStats };
+    Object.keys(effect).forEach(key => {
+      if (key !== 'time' && key !== 'message' && key !== 'icon' && key !== 'detailedChange' && key !== 'visualChange') {
+        newStats[key] = Math.max(0, Math.min(100, careStats[key] + effect[key]));
+      }
+    });
+    
+    // 새로운 기분 계산
+    const newMood = calculateAnimalMood(newStats);
+    
+    // AI 이미지 생성 (병렬로 실행)
+    const aiImagePromise = generateCareImage(careType, newStats, newMood);
     
     // 애니메이션 시간 (3초)
-    setTimeout(() => {
+    setTimeout(async () => {
       // 스탯 업데이트
-      setCareStats(prev => {
-        const newStats = { ...prev };
-        Object.keys(effect).forEach(key => {
-          if (key !== 'time' && key !== 'message' && key !== 'icon') {
-            newStats[key] = Math.max(0, Math.min(100, prev[key] + effect[key]));
-          }
-        });
-        return newStats;
-      });
+      setCareStats(newStats);
 
       // 시간 감소
       setTimeLeft(prev => prev - effect.time);
@@ -298,15 +365,22 @@ const AnimalCareGame = () => {
       // 완료한 작업 추가
       setCompletedTasks(prev => [...prev, careType]);
       
-      // 메시지 표시
-      setMessage(effect.message);
+      // AI 이미지 결과 확인
+      const generatedImageUrl = await aiImagePromise;
+      if (generatedImageUrl) {
+        // 임시로 생성된 이미지를 표시 (실제로는 animalImage를 교체하지 않음 - 원본 보존)
+        console.log(`🖼️ ${careType} 케어 결과 이미지:`, generatedImageUrl);
+        setMessage(`${effect.message} 🎨 AI가 ${selectedAnimal.name}의 변화된 모습을 그려줬어요!`);
+      } else {
+        setMessage(effect.message);
+      }
       
       // 애니메이션 종료
       setShowCareAnimation(false);
       setCurrentCareType('');
       
-      // 메시지 3초 후 사라짐
-      setTimeout(() => setMessage(''), 3000);
+      // 메시지 5초 후 사라짐 (AI 이미지 확인 시간)
+      setTimeout(() => setMessage(''), 5000);
     }, 3000);
   };
 
@@ -392,75 +466,66 @@ const AnimalCareGame = () => {
     setGameStarted(false);
     setGameEnded(false);
     setMessage('');
-    setGeneratedImage(null);
-    setShowImageGeneration(false);
+    setGeneratedImages({});
+    setCurrentDisplayImage('');
+    setIsGeneratingImage(false);
     setTodayRecord('');
     setAnimalMood('normal');
   };
 
-  // 최고 케어 활동 결정 (가장 높은 스탯 기준)
-  const getBestCareActivity = () => {
-    const stats = {
-      '씻기기': careStats.cleanliness,
-      '밥주기': careStats.hunger,
-      '미용하기': careStats.beauty
-    };
+  // 동물 기분 계산 함수
+  const calculateAnimalMood = (stats) => {
+    const totalScore = (stats.cleanliness + stats.hunger + stats.beauty + stats.energy) / 4;
     
-    return Object.entries(stats).reduce((best, [activity, value]) => 
-      value > stats[best] ? activity : best
-    , '씻기기');
+    if (totalScore >= 80) return 'beautiful';
+    if (totalScore >= 60) return 'clean';
+    if (totalScore >= 40) return 'happy';
+    if (totalScore >= 20) return 'normal';
+    return 'dirty';
   };
 
-  // DALL-E 이미지 생성 함수
-  const generateCareImage = async () => {
-    if (!selectedAnimal) return;
-    
-    try {
-      setIsGeneratingImage(true);
-      setShowImageGeneration(true);
-      
-      const bestActivity = getBestCareActivity();
-      
-      console.log('🎨 이미지 생성 시작:', {
-        animal: selectedAnimal.name,
-        activity: bestActivity,
-        mood: animalMood
-      });
-      
-      // 백엔드 API 호출 (DALL-E 연동)
-      const response = await api.post('/api/generate-care-image', {
-        animalData: {
-          id: selectedAnimal.id,
-          name: selectedAnimal.name,
-          species: selectedAnimal.species,
-          image_url: selectedAnimal.image_url,
-          description: selectedAnimal.description
-        },
-        careActivity: bestActivity,
-        careStats: careStats,
-        animalMood: animalMood,
-        completedTasks: completedTasks
-      });
-      
-      if (response.data.success) {
-        setGeneratedImage({
-          url: response.data.image_path,
-          activity: bestActivity,
-          filename: response.data.filename,
-          timestamp: response.data.timestamp
-        });
-        console.log('✅ 이미지 생성 완료:', response.data.filename);
-      } else {
-        throw new Error(response.data.error || '이미지 생성에 실패했습니다');
-      }
-      
-    } catch (error) {
-      console.error('❌ 이미지 생성 오류:', error);
-      setMessage('🎨 이미지 생성에 실패했습니다. 나중에 다시 시도해주세요.');
-      setTimeout(() => setMessage(''), 5000);
-    } finally {
-      setIsGeneratingImage(false);
+  // 수동으로 기록 저장하는 함수
+  const saveCurrentRecord = () => {
+    if (!selectedAnimal || !todayRecord.trim()) {
+      setMessage('💭 기록할 내용을 입력해주세요!');
+      setTimeout(() => setMessage(''), 3000);
+      return;
     }
+
+    const totalScore = Object.values(careStats).reduce((sum, stat) => sum + stat, 0) / 4;
+    let grade = "";
+    
+    if (totalScore >= 80) {
+      grade = "S";
+    } else if (totalScore >= 60) {
+      grade = "A";
+    } else {
+      grade = "B";
+    }
+
+    const newRecord = {
+      id: Date.now(),
+      animal: selectedAnimal,
+      date: new Date().toLocaleDateString('ko-KR'),
+      time: new Date().toLocaleTimeString('ko-KR'),
+      finalStats: careStats,
+      completedTasks: [...completedTasks],
+      totalScore: Math.round(totalScore),
+      grade: grade,
+      mood: animalMood,
+      note: todayRecord,
+      isManualSave: true // 수동 저장 표시
+    };
+
+    const updatedHistory = [newRecord, ...careHistory];
+    setCareHistory(updatedHistory);
+    localStorage.setItem('careHistory', JSON.stringify(updatedHistory));
+    
+    setMessage(`📝 ${selectedAnimal.name}와의 기록이 저장되었어요!`);
+    setTimeout(() => setMessage(''), 3000);
+    
+    // 기록 저장 후 텍스트 초기화 (선택사항)
+    // setTodayRecord('');
   };
 
   // 스탯 바 컴포넌트
@@ -504,10 +569,6 @@ const AnimalCareGame = () => {
             📝 케어 기록 {careHistory.length > 0 && `(${careHistory.length})`}
           </button>
         </div>
-        <p className={styles.gameDescription}>
-          실제 보호소의 유기동물을 선택하고 24시간 동안 정성껏 돌봐주세요!<br/>
-          씻기기, 밥주기, 미용, 산책을 통해 행복하게 만들어주세요.
-        </p>
         
         {/* 케어 기록 표시 */}
         {showCareHistory && (
@@ -529,7 +590,12 @@ const AnimalCareGame = () => {
                     />
                     <div className={styles.historyInfo}>
                       <div className={styles.historyHeader}>
-                        <span className={styles.historyName}>{record.animal.name}</span>
+                        <span className={styles.historyName}>
+                          {record.animal.name}
+                          {record.isManualSave && (
+                            <span className={styles.manualSaveBadge}>📝</span>
+                          )}
+                        </span>
                         <span className={`${styles.historyGrade} ${styles[`grade${record.grade}`]}`}>
                           {record.grade}
                         </span>
@@ -604,10 +670,6 @@ const AnimalCareGame = () => {
                   </div>
                 ))}
               </div>
-              <div className={styles.realDataNotice}>
-                💡 <strong>실제 보호소 동물들</strong>과 함께하는 시뮬레이션입니다. 
-                게임 후 관심이 생기셨다면 실제 입양도 고려해보세요! 🏡
-              </div>
             </>
           )}
         </div>
@@ -620,7 +682,6 @@ const AnimalCareGame = () => {
       <div className={styles.gameHeader}>
         <h2>🐾 {selectedAnimal.name}이(가)의 하루</h2>
         <div className={styles.timeInfo}>
-          <span className={styles.timeLeft}>⏰ 남은 시간: {timeLeft}시간</span>
           <button className={styles.resetButton} onClick={resetGame}>
             다른 동물 선택
           </button>
@@ -644,14 +705,32 @@ const AnimalCareGame = () => {
           ) : (
             <>
               <div className={`${styles.animalContainer} ${styles[animalMood]}`}>
-                <img 
-                  src={selectedAnimal.image_url} 
-                  alt={selectedAnimal.name}
-                  className={`${styles.mainAnimalImage} ${styles[animalMood + 'Image']}`}
-                  onError={(e) => { 
-                    e.target.src = '/images/unknown_animal.png'; 
-                  }}
-                />
+                <div className={styles.imageContainer}>
+                  {/* AI 이미지 생성 중일 때 로딩 표시 */}
+                  {isGeneratingImage && (
+                    <div className={styles.imageLoadingOverlay}>
+                      <div className={styles.imageLoader}>🎨 AI가 그리고 있어요...</div>
+                    </div>
+                  )}
+                  
+                  {/* 현재 표시할 이미지 결정 */}
+                  <img 
+                    src={currentDisplayImage || selectedAnimal.image_url} 
+                    alt={`${selectedAnimal.name}${currentDisplayImage ? ' (케어 후)' : ''}`}
+                    className={`${styles.mainAnimalImage} ${styles[animalMood + 'Image']} ${currentDisplayImage ? styles.aiGeneratedImage : ''}`}
+                    onError={(e) => { 
+                      e.target.src = selectedAnimal.image_url || '/images/unknown_animal.png'; 
+                      setCurrentDisplayImage(''); // AI 이미지 로드 실패시 원본으로 복구
+                    }}
+                  />
+                  
+                  {/* AI 생성 이미지 표시 중일 때 라벨 */}
+                  {currentDisplayImage && (
+                    <div className={styles.aiImageLabel}>
+                      🤖 AI가 그린 {selectedAnimal.name}
+                    </div>
+                  )}
+                </div>
                 <div className={styles.moodEffects}>
                   {animalMood === 'dirty' && <span className={styles.dirtEffect}>💦</span>}
                   {animalMood === 'happy' && <span className={styles.happyEffect}>😊</span>}
@@ -669,6 +748,30 @@ const AnimalCareGame = () => {
                   {animalMood === 'clean' && <span>😄 깨끗해요!</span>}
                   {animalMood === 'beautiful' && <span>🥰 완벽해요!</span>}
                 </div>
+                
+                {/* AI 이미지 컨트롤 버튼들 */}
+                {Object.keys(generatedImages).length > 0 && (
+                  <div className={styles.imageControls}>
+                    <button 
+                      className={`${styles.imageToggleBtn} ${!currentDisplayImage ? styles.active : ''}`}
+                      onClick={() => setCurrentDisplayImage('')}
+                    >
+                      📷 원본
+                    </button>
+                    {Object.entries(generatedImages).map(([careType, imageData]) => (
+                      <button 
+                        key={careType}
+                        className={`${styles.imageToggleBtn} ${currentDisplayImage === imageData.url ? styles.active : ''}`}
+                        onClick={() => setCurrentDisplayImage(imageData.url)}
+                        title={`${imageData.activity} 후 모습`}
+                      >
+                        {careType === 'wash' ? '🛁' : 
+                         careType === 'feed' ? '🍽️' : 
+                         careType === 'groom' ? '✨' : '🚶‍♂️'}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -711,8 +814,17 @@ const AnimalCareGame = () => {
             className={styles.recordTextarea}
             maxLength={100}
           />
-          <div className={styles.recordCounter}>
-            {todayRecord.length}/100자
+          <div className={styles.recordActions}>
+            <div className={styles.recordCounter}>
+              {todayRecord.length}/100자
+            </div>
+            <button 
+              className={styles.saveRecordButton}
+              onClick={saveCurrentRecord}
+              disabled={!todayRecord.trim()}
+            >
+              💾 기록 저장하기
+            </button>
           </div>
         </div>
 
@@ -774,74 +886,6 @@ const AnimalCareGame = () => {
               <StatBar label="활력도" value={careStats.energy} icon="⚡" color="#FF7043" />
             </div>
             
-            {/* 이미지 생성 섹션 */}
-            {!showImageGeneration && (
-              <div className={styles.imageGenerationPrompt}>
-                <h3>🎨 특별한 추억을 만들어보세요!</h3>
-                <p>
-                  {selectedAnimal.name}이(가)와 함께한 {getBestCareActivity()} 장면을 
-                  AI가 그려드릴게요!
-                </p>
-                <button 
-                  className={styles.generateImageButton} 
-                  onClick={generateCareImage}
-                  disabled={isGeneratingImage}
-                >
-                  {isGeneratingImage ? (
-                    <>
-                      <span className={styles.loadingSpinner}></span>
-                      AI가 그림을 그리고 있어요...
-                    </>
-                  ) : (
-                    <>🎨 케어 장면 그려받기</>
-                  )}
-                </button>
-              </div>
-            )}
-            
-            {/* 생성된 이미지 표시 */}
-            {generatedImage && (
-              <div className={styles.generatedImageSection}>
-                <h3>🖼️ {selectedAnimal.name}이(가)와의 {generatedImage.activity} 장면</h3>
-                <div className={styles.generatedImageContainer}>
-                  <img 
-                    src={generatedImage.url} 
-                    alt={`${selectedAnimal.name}의 ${generatedImage.activity} 장면`}
-                    className={styles.generatedImage}
-                  />
-                  <div className={styles.imageCaption}>
-                    AI가 그려준 {selectedAnimal.name}이(가)와의 특별한 순간
-                  </div>
-                </div>
-                <div className={styles.imageActions}>
-                  <button 
-                    className={styles.downloadButton}
-                    onClick={() => {
-                      const link = document.createElement('a');
-                      link.href = generatedImage.url;
-                      link.download = `${selectedAnimal.name}_${generatedImage.activity}_${generatedImage.timestamp}.png`;
-                      link.click();
-                    }}
-                  >
-                    📥 이미지 다운로드
-                  </button>
-                  <button 
-                    className={styles.shareButton}
-                    onClick={() => {
-                      if (navigator.share) {
-                        navigator.share({
-                          title: `${selectedAnimal.name}이(가)와의 ${generatedImage.activity} 장면`,
-                          text: '포우포우에서 동물 케어 시뮬레이션을 했어요!',
-                          url: window.location.href
-                        });
-                      }
-                    }}
-                  >
-                    🔗 공유하기
-                  </button>
-                </div>
-              </div>
-            )}
             
             <div className={styles.gameEndButtons}>
               <button className={styles.playAgainButton} onClick={resetGame}>

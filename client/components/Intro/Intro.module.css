@@ -247,10 +247,10 @@ img {
 
 /* Features */
 .features {
-  padding: 16px 0 8px;
+  padding: 40px 0 8px;
 }
 .sectionHead h2 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
 }
 .grid4 {
@@ -487,7 +487,7 @@ img {
   font-size: 12px;
 }
 
-/* 게임 시작 버튼 (프린세스 메이커 스타일) */
+/* 게임 시작 버튼 */
 .sectionSubtitle {
   color: #8b5cf6 !important;
   font-size: 18px !important;
@@ -502,27 +502,27 @@ img {
 }
 
 .startGameButton {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
   border: none;
-  padding: 20px 40px;
-  border-radius: 50px;
+  padding: 15px 30px;
+  border-radius: 35px;
   color: white;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 15px;
-  font-size: 16px;
+  gap: 12px;
+  font-size: 14px;
   font-weight: bold;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 20px rgba(0, 184, 148, 0.3);
   position: relative;
   overflow: hidden;
 }
 
 .startGameButton:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  box-shadow: 0 12px 30px rgba(0, 184, 148, 0.5);
+  background: linear-gradient(135deg, #00a085 0%, #00b894 100%);
 }
 
 .startGameButton:active {
@@ -530,7 +530,7 @@ img {
 }
 
 .gameButtonIcon {
-  font-size: 24px;
+  font-size: 20px;
   animation: bounce 2s infinite;
 }
 
