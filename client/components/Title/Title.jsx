@@ -31,19 +31,26 @@ const Title = () => {
   const goToImage = (index) => {
         setCurrentImageIndex(index);
     };
+
+    const prevImage = () => {
+        setCurrentImageIndex((prevIndex) => 
+            prevIndex === 0 ? images.length - 1 : prevIndex - 1
+        );
+    };
+
+    const nextImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    };
     return (
     <div className={styles['headline']}>
         <div className={styles["title-section"]} onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
             <img src={images[currentImageIndex]} alt="Carousel" className={styles["carousel-image"]} />
-            <div className={styles["carousel-dots"]}>
-                {images.map((_, index) => (
-                    <div
-                        key={index}
-                        className={`${styles["carousel-dot"]} ${index === currentImageIndex ? styles['active'] : ''}`}
-                        onClick={() => goToImage(index)}
-                    ></div>
-                ))}
-            </div>
+            <button className={`${styles["carousel-arrow"]} ${styles["left"]}`} onClick={prevImage}>
+                &#8249;
+            </button>
+            <button className={`${styles["carousel-arrow"]} ${styles["right"]}`} onClick={nextImage}>
+                &#8250;
+            </button>
         </div>
         <nav className={styles["nav"]}>
             <ol>

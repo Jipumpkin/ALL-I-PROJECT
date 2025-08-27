@@ -77,7 +77,7 @@ const ShelterMap = () => {
           setIsLoading(false);
         }
       }).catch((error) => {
-        console.error("스크립트 로드 실패:", error);
+        console.error("카카오 : 스크립트 로드 실패:", error);
         if (error.message === 'KAKAO_API_KEY_NOT_FOUND') {
           setError("지도 서비스 설정이 완료되지 않았습니다. 관리자에게 문의해주세요.");
         } else {

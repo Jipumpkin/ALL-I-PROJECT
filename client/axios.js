@@ -8,7 +8,7 @@ const API_BASE_URL = import.meta.env.DEV
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 30000, // 30초로 증가
   headers: { "Content-Type": "application/json" },
   withCredentials: true, // 쿠키/세션 쓰면 켜두세요 (서버 CORS 옵션과 짝)
 });
