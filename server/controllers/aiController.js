@@ -203,6 +203,197 @@ The scene should naturally combine this rescued ${animal.species} with a loving 
         }
     },
 
+    // 케어 게임용 이미지 생성
+    generateCareImage: async (req, res) => {
+        try {
+            console.log('🎮 케어 게임 이미지 생성 시작...');
+            
+            // OpenAI API 키 확인
+            const apiKey = process.env.OPENAI_API_KEY;
+            if (!apiKey || apiKey === 'test-key-please-replace-with-real-openai-api-key') {
+                return res.status(501).json({
+                    success: false,
+                    error: 'OpenAI API 키가 설정되지 않았습니다. 관리자에게 문의하세요.',
+                    mock: true
+                });
+            }
+            
+            // 입력 검증
+            const { animalData, careActivity, careStats, animalMood, completedTasks } = req.body;
+            
+            if (!animalData || !careActivity) {
+                return res.status(400).json({ 
+                    error: '필수 파라미터가 누락되었습니다.',
+                    required: ['animalData', 'careActivity']
+                });
+            }
+
+            // 케어 활동별 프롬프트 템플릿 (더 구체적이고 정확한 변화)
+            const carePrompts = {
+                '씻기기': {
+                    action: 'being gently washed with warm water, fur becoming fluffy and clean after bath',
+                    mood: '목욕 후 털이 보송보송해지고 피부가 건강해진 상태로, 깨끗함에 만족하며 꼬리를 살랑살랑 흔들고 밝고 신뢰하는 눈빛',
+                    scene: 'cozy bathroom scene with warm water, soap bubbles, fluffy towels, bathing supplies',
+                    visualChange: 'fur becomes noticeably fluffier and cleaner, dirt completely removed, skin healthy and pink, sparkling clean appearance'
+                },
+                '밥주기': {
+                    action: 'eating nutritious food happily with full belly, showing brighter eyes and healthier coat shine',
+                    mood: '영양가 있는 사료를 맛있게 먹고 배가 든든해진 상태로, 눈이 더 밝아지고 털에 윤기가 나며 건강해 보이는 모습',
+                    scene: 'warm dining area with food bowls filled with nutritious food, comfortable eating space',
+                    visualChange: 'eating with obvious satisfaction, fuller belly, brighter and more alert eyes, coat developing healthy shine'
+                },
+                '미용하기': {
+                    action: 'after professional grooming with neatly trimmed fur and clean shaped nails',
+                    mood: '전문적인 그루밍을 받고 털이 예쁘게 다듬어지고 발톱이 깔끔해진 상태로, 자신감 있고 우아한 모습을 보이며 완전한 만족감을 표현',
+                    scene: 'professional pet salon with grooming tools, brushes, scissors, bright and clean environment',
+                    visualChange: 'fur neatly trimmed and professionally styled, nails properly cut and shaped, overall well-groomed and elegant appearance'
+                }
+            };
+
+            const promptConfig = carePrompts[careActivity];
+            if (!promptConfig) {
+                return res.status(400).json({ 
+                    error: '지원하지 않는 케어 활동입니다.',
+                    allowed: Object.keys(carePrompts)
+                });
+            }
+
+            // 스탯 기반 추가 설명
+            const statsDescription = [];
+            if (careStats.cleanliness > 80) statsDescription.push('매우 깨끗하고');
+            if (careStats.hunger > 80) statsDescription.push('만족스럽게 배부른');
+            if (careStats.beauty > 80) statsDescription.push('아름답게 단정한');
+            if (careStats.energy > 80) statsDescription.push('활기찬');
+            
+            const moodDescription = animalMood === 'beautiful' ? 'extremely happy and radiant' :
+                                   animalMood === 'clean' ? 'content and satisfied' :
+                                   animalMood === 'happy' ? 'joyful and playful' : 'calm and peaceful';
+
+            // GPT를 이용한 DALL-E 프롬프트 생성
+            console.log('🧠 케어 게임 DALL-E 프롬프트 생성 중...');
+            const promptResponse = await openai.chat.completions.create({
+                model: "gpt-4o-mini",
+                messages: [
+                    {
+                        role: "system",
+                        content: "You are a DALL-E prompt expert specializing in heartwarming pet care scenes. Create realistic, emotionally appealing prompts showing rescued animals being lovingly cared for. Focus on the bond between humans and animals, warm lighting, and cozy domestic settings."
+                    },
+                    {
+                        role: "user",
+                        content: `Create a DALL-E prompt for a ${careActivity} scene with this rescued animal:
+                        
+Animal details:
+- Species: ${animalData.species}
+- Name: ${animalData.name}
+- Description: ${animalData.description}
+- Current mood: ${moodDescription}
+- Care stats: ${statsDescription.join(', ') || '건강한'}
+
+Scene requirements:
+- Action: ${promptConfig.action}
+- Mood: ${promptConfig.mood}
+- Setting: ${promptConfig.scene}
+- Visual Changes: ${promptConfig.visualChange}
+- Style: Photorealistic, warm and cozy atmosphere, soft natural lighting
+- Emotion: Show the deep bond and trust between the animal and caregiver
+- Quality: High detail, professional pet photography style
+- Specific Details: Focus on the visible transformation and improvements from the care activity
+
+Make it heartwarming and show the specific positive changes this care activity brought to this rescued animal.`
+                    }
+                ],
+                max_tokens: 200,
+                temperature: 0.8
+            });
+
+            if (!promptResponse.choices?.[0]?.message?.content) {
+                throw new Error('GPT 프롬프트 생성에 실패했습니다.');
+            }
+
+            const dallePrompt = promptResponse.choices[0].message.content;
+            console.log('📝 생성된 프롬프트:', dallePrompt);
+
+            // DALL-E로 이미지 생성
+            console.log('🎨 DALL-E로 케어 이미지 생성 중...');
+            const imageResponse = await openai.images.generate({
+                model: "dall-e-3",
+                prompt: dallePrompt,
+                size: "1024x1024",
+                quality: "standard",
+                n: 1
+            });
+
+            if (!imageResponse.data?.[0]?.url) {
+                throw new Error('DALL-E 이미지 생성에 실패했습니다.');
+            }
+
+            const generatedImageUrl = imageResponse.data[0].url;
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            const filename = `care_${careActivity}_${animalData.id}_${timestamp}.png`;
+
+            // 생성된 이미지 정보 저장 (옵션 - 사용자 ID가 있는 경우)
+            try {
+                if (req.user?.id) {
+                    await db.execute(
+                        'INSERT INTO generated_images (user_id, image_url, metadata, created_at) VALUES (?, ?, ?, NOW())',
+                        [req.user.id, generatedImageUrl, JSON.stringify({
+                            type: 'care_game',
+                            animal: animalData,
+                            careActivity,
+                            careStats,
+                            animalMood,
+                            completedTasks,
+                            prompt: dallePrompt
+                        })]
+                    );
+                }
+            } catch (saveError) {
+                console.warn('이미지 저장 실패 (계속 진행):', saveError.message);
+            }
+
+            // 성공 응답
+            console.log('🎉 케어 게임 이미지 생성 완료!');
+            res.json({ 
+                success: true,
+                image_path: generatedImageUrl,
+                filename: filename,
+                timestamp: timestamp,
+                activity: careActivity,
+                animal: animalData,
+                usedPrompt: dallePrompt,
+                careStats: careStats,
+                animalMood: animalMood
+            });
+
+        } catch (error) {
+            console.error('케어 게임 이미지 생성 오류:', error);
+            
+            // 에러 타입에 따른 구체적인 응답
+            if (error.code === 'insufficient_quota') {
+                return res.status(402).json({ 
+                    success: false,
+                    error: 'OpenAI API 할당량이 부족합니다. 잠시 후 다시 시도해주세요.' 
+                });
+            } else if (error.code === 'content_policy_violation') {
+                return res.status(400).json({ 
+                    success: false,
+                    error: '콘텐츠 정책 위반: 부적절한 내용이 감지되었습니다.' 
+                });
+            } else if (error.message?.includes('timeout')) {
+                return res.status(408).json({ 
+                    success: false,
+                    error: '요청 시간이 초과되었습니다. 다시 시도해주세요.' 
+                });
+            }
+            
+            res.status(500).json({ 
+                success: false,
+                error: "이미지 생성 중 오류가 발생했습니다.",
+                details: process.env.NODE_ENV === 'development' ? error.message : undefined
+            });
+        }
+    },
+
     // 사용자의 생성 이미지 히스토리 조회
     getImageHistory: async (req, res) => {
         try {

@@ -126,6 +126,7 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/animals', require('./routes/animalRoutes'));
 app.use('/api/images', require('./routes/imageRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
 
 // 404 및 에러 핸들러 (라우트 뒤에 배치)
 app.use(notFoundHandler);

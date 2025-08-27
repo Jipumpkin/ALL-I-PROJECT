@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./Intro.module.css";
 import ScrollAnimation from "../ScrollAnimation/ScrollAnimation";
 
@@ -50,6 +51,7 @@ const FeatureCard = ({ icon, title, desc, tag }) => (
 );
 
 export default function PawPawIntro() {
+  const navigate = useNavigate();
   const features = [
     {
       icon: <IconShower />,
@@ -186,6 +188,9 @@ export default function PawPawIntro() {
         >
           <div className={styles.sectionHead}>
             <h2>하루 시뮬레이션</h2>
+            <p className={styles.sectionSubtitle}>
+              🐕 귀여운 유기동물과 함께하는 특별한 하루를 체험해보세요!
+            </p>
           </div>
           <div className={styles.grid4}>
             {features.map((f, index) => (
@@ -199,9 +204,19 @@ export default function PawPawIntro() {
               </ScrollAnimation>
             ))}
           </div>
-          <p className={styles.note}>
-            ※ 각 버튼은 실제 기능 페이지로 연결될 수 있도록 라우팅을 연결하세요.
-          </p>
+          <div className={styles.gameButtonContainer}>
+            <button 
+              className={styles.startGameButton}
+              onClick={() => navigate('/care-game')}
+            >
+              <span className={styles.gameButtonIcon}>🎮</span>
+              <span className={styles.gameButtonText}>
+                <strong>케어 시뮬레이션 게임 시작!</strong>
+                <small>프린세스 메이커 스타일의 반려동물 키우기</small>
+              </span>
+              <span className={styles.gameButtonArrow}>→</span>
+            </button>
+          </div>
         </section>
       </ScrollAnimation>
 

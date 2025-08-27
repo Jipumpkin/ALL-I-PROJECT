@@ -1,0 +1,1445 @@
+/* 메인 게임 컨테이너 */
+.gameContainer {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+}
+
+/* 뒤로가기 버튼 */
+.backButton {
+  background: #95a5a6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.backButton:hover {
+  background: #7f8c8d;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(149, 165, 166, 0.3);
+}
+
+/* 히스토리 버튼 */
+.historyButton {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.historyButton:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+/* 게임 타이틀 */
+.gameTitle {
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: #2c3e50;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.gameDescription {
+  text-align: center;
+  font-size: 16px;
+  color: #7f8c8d;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+/* 동물 선택 화면 */
+.animalSelection h3 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.animalGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.animalCard {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 3px solid transparent;
+}
+
+.animalCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+  border-color: #3498db;
+}
+
+.animalImage {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  border: 4px solid #ecf0f1;
+  transition: all 0.3s ease;
+}
+
+.animalCard:hover .animalImage {
+  border-color: #3498db;
+  transform: scale(1.05);
+}
+
+.animalCard h4 {
+  color: #2c3e50;
+  margin: 10px 0 5px 0;
+  font-size: 18px;
+}
+
+.animalCard p {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.selectButton {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.selectButton:hover {
+  background: linear-gradient(135deg, #2980b9, #21618c);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+/* 게임 화면 */
+.gameHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.gameHeader h2 {
+  color: #2c3e50;
+  margin: 0;
+  font-size: 24px;
+}
+
+.timeInfo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.timeLeft {
+  font-size: 16px;
+  font-weight: bold;
+  color: #e74c3c;
+  background: #fff5f5;
+  padding: 8px 15px;
+  border-radius: 20px;
+  border: 2px solid #fedede;
+}
+
+.resetButton {
+  background: #95a5a6;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.resetButton:hover {
+  background: #7f8c8d;
+  transform: translateY(-2px);
+}
+
+/* 메시지 박스 */
+.messageBox {
+  background: linear-gradient(135deg, #74b9ff, #0984e3);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: bold;
+  font-size: 16px;
+  box-shadow: 0 5px 15px rgba(116, 185, 255, 0.3);
+  animation: slideDown 0.5s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 게임 보드 */
+.gameBoard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.animalDisplay {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  grid-row: span 2;
+}
+
+.mainAnimalImage {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 15px;
+  margin-bottom: 15px;
+  border: 5px solid #ecf0f1;
+  transition: all 0.3s ease;
+}
+
+.mainAnimalImage:hover {
+  transform: scale(1.02);
+  border-color: #3498db;
+}
+
+.animalInfo h3 {
+  color: #2c3e50;
+  margin: 10px 0 5px 0;
+  font-size: 22px;
+}
+
+.animalInfo p {
+  color: #7f8c8d;
+  font-size: 16px;
+  margin: 0;
+}
+
+/* 스탯 패널 */
+.statsPanel {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.statsPanel h3 {
+  color: #2c3e50;
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  text-align: center;
+}
+
+.statBar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.statLabel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: bold;
+  color: #2c3e50;
+  min-width: 80px;
+  font-size: 14px;
+}
+
+.statBarBg {
+  flex: 1;
+  height: 12px;
+  background: #ecf0f1;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.statBarFill {
+  height: 100%;
+  border-radius: 6px;
+  position: relative;
+  background: linear-gradient(90deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%);
+}
+
+.statValue {
+  font-weight: bold;
+  color: #2c3e50;
+  min-width: 35px;
+  text-align: right;
+  font-size: 12px;
+}
+
+/* 케어 버튼들 */
+.careButtons {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.careButtons h3 {
+  color: #2c3e50;
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  text-align: center;
+}
+
+.buttonGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.careButton {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 15px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-height: 80px;
+  justify-content: center;
+}
+
+.careButton:hover:not(:disabled) {
+  background: #2980b9;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+}
+
+.careButton:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.buttonIcon {
+  font-size: 24px;
+}
+
+.buttonText {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.buttonTime {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+/* 게임 종료 모달 */
+.gameEndModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.gameEndContent {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+.gameEndContent h2 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.finalStats h3 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.gameEndButtons {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.playAgainButton {
+  background: linear-gradient(135deg, #00b894, #00cec9);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.playAgainButton:hover {
+  background: linear-gradient(135deg, #00a085, #00b7c2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 184, 148, 0.3);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 로딩 및 새로운 UI 스타일 */
+.loadingContainer {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animalCount {
+  text-align: center;
+  font-size: 16px;
+  color: #2c3e50;
+  margin-bottom: 25px;
+  padding: 15px;
+  background: linear-gradient(135deg, #e8f5e8, #f0f9ff);
+  border-radius: 15px;
+  border: 2px solid #a7f3d0;
+  font-weight: 600;
+}
+
+.animalDetails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+  justify-content: center;
+}
+
+.animalSpecies {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.animalAge {
+  background: linear-gradient(135deg, #e67e22, #d35400);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.animalGender {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.animalDescription {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+  margin: 8px 0;
+  min-height: 35px;
+}
+
+.animalInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.animalInfo h4 {
+  margin: 10px 0 5px 0;
+  font-size: 16px;
+  color: #2c3e50;
+  text-align: center;
+}
+
+.selectButton {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  border: none;
+  padding: 12px 15px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: auto;
+}
+
+.selectButton:hover {
+  background: linear-gradient(135deg, #c0392b, #a93226);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+}
+
+.realDataNotice {
+  margin-top: 30px;
+  padding: 20px;
+  background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+  border: 2px solid #f39c12;
+  border-radius: 15px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #8b4513;
+}
+
+.realDataNotice strong {
+  color: #d68910;
+}
+
+/* 동물 카드 개선 */
+.animalCard {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 3px solid transparent;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 400px;
+}
+
+.animalCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+  border-color: #3498db;
+}
+
+.animalImage {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 15px;
+  margin: 0 auto 15px;
+  border: 4px solid #ecf0f1;
+  transition: all 0.3s ease;
+}
+
+.animalCard:hover .animalImage {
+  border-color: #3498db;
+  transform: scale(1.05);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .gameContainer {
+    padding: 15px;
+    margin: 10px;
+  }
+  
+  .gameBoard {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+  
+  .animalDisplay {
+    grid-row: span 1;
+  }
+  
+  .mainAnimalImage {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .gameHeader {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .animalGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .buttonGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .careButton {
+    min-height: 70px;
+  }
+  
+  .gameTitle {
+    font-size: 22px;
+  }
+  
+  .gameDescription {
+    font-size: 14px;
+  }
+  
+  .animalCard {
+    min-height: 350px;
+  }
+  
+  .animalImage {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .realDataNotice {
+    font-size: 13px;
+    padding: 15px;
+  }
+}
+
+/* 케어 애니메이션 스타일 - 포우 게임 스타일 */
+.careAnimationContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.careAnimation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+}
+
+/* 세탁 애니메이션 */
+.bathtub {
+  font-size: 40px;
+  margin-bottom: 10px;
+  animation: wobble 2s ease-in-out infinite;
+}
+
+.bubble {
+  position: absolute;
+  font-size: 20px;
+  animation: bubbleFloat 3s ease-in-out infinite;
+}
+
+.bubble0 { top: 20%; left: 20%; animation-delay: 0s; }
+.bubble1 { top: 30%; left: 70%; animation-delay: 0.5s; }
+.bubble2 { top: 50%; left: 15%; animation-delay: 1s; }
+.bubble3 { top: 60%; left: 80%; animation-delay: 1.5s; }
+.bubble4 { top: 40%; left: 50%; animation-delay: 2s; }
+.bubble5 { top: 25%; left: 85%; animation-delay: 2.5s; }
+
+/* 먹이 주기 애니메이션 */
+.foodBowl {
+  font-size: 50px;
+  margin-bottom: 15px;
+  animation: bowlShake 1s ease-in-out infinite;
+}
+
+.foodItems {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.food1, .food2, .food3 {
+  font-size: 25px;
+  animation: foodDrop 2s ease-in-out infinite;
+}
+
+.food1 { animation-delay: 0s; }
+.food2 { animation-delay: 0.7s; }
+.food3 { animation-delay: 1.4s; }
+
+/* 미용 애니메이션 */
+.groomTools {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.brush, .scissors, .perfume {
+  font-size: 30px;
+  animation: toolSpin 3s linear infinite;
+}
+
+.brush { animation-delay: 0s; }
+.scissors { animation-delay: 1s; }
+.perfume { animation-delay: 2s; }
+
+.sparkles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.sparkle {
+  position: absolute;
+  font-size: 20px;
+  animation: sparkleFloat 2s ease-in-out infinite;
+}
+
+.sparkle0 { top: 10%; left: 10%; animation-delay: 0s; }
+.sparkle1 { top: 20%; left: 80%; animation-delay: 0.3s; }
+.sparkle2 { top: 70%; left: 20%; animation-delay: 0.6s; }
+.sparkle3 { top: 80%; left: 70%; animation-delay: 0.9s; }
+.sparkle4 { top: 30%; left: 50%; animation-delay: 1.2s; }
+.sparkle5 { top: 60%; left: 90%; animation-delay: 1.5s; }
+.sparkle6 { top: 40%; left: 10%; animation-delay: 1.8s; }
+.sparkle7 { top: 90%; left: 40%; animation-delay: 2.1s; }
+
+/* 산책 애니메이션 */
+.walkPath {
+  width: 100%;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.pathLine {
+  font-size: 30px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.trees {
+  font-size: 25px;
+  text-align: center;
+  animation: treeSwing 3s ease-in-out infinite;
+}
+
+.walkEffects {
+  position: absolute;
+  width: 100%;
+  bottom: 20%;
+}
+
+.pawPrint1, .pawPrint2, .pawPrint3 {
+  position: absolute;
+  font-size: 18px;
+  animation: pawFade 3s ease-in-out infinite;
+}
+
+.pawPrint1 { left: 20%; animation-delay: 0s; }
+.pawPrint2 { left: 50%; animation-delay: 1s; }
+.pawPrint3 { left: 80%; animation-delay: 2s; }
+
+/* 동물 케어 중 상태 */
+.animalInCare {
+  font-size: 50px;
+  margin: 15px 0;
+  text-align: center;
+}
+
+.animalInCare.washing {
+  animation: washingBounce 1s ease-in-out infinite;
+}
+
+.animalInCare.eating {
+  animation: eatingBounce 1.5s ease-in-out infinite;
+}
+
+.animalInCare.grooming {
+  animation: groomingTwirl 2s ease-in-out infinite;
+}
+
+.animalInCare.walking {
+  animation: walkingBounce 1s ease-in-out infinite;
+}
+
+/* 케어 텍스트 */
+.careText {
+  text-align: center;
+  margin: 15px 0;
+}
+
+.careTitle {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 5px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.careDesc {
+  font-size: 14px;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+/* 진행도 표시 */
+.progressDots {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.dot, .activeDot {
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.dot {
+  color: #bdc3c7;
+}
+
+.activeDot {
+  color: #3498db;
+  transform: scale(1.2);
+}
+
+/* 애니메이션 키프레임 */
+@keyframes bubbleFloat {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.7; }
+  50% { transform: translateY(-20px) scale(1.1); opacity: 1; }
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
+@keyframes bowlShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+@keyframes foodDrop {
+  0% { transform: translateY(-10px); opacity: 0; }
+  50% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(5px); opacity: 0.8; }
+}
+
+@keyframes toolSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.1); }
+  50% { transform: rotate(180deg) scale(1); }
+  75% { transform: rotate(270deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes sparkleFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+  50% { transform: translateY(-15px) rotate(180deg); opacity: 1; }
+}
+
+@keyframes treeSwing {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(2deg); }
+}
+
+@keyframes pawFade {
+  0% { opacity: 0; transform: scale(0.5); }
+  33% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.5); }
+}
+
+@keyframes washingBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(-5deg); }
+}
+
+@keyframes eatingBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes groomingTwirl {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.05); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  75% { transform: rotate(270deg) scale(1.05); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes walkingBounce {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(-3px) translateY(-5px); }
+  75% { transform: translateX(3px) translateY(-5px); }
+}
+
+/* 동물 무드 효과 개선 */
+.animalContainer.dirty {
+  filter: sepia(0.3) brightness(0.8);
+}
+
+.animalContainer.normal {
+  filter: none;
+}
+
+.animalContainer.happy {
+  filter: brightness(1.1) saturate(1.2);
+}
+
+.animalContainer.clean {
+  filter: brightness(1.2) saturate(1.3) contrast(1.1);
+}
+
+.animalContainer.beautiful {
+  filter: brightness(1.3) saturate(1.4) contrast(1.2);
+  animation: beautifulGlow 2s ease-in-out infinite;
+}
+
+@keyframes beautifulGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 182, 193, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(255, 182, 193, 0.8); }
+}
+
+.moodEffects {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  animation: moodFloat 2s ease-in-out infinite;
+}
+
+@keyframes moodFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.dirtEffect {
+  color: #8b4513;
+}
+
+.happyEffect {
+  color: #f39c12;
+}
+
+.cleanEffect {
+  color: #3498db;
+}
+
+.beautifulEffect {
+  background: linear-gradient(45deg, #ff69b4, #ffd700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 이미지 생성 관련 스타일 */
+.imageGenerationPrompt {
+  margin: 25px 0;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  text-align: center;
+  color: white;
+}
+
+.imageGenerationPrompt h3 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.imageGenerationPrompt p {
+  margin: 0 0 15px 0;
+  font-size: 14px;
+  opacity: 0.9;
+  line-height: 1.5;
+}
+
+.generateImageButton {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 auto;
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+.generateImageButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ee5a24, #d63031);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+}
+
+.generateImageButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.loadingSpinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 생성된 이미지 표시 */
+.generatedImageSection {
+  margin: 25px 0;
+  text-align: center;
+}
+
+.generatedImageSection h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: #2c3e50;
+  font-weight: bold;
+}
+
+.generatedImageContainer {
+  margin: 15px 0;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  background: white;
+  padding: 15px;
+}
+
+.generatedImage {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+  margin: 0 auto;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.imageCaption {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+.imageActions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.downloadButton, .shareButton {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.downloadButton {
+  background: linear-gradient(135deg, #00b894, #00cec9);
+  color: white;
+  box-shadow: 0 3px 10px rgba(0, 184, 148, 0.3);
+}
+
+.downloadButton:hover {
+  background: linear-gradient(135deg, #00a085, #00b3b6);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+}
+
+.shareButton {
+  background: linear-gradient(135deg, #fd79a8, #e84393);
+  color: white;
+  box-shadow: 0 3px 10px rgba(253, 121, 168, 0.3);
+}
+
+.shareButton:hover {
+  background: linear-gradient(135deg, #e84393, #d63384);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(253, 121, 168, 0.4);
+}
+
+/* 게임 종료 버튼들 개선 */
+.gameEndButtons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 25px;
+  flex-wrap: wrap;
+}
+
+.playAgainButton, .goHomeButton {
+  padding: 15px 25px;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.playAgainButton {
+  background: linear-gradient(135deg, #00b894, #00cec9);
+  color: white;
+  box-shadow: 0 5px 15px rgba(0, 184, 148, 0.3);
+}
+
+.playAgainButton:hover {
+  background: linear-gradient(135deg, #00a085, #00b3b6);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 184, 148, 0.4);
+}
+
+.goHomeButton {
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  color: white;
+  box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+}
+
+.goHomeButton:hover {
+  background: linear-gradient(135deg, #5f4fcf, #948ce6);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(108, 92, 231, 0.4);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .imageGenerationPrompt {
+    padding: 15px;
+  }
+  
+  .generateImageButton {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+  
+  .generatedImage {
+    max-width: 100%;
+  }
+  
+  .imageActions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .downloadButton, .shareButton {
+    width: 200px;
+    justify-content: center;
+  }
+  
+  .gameEndButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .playAgainButton, .goHomeButton {
+    width: 200px;
+    justify-content: center;
+  }
+}
+
+/* 케어 히스토리 섹션 */
+.careHistorySection {
+  margin: 25px 0;
+  padding: 20px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.careHistorySection h3 {
+  color: #2c3e50;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.noCareHistory {
+  text-align: center;
+  color: #7f8c8d;
+  font-style: italic;
+  padding: 20px;
+}
+
+.careHistoryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 15px;
+}
+
+.careHistoryCard {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  display: flex;
+  gap: 12px;
+}
+
+.careHistoryCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.historyAnimalImage {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+}
+
+.historyInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.historyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.historyName {
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.historyGrade {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.gradeS {
+  background: #f39c12;
+  color: white;
+}
+
+.gradeA {
+  background: #27ae60;
+  color: white;
+}
+
+.gradeB {
+  background: #95a5a6;
+  color: white;
+}
+
+.historyDetails {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #7f8c8d;
+}
+
+.historyScore {
+  font-weight: bold;
+  color: #3498db;
+}
+
+.historyMood {
+  font-size: 12px;
+  color: #2c3e50;
+}
+
+.historyNote {
+  font-size: 11px;
+  color: #7f8c8d;
+  font-style: italic;
+  background: #ecf0f1;
+  padding: 6px 8px;
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+/* 오늘의 기록 섹션 */
+.todayRecordSection {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+}
+
+.todayRecordSection h3 {
+  color: #2c3e50;
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  text-align: center;
+}
+
+.recordTextarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.recordTextarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 10px rgba(52, 152, 219, 0.1);
+}
+
+.recordCounter {
+  text-align: right;
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-top: 5px;
+}
+
+/* 반응형 케어 히스토리 */
+@media (max-width: 768px) {
+  .careHistoryGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .careHistoryCard {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .historyAnimalImage {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .historyHeader {
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .recordTextarea {
+    min-height: 60px;
+  }
+}

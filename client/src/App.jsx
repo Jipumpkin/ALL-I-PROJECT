@@ -21,6 +21,7 @@ import NotFound from "../components/NotFound/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import ShelterMap from "../components/ShelterMap/ShelterMap";
 import Admin from "../components/Admin/Admin";
+import AnimalCareGame from "../components/AnimalCareGame/AnimalCareGame";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
           <Route path="/intro" element={<Intro />} />
           <Route path="/animals" element={<Animals />} />
           <Route path="/shelter-map" element={<ShelterMap />} />
+          <Route path="/care-game" element={<AnimalCareGame />} />
           
           {/* 인증이 필요한 페이지 */}
           <Route path="/maker" element={
