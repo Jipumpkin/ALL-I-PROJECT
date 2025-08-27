@@ -1,9 +1,11 @@
 :root {
   /* Colors */
-  --color-primary: #FF5C1C;
-  --color-primary-hover: #e6501a;
-  --color-primary-light: rgba(255, 92, 28, 0.1);
-  --color-primary-dark: #cc4916;
+  --color-primary: #FBC02D;
+  --color-primary-hover: #F9A825;
+  --color-primary-light: rgba(251, 192, 45, 0.12);
+  --color-primary-dark: #F57F17;
+  --color-primary-transparent: rgba(251, 192, 45, 0.85);
+  --color-primary-subtle: rgba(251, 192, 45, 0.08);
 
   --color-secondary: #4CD4A1;
   --color-secondary-hover: #42c094;
@@ -37,7 +39,7 @@
 
   --color-border: #dddfe2;
   --color-border-light: #eee;
-  --color-border-focus: rgba(248, 156, 30, 0.5);
+  --color-border-focus: rgba(251, 192, 45, 0.4);
 
   /* Typography */
   --font-family-primary: "Ownglyph_meetme-Rg", "Arial", sans-serif;

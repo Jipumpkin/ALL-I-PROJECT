@@ -56,12 +56,9 @@ app.use((req, res, next) => {
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     next();
 });
-<<<<<<< HEAD
-=======
 
 // Rate limiting 적용 (모든 API 요청) - 임시 비활성화
 // app.use('/api/', apiLimiter);
->>>>>>> a14c38e9d361c9947c7ed38707799c7d302c243b
 
 // 헬스체크
 app.get('/api/test', (req, res) => {
@@ -161,7 +158,6 @@ const server = app.listen(PORT, async () => {
     process.exit(1);
   }
 
-<<<<<<< HEAD
   console.log(`✅ 서버가 ${PORT}번 포트에서 정상적으로 시작되었습니다!`);
   console.log(`🌐 서버 주소: http://localhost:${PORT}`);
   console.log('📍 등록된 라우트:');
