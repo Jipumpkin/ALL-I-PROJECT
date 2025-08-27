@@ -9,7 +9,7 @@ const Footer = () => {
         <div className={styles['footer-section']}>
           <div className={styles['footer-brand']}>
             <span className={styles['brand-name']}>🐾 PAW PAW</span>
-            <p className={styles['brand-desc']}>유기동물과 사람 사이의 따뜻한 연결</p>
+            
           </div>
         </div>
         <div className={styles['footer-section']}>
