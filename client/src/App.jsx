@@ -22,6 +22,7 @@ import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import ShelterMap from "../components/ShelterMap/ShelterMap";
 import Admin from "../components/Admin/Admin";
 import AnimalCareGame from "../components/AnimalCareGame/AnimalCareGame";
+import AdoptionHistory from "../components/AdoptionHistory/AdoptionHistory";
 
 function App() {
   return (
@@ -61,6 +62,11 @@ function App() {
           <Route path="/account-delete" element={
             <ProtectedRoute>
               <AccountD />
+            </ProtectedRoute>
+          } />
+          <Route path="/adoption-history" element={
+            <ProtectedRoute>
+              <AdoptionHistory />
             </ProtectedRoute>
           } />
           
