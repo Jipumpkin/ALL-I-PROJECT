@@ -3,6 +3,24 @@ import { useNavigate } from "react-router-dom";
 import styles from "./Intro.module.css";
 import ScrollAnimation from "../ScrollAnimation/ScrollAnimation";
 
+// Icons
+const IconShower = () => <span>🚿</span>;
+const IconBowl = () => <span>🍽️</span>;
+const IconScissors = () => <span>✂️</span>;
+const IconPaw = () => <span>🐾</span>;
+
+// FeatureCard component
+const FeatureCard = ({ icon, title, desc, tag }) => (
+  <div className={styles.featureCard}>
+    <div className={styles.featureCardHead}>
+      <div className={styles.featureCardIcon}>{icon}</div>
+      <span className={styles.featureCardTag}>{tag}</span>
+    </div>
+    <div className={styles.featureCardTitle}>{title}</div>
+    <div className={styles.featureCardDesc}>{desc}</div>
+  </div>
+);
+
 
 // Before/After Slider Component
 const BeforeAfterSlider = () => {

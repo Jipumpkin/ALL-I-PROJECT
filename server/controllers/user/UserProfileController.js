@@ -108,11 +108,21 @@ const UserProfileController = {
             if (phone_number !== undefined) updateData.phone_number = phone_number;
 
             if (Object.keys(updateData).length > 0) {
-                await User.updateProfile(userId, updateData);
+                console.log('🔍 User.updateProfile 호출 - updateData:', updateData);
+                const [affectedRows] = await User.update(updateData, {
+                    where: { user_id: userId }
+                });
+                console.log('🔍 User.updateProfile 결과 - affectedRows:', affectedRows);
+                if (affectedRows === 0) {
+                    console.warn('⚠️ User.updateProfile: 변경된 행이 없습니다. 데이터가 동일하거나 사용자 ID가 잘못되었을 수 있습니다.');
+                }
+            } else {
+                console.log('🔍 User.updateProfile 호출 스킵 - updateData가 비어 있습니다.');
             }
 
             // 업데이트된 사용자 정보 조회
             const updatedUser = await User.findByPk(userId);
+            console.log('🔍 업데이트 후 조회된 사용자 정보:', updatedUser ? updatedUser.toJSON() : '사용자를 찾을 수 없음');
             
             const userProfile = {
                 id: updatedUser.user_id,

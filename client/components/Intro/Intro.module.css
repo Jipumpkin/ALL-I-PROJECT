@@ -235,7 +235,8 @@ img {
   height: 36px;
   padding: 0 14px;
   border-radius: 12px;
-
+  border: 1px solid #FBC02D;
+  background: #FBC02D;
   color: #fff;
   font-weight: 600;
   cursor: pointer;
@@ -259,7 +260,10 @@ img {
 }
 
 .btn:hover {
-
+  background: #F9A825;
+  border-color: #F9A825;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(251, 192, 45, 0.3);
 }
 
 .btn:hover::before {
@@ -273,12 +277,13 @@ img {
 }
 .btnOutline {
   background: #fff;
-
+  color: #FBC02D;
+  border-color: #FBC02D;
 }
 .btnOutline:hover {
   background: #fff5f3;
   transform: translateY(-2px);
-
+  box-shadow: 0 8px 25px rgba(251, 192, 45, 0.15);
 }
 .btnGhost {
   background: transparent;
@@ -286,7 +291,12 @@ img {
   border-color: #e2e8f0;
 }
 .btnSecondary {
-
+  background: #FBC02D;
+  border-color: #FBC02D;
+}
+.btnSecondary:hover {
+  background: #F9A825;
+  border-color: #F9A825;
 }
 
 @media (min-width: 768px) {
@@ -428,7 +438,8 @@ img {
 
 .featureCard:hover {
   transform: translateY(-8px) scale(1.02);
-
+  box-shadow: 0 20px 40px rgba(251, 192, 45, 0.15);
+  border-color: #FBC02D;
 }
 
 .featureCard:hover::before {
