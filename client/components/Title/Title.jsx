@@ -13,6 +13,54 @@ const BeforeAfterSlider = () => {
   const [isInactivePaused, setIsInactivePaused] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [inactiveDirection, setInactiveDirection] = useState(1); // 1: 오른쪽, -1: 왼쪽
+  const [imageIndex, setImageIndex] = useState(0); // 현재 이미지 세트 인덱스
+  const [isShowingAfter, setIsShowingAfter] = useState(false); // 같은 세트 내에서 after 표시 여부
+
+  // 이미지 배열 정의
+  const beforeImages = [
+    '/images/before0.jpeg',
+    '/images/before1.jpeg', 
+    '/images/before2.jpeg'
+  ];
+  
+  const afterImages = [
+    '/images/after0.png',
+    '/images/after1.png',
+    '/images/after2.png'
+  ];
+
+  // 이미지 자동 변경 로직
+  useEffect(() => {
+    let timeoutId;
+    
+    const scheduleNext = () => {
+      if (!isShowingAfter) {
+        // before 상태 → after로 슬라이더 이동 (4초 후)
+        timeoutId = setTimeout(() => {
+          animateToPosition(100); // after로 슬라이더 이동
+          // 슬라이더 애니메이션 완료 후 상태 변경 (250ms 후)
+          setTimeout(() => {
+            setIsShowingAfter(true);
+          }, 250);
+        }, 4000);
+      } else {
+        // after 상태 → 다음 이미지 세트로 (4초 후)
+        timeoutId = setTimeout(() => {
+          // 다음 이미지 인덱스로 바로 변경 (슬라이드 없이)
+          const nextImageIndex = (imageIndex + 1) % beforeImages.length;
+          setImageIndex(nextImageIndex);
+          setSliderPosition(0); // 다음 이미지는 before부터 시작
+          setIsShowingAfter(false);
+        }, 4000);
+      }
+    };
+    
+    scheduleNext();
+    
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [isShowingAfter, imageIndex, beforeImages.length]);
 
   // 사용자 비활성 감지 및 자동 슬라이드
   useEffect(() => {
@@ -171,7 +219,7 @@ const BeforeAfterSlider = () => {
         {/* Before Image */}
         <div className={styles.imageContainer}>
           <img 
-            src="/images/poster1.jpg" 
+            src={beforeImages[imageIndex]} 
             alt="Before - 유기동물 보호소" 
             className={styles.beforeImage}
           />
@@ -180,11 +228,11 @@ const BeforeAfterSlider = () => {
         
         {/* After Image with Clip */}
         <div 
-          className={styles.imageContainer + ' ' + styles.afterContainer}
+          className={`${styles.imageContainer} ${styles.afterContainer}`}
           style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
         >
           <img 
-            src="/images/child-puppy.png" 
+            src={afterImages[imageIndex]} 
             alt="After - 입양 후 행복한 일상" 
             className={styles.afterImage}
           />
@@ -208,6 +256,7 @@ const BeforeAfterSlider = () => {
           </div>
         </div>
       </div>
+
       
       <div className={styles.sliderCaption}>
         <span className={styles.captionEmoji}>🐾</span>
@@ -226,43 +275,6 @@ const BeforeAfterSlider = () => {
   );
 };
 const Title = () => {
-    const images = [
-        '/images/poster1.png',
-        '/images/poster2.png',
-        '/images/poster3.png',
-        '/images/poster4.png',
-        '/images/poster5.png',
-        '/images/poster6.png',
-
-    ];
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [isPaused, setIsPaused] = useState(false);
-    useEffect(() => {
-        if (isPaused) return;
-    
-        const interval = setInterval(() => {
-          setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-        }, 3000); // Change image every 3 seconds
-    
-        return () => clearInterval(interval);
-      }, [isPaused, images.length]);
-    // const nextImage = () => {
-    //     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-    //  };
-
-  const goToImage = (index) => {
-        setCurrentImageIndex(index);
-    };
-
-    const prevImage = () => {
-        setCurrentImageIndex((prevIndex) => 
-            prevIndex === 0 ? images.length - 1 : prevIndex - 1
-        );
-    };
-
-    const nextImage = () => {
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-    };
     return (
     <div className={styles['headline']}>
         <div className={styles["title-section"]}>

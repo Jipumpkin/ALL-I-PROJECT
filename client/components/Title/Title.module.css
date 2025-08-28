@@ -11,12 +11,18 @@
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
+  position: relative;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  border-radius: 16px;
 }
 
 .beforeAfterWrapper {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  aspect-ratio: 16/9;
+  height: 100%;
   overflow: hidden;
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
@@ -35,14 +41,47 @@
   left: 0;
   width: 100%;
   height: 100%;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .beforeImage,
 .afterImage {
+  width: 120%;
+  height: 120%;
+  object-fit: contain;
+  object-position: center;
+  will-change: clip-path, transform;
+  transform: scale(1);
+  transition: transform 0.8s ease-in-out;
+}
+
+.beforeAfterWrapper {
+  position: relative;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  will-change: clip-path;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease;
+}
+
+.beforeAfterWrapper.fadeOut {
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+.beforeAfterWrapper.fadeIn {
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+}
+
+.beforeAfterWrapper.fadeIn.active {
+  opacity: 1;
 }
 
 .afterContainer {
