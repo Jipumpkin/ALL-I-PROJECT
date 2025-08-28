@@ -139,8 +139,15 @@ const BeforeAfterSlider = () => {
     
     updateUserInteraction();
     
-    // Before 상태에서 클릭하면 After로 슬라이드
-    if (!isShowingAfter && sliderPosition <= 50) {
+    // 현재 상태에 따라 토글
+    if (isShowingAfter || sliderPosition > 50) {
+      // After 상태 → Before로
+      animateToPosition(0);
+      setTimeout(() => {
+        setIsShowingAfter(false);
+      }, 300);
+    } else {
+      // Before 상태 → After로
       animateToPosition(100);
       setTimeout(() => {
         setIsShowingAfter(true);
