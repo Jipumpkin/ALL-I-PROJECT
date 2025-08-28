@@ -367,12 +367,13 @@
 .loadingModalOverlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
   z-index: 110;
+  backdrop-filter: blur(2px);
 }
 
 .loadingModal {
@@ -382,19 +383,21 @@
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
   width: 100%;
-  max-width: 20rem;
+  max-width: 28rem;
+  min-width: 20rem;
   text-align: center;
   border: 2px solid #e5e7eb;
   position: relative;
+  margin: 1rem;
 }
 
 .loadingCloseButton {
   position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e5e7eb;
+  font-size: 1.25rem;
   font-weight: bold;
   color: #6b7280;
   cursor: pointer;
@@ -405,11 +408,28 @@
   justify-content: center;
   border-radius: 50%;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .loadingCloseButton:hover {
-  background-color: #f3f4f6;
+  background-color: rgba(255, 255, 255, 1);
   color: #374151;
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* 반응형 디자인 추가 */
+@media (max-width: 640px) {
+  .loadingModal {
+    max-width: 90vw;
+    min-width: 0;
+    margin: 0.5rem;
+    padding: 1.5rem;
+  }
+  
+  .loadingModalOverlay {
+    padding: 0.5rem;
+  }
 }
 
  
