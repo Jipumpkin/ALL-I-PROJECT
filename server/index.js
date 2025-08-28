@@ -171,6 +171,7 @@ const server = app.listen(PORT, async () => {
   console.log('   - /api/animals/*');
   console.log('   - /api/images/*');
   console.log('   - /api/admin/*');
+  console.log('   - /api/ai/* (AI 기능)');
 
   // 개발환경에서는 매번 동기화하지 않음
   if (process.env.NODE_ENV !== 'development') {

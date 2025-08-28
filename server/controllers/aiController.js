@@ -342,8 +342,8 @@ Make it heartwarming and show the specific positive changes this care activity b
             }
 
             const generatedImageUrl = imageResponse.data[0].url;
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-            const filename = `care_${careActivity}_${animalData.id}_${timestamp}.png`;
+            const imageTimestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            const filename = `care_${careActivity}_${animalData.id}_${imageTimestamp}.png`;
 
             // 생성된 이미지 정보 저장 (옵션 - 사용자 ID가 있는 경우)
             try {
@@ -371,7 +371,7 @@ Make it heartwarming and show the specific positive changes this care activity b
                 success: true,
                 image_path: generatedImageUrl,
                 filename: filename,
-                timestamp: timestamp,
+                timestamp: imageTimestamp,
                 activity: careActivity,
                 animal: animalData,
                 usedPrompt: dallePrompt,
@@ -403,6 +403,270 @@ Make it heartwarming and show the specific positive changes this care activity b
             res.status(500).json({ 
                 success: false,
                 error: "이미지 생성 중 오류가 발생했습니다.",
+                details: process.env.NODE_ENV === 'development' ? error.message : undefined
+            });
+        }
+    },
+
+    // AI 케어 피드백 생성 (새로운 기능)
+    generateCareFeedback: async (req, res) => {
+        try {
+            console.log('🤖 AI 케어 피드백 생성 시작...');
+            
+            // OpenAI API 키 확인
+            const apiKey = process.env.OPENAI_API_KEY;
+            if (!apiKey || apiKey === 'test-key-please-replace-with-real-openai-api-key') {
+                return res.status(501).json({
+                    success: false,
+                    error: 'OpenAI API 키가 설정되지 않았습니다.'
+                });
+            }
+            
+            const { animalData, careStats, completedTasks, timeLeft, animalMood } = req.body;
+            
+            if (!animalData || !careStats) {
+                return res.status(400).json({ 
+                    error: '필수 파라미터가 누락되었습니다.',
+                    required: ['animalData', 'careStats']
+                });
+            }
+
+            // AI를 이용한 개인화된 피드백 생성
+            const feedbackResponse = await openai.chat.completions.create({
+                model: "gpt-4o-mini",
+                messages: [
+                    {
+                        role: "system",
+                        content: "You are a professional pet care advisor with deep knowledge of animal psychology and welfare. Provide warm, encouraging, and specific care advice based on the animal's current condition and care history. Always be positive and educational. Respond in Korean."
+                    },
+                    {
+                        role: "user",
+                        content: `다음 동물의 현재 상태를 분석하고 개인화된 케어 조언을 제공해주세요:
+                        
+동물 정보:
+- 이름: ${animalData.name || animalData.displayName}
+- 종: ${animalData.species}
+- 설명: ${animalData.description}
+- 현재 기분: ${animalMood}
+
+현재 케어 상태:
+- 청결도: ${careStats.cleanliness}%
+- 포만감: ${careStats.hunger}%
+- 미용도: ${careStats.beauty}%
+- 활력도: ${careStats.energy}%
+
+완료된 활동: ${completedTasks.join(', ') || '없음'}
+남은 시간: ${timeLeft}시간
+
+다음을 포함한 따뜻하고 구체적인 조언을 제공해주세요:
+1. 현재 상태에 대한 긍정적인 피드백
+2. 다음에 우선적으로 해야 할 케어 활동
+3. 이 동물의 특성을 고려한 맞춤 팁
+4. 격려의 메시지
+
+답변은 친근하고 따뜻한 말투로, 150자 내외로 작성해주세요.`
+                    }
+                ],
+                max_tokens: 250,
+                temperature: 0.7
+            });
+
+            if (!feedbackResponse.choices?.[0]?.message?.content) {
+                throw new Error('AI 피드백 생성에 실패했습니다.');
+            }
+
+            const feedback = feedbackResponse.choices[0].message.content;
+
+            console.log('✅ AI 케어 피드백 생성 완료!');
+            res.json({ 
+                success: true,
+                feedback: feedback,
+                timestamp: new Date().toISOString()
+            });
+
+        } catch (error) {
+            console.error('AI 케어 피드백 생성 오류:', error);
+            res.status(500).json({ 
+                success: false,
+                error: "AI 피드백 생성 중 오류가 발생했습니다.",
+                details: process.env.NODE_ENV === 'development' ? error.message : undefined
+            });
+        }
+    },
+
+    // AI 동물 스토리 생성 (새로운 기능)
+    generateAnimalStory: async (req, res) => {
+        try {
+            console.log('📖 AI 동물 스토리 생성 시작...');
+            
+            const apiKey = process.env.OPENAI_API_KEY;
+            if (!apiKey || apiKey === 'test-key-please-replace-with-real-openai-api-key') {
+                return res.status(501).json({
+                    success: false,
+                    error: 'OpenAI API 키가 설정되지 않았습니다.'
+                });
+            }
+            
+            const { animalData, careHistory, userNote } = req.body;
+            
+            if (!animalData) {
+                return res.status(400).json({ 
+                    error: '동물 데이터가 필요합니다.',
+                    required: ['animalData']
+                });
+            }
+
+            // AI를 이용한 감동적인 스토리 생성
+            const storyResponse = await openai.chat.completions.create({
+                model: "gpt-4o-mini",
+                messages: [
+                    {
+                        role: "system",
+                        content: "You are a talented storyteller specializing in heartwarming animal rescue stories. Create touching, hopeful stories that highlight the bond between humans and rescued animals. Write in Korean with emotional depth and warmth."
+                    },
+                    {
+                        role: "user",
+                        content: `다음 정보를 바탕으로 감동적인 동물 스토리를 작성해주세요:
+                        
+동물 정보:
+- 이름: ${animalData.name || animalData.displayName}
+- 종: ${animalData.species}
+- 구조 지역: ${animalData.region || '알 수 없는 곳'}
+- 설명: ${animalData.description}
+
+케어 경험: ${careHistory ? '사랑스러운 케어를 받으며 점점 건강해지고 있음' : '이제 막 새로운 보호자를 만남'}
+사용자 메모: ${userNote || '특별한 기록 없음'}
+
+다음 요소를 포함한 따뜻하고 희망적인 스토리를 작성해주세요:
+1. 구조되기 전의 상황 (간단히)
+2. 현재 받고 있는 사랑과 케어
+3. 밝은 미래에 대한 희망
+4. 독자에게 전하는 메시지
+
+200-300자 내외의 감동적인 스토리로 작성해주세요.`
+                    }
+                ],
+                max_tokens: 400,
+                temperature: 0.8
+            });
+
+            if (!storyResponse.choices?.[0]?.message?.content) {
+                throw new Error('AI 스토리 생성에 실패했습니다.');
+            }
+
+            const story = storyResponse.choices[0].message.content;
+
+            console.log('📚 AI 동물 스토리 생성 완료!');
+            res.json({ 
+                success: true,
+                story: story,
+                animal: animalData,
+                timestamp: new Date().toISOString()
+            });
+
+        } catch (error) {
+            console.error('AI 스토리 생성 오류:', error);
+            res.status(500).json({ 
+                success: false,
+                error: "AI 스토리 생성 중 오류가 발생했습니다.",
+                details: process.env.NODE_ENV === 'development' ? error.message : undefined
+            });
+        }
+    },
+
+    // AI 케어 추천 시스템 (새로운 기능)
+    getAiCareRecommendations: async (req, res) => {
+        try {
+            console.log('💡 AI 케어 추천 생성 시작...');
+            
+            const apiKey = process.env.OPENAI_API_KEY;
+            if (!apiKey || apiKey === 'test-key-please-replace-with-real-openai-api-key') {
+                return res.status(501).json({
+                    success: false,
+                    error: 'OpenAI API 키가 설정되지 않았습니다.'
+                });
+            }
+            
+            const { animalData, careStats, timeLeft, completedTasks, weatherCondition } = req.body;
+            
+            if (!animalData || !careStats) {
+                return res.status(400).json({ 
+                    error: '필수 파라미터가 누락되었습니다.',
+                    required: ['animalData', 'careStats']
+                });
+            }
+
+            // AI를 이용한 스마트 케어 추천
+            const recommendationResponse = await openai.chat.completions.create({
+                model: "gpt-4o-mini",
+                messages: [
+                    {
+                        role: "system",
+                        content: "You are an expert animal care advisor with knowledge of pet psychology, health, and optimal care scheduling. Provide smart, practical care recommendations based on current conditions. Respond in Korean."
+                    },
+                    {
+                        role: "user",
+                        content: `다음 상황을 분석하고 최적의 케어 순서를 추천해주세요:
+                        
+동물 정보:
+- 종: ${animalData.species}
+- 이름: ${animalData.name || animalData.displayName}
+- 나이: ${animalData.age || '불명'}
+
+현재 상태:
+- 청결도: ${careStats.cleanliness}% ${careStats.cleanliness < 40 ? '(우선 케어 필요)' : ''}
+- 포만감: ${careStats.hunger}% ${careStats.hunger < 30 ? '(배고픔)' : ''}
+- 미용도: ${careStats.beauty}% ${careStats.beauty < 50 ? '(미용 필요)' : ''}
+- 활력도: ${careStats.energy}% ${careStats.energy < 50 ? '(휴식 또는 활동 필요)' : ''}
+
+이미 완료된 활동: ${completedTasks.join(', ') || '없음'}
+남은 시간: ${timeLeft}시간
+날씨 조건: ${weatherCondition || '보통'}
+
+다음을 제공해주세요:
+1. 가장 우선적으로 해야 할 케어 활동 (이유와 함께)
+2. 시간 효율을 고려한 케어 순서 추천
+3. 이 동물 종의 특성을 고려한 특별 팁
+4. 주의사항이나 피해야 할 것
+
+구체적이고 실용적인 조언을 150자 내외로 작성해주세요.`
+                    }
+                ],
+                max_tokens: 300,
+                temperature: 0.6
+            });
+
+            if (!recommendationResponse.choices?.[0]?.message?.content) {
+                throw new Error('AI 추천 생성에 실패했습니다.');
+            }
+
+            const recommendations = recommendationResponse.choices[0].message.content;
+
+            // 우선순위 계산 (수치 기반)
+            const priorities = [];
+            if (careStats.hunger < 30) priorities.push({ activity: '밥주기', urgency: 'high', reason: '매우 배고픔' });
+            if (careStats.cleanliness < 40) priorities.push({ activity: '씻기기', urgency: 'high', reason: '청결도 부족' });
+            if (careStats.energy < 30) priorities.push({ activity: '산책하기', urgency: 'medium', reason: '활력도 부족' });
+            if (careStats.beauty < 50) priorities.push({ activity: '미용하기', urgency: 'low', reason: '미용 개선 필요' });
+
+            console.log('🎯 AI 케어 추천 완료!');
+            res.json({ 
+                success: true,
+                recommendations: recommendations,
+                priorities: priorities,
+                animalCondition: {
+                    overall: (careStats.cleanliness + careStats.hunger + careStats.beauty + careStats.energy) / 4,
+                    needsImmediate: priorities.filter(p => p.urgency === 'high'),
+                    canWait: priorities.filter(p => p.urgency === 'low')
+                },
+                timestamp: new Date().toISOString()
+            });
+
+        } catch (error) {
+            console.error('AI 케어 추천 오류:', error);
+            res.status(500).json({ 
+                success: false,
+                error: "AI 케어 추천 생성 중 오류가 발생했습니다.",
                 details: process.env.NODE_ENV === 'development' ? error.message : undefined
             });
         }

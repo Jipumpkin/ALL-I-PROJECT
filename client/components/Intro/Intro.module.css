@@ -641,6 +641,7 @@ img {
   margin-top: 40px;
   display: flex;
   justify-content: center;
+  gap: 20px;
 }
 
 .startGameButton {

@@ -3,8 +3,252 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../axios';
 import styles from './AnimalCareGame.module.css';
 
+// 공 던지기 미니 게임 컴포넌트
+const BallGameComponent = ({ onComplete, onClose, score, setScore }) => {
+  const [ballPosition, setBallPosition] = useState({ x: 50, y: 80 });
+  const [targetPosition, setTargetPosition] = useState({ x: 75, y: 30 });
+  const [timeLeft, setTimeLeft] = useState(30);
+  const [gameActive, setGameActive] = useState(true);
+
+  useEffect(() => {
+    if (timeLeft > 0 && gameActive) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (timeLeft === 0) {
+      setGameActive(false);
+      setTimeout(() => onComplete(score), 1000);
+    }
+  }, [timeLeft, gameActive, score, onComplete]);
+
+  const throwBall = (e) => {
+    if (!gameActive) return;
+    
+    e.stopPropagation();
+    
+    // 클릭한 위치로 공을 이동
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = ((e.clientX - rect.left) / rect.width) * 100;
+    const clickY = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    setBallPosition({ x: clickX, y: clickY });
+    
+    // 타겟과의 거리 계산
+    const distance = Math.abs(clickX - targetPosition.x) + Math.abs(clickY - targetPosition.y);
+    if (distance < 20) {
+      setScore(score + 10);
+      // 새로운 타겟 위치
+      setTargetPosition({
+        x: Math.random() * 80 + 10,
+        y: Math.random() * 50 + 20
+      });
+    } else {
+      setScore(Math.max(0, score - 2));
+    }
+    
+    // 1초 후 공 위치 리셋
+    setTimeout(() => {
+      setBallPosition({ x: 50, y: 80 });
+    }, 1000);
+  };
+
+  return (
+    <div className={styles.miniGameContainer}>
+      <div className={styles.gameHeader}>
+        <h3>🎾 공 던지기 게임</h3>
+        <div className={styles.gameStats}>
+          <span>점수: {score}</span>
+          <span>시간: {timeLeft}초</span>
+        </div>
+      </div>
+      
+      <div className={styles.ballGameField} onClick={throwBall}>
+        <div 
+          className={styles.target}
+          style={{ left: `${targetPosition.x}%`, top: `${targetPosition.y}%` }}
+        >
+          🎯
+        </div>
+        <div 
+          className={styles.ball}
+          style={{ left: `${ballPosition.x}%`, top: `${ballPosition.y}%` }}
+        >
+          ⚽
+        </div>
+        <div className={styles.dog}>🐕</div>
+        {!gameActive && (
+          <div className={styles.gameEndOverlay}>
+            <h4>게임 종료!</h4>
+            <p>최종 점수: {score}점</p>
+          </div>
+        )}
+      </div>
+      
+      <div className={styles.gameInstructions}>
+        <p>🎯 필드를 클릭해서 공을 던져보세요! 타겟에 가깝게 던질수록 점수가 올라요!</p>
+        <button onClick={onClose} className={styles.closeGameButton}>
+          게임 종료
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// 낚시 미니 게임 컴포넌트  
+const FishingGameComponent = ({ onComplete, onClose, score, setScore }) => {
+  const [fishVisible, setFishVisible] = useState(false);
+  const [fishPosition, setFishPosition] = useState(50);
+  const [timeLeft, setTimeLeft] = useState(30);
+  const [gameActive, setGameActive] = useState(true);
+
+  useEffect(() => {
+    if (timeLeft > 0 && gameActive) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (timeLeft === 0) {
+      setGameActive(false);
+      setTimeout(() => onComplete(score), 1000);
+    }
+  }, [timeLeft, gameActive, score, onComplete]);
+
+  useEffect(() => {
+    if (!gameActive) return;
+    
+    const fishTimer = setInterval(() => {
+      if (Math.random() < 0.3) {
+        setFishVisible(true);
+        setFishPosition(Math.random() * 80 + 10);
+        setTimeout(() => setFishVisible(false), 2000);
+      }
+    }, 1500);
+    
+    return () => clearInterval(fishTimer);
+  }, [gameActive]);
+
+  const catchFish = () => {
+    if (fishVisible && gameActive) {
+      setScore(score + 15);
+      setFishVisible(false);
+    }
+  };
+
+  return (
+    <div className={styles.miniGameContainer}>
+      <div className={styles.gameHeader}>
+        <h3>🎣 낚시 게임</h3>
+        <div className={styles.gameStats}>
+          <span>점수: {score}</span>
+          <span>시간: {timeLeft}초</span>
+        </div>
+      </div>
+      
+      <div className={styles.fishingGameField}>
+        <div className={styles.water}>
+          🌊🌊🌊🌊🌊🌊🌊🌊
+        </div>
+        {fishVisible && (
+          <div 
+            className={styles.fish}
+            style={{ left: `${fishPosition}%` }}
+            onClick={catchFish}
+          >
+            🐟
+          </div>
+        )}
+        <div className={styles.cat}>🐱</div>
+        <div className={styles.fishingRod}>🎣</div>
+        {!gameActive && (
+          <div className={styles.gameEndOverlay}>
+            <h4>게임 종료!</h4>
+            <p>최종 점수: {score}점</p>
+          </div>
+        )}
+      </div>
+      
+      <div className={styles.gameInstructions}>
+        <p>🐟 물고기가 나타나면 빨리 클릭하세요!</p>
+        <button onClick={onClose} className={styles.closeGameButton}>
+          게임 종료
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// 퍼즐 미니 게임 컴포넌트
+const PuzzleGameComponent = ({ onComplete, onClose, score, setScore }) => {
+  const [pieces, setPieces] = useState([3, 1, 4, 2, 0]); // 0은 빈 공간
+  const [moves, setMoves] = useState(0);
+  const [gameActive, setGameActive] = useState(true);
+  const correctOrder = [1, 2, 3, 4, 0];
+
+  const movePiece = (index) => {
+    if (!gameActive) return;
+    
+    const emptyIndex = pieces.indexOf(0);
+    
+    // 1차원 퍼즐이므로 좌우 이동만 허용
+    const validMove = 
+      (index === emptyIndex - 1 && emptyIndex % 5 !== 0) ||
+      (index === emptyIndex + 1 && (emptyIndex + 1) % 5 !== 0);
+    
+    if (validMove) {
+      const newPieces = [...pieces];
+      [newPieces[index], newPieces[emptyIndex]] = [newPieces[emptyIndex], newPieces[index]];
+      setPieces(newPieces);
+      setMoves(moves + 1);
+      
+      // 퍼즐 완성 체크
+      if (JSON.stringify(newPieces) === JSON.stringify(correctOrder)) {
+        const finalScore = Math.max(50 - moves, 10);
+        setScore(finalScore);
+        setGameActive(false);
+        setTimeout(() => onComplete(finalScore), 1000);
+      }
+    }
+  };
+
+  return (
+    <div className={styles.miniGameContainer}>
+      <div className={styles.gameHeader}>
+        <h3>🧩 퍼즐 게임</h3>
+        <div className={styles.gameStats}>
+          <span>이동 횟수: {moves}</span>
+        </div>
+      </div>
+      
+      <div className={styles.puzzleGameField}>
+        <div className={styles.puzzleGrid}>
+          {pieces.map((piece, index) => (
+            <div
+              key={index}
+              className={`${styles.puzzlePiece} ${piece === 0 ? styles.empty : ''}`}
+              onClick={() => movePiece(index)}
+              style={{ cursor: 'pointer' }}
+            >
+              {piece === 0 ? '' : piece}
+            </div>
+          ))}
+        </div>
+        {!gameActive && (
+          <div className={styles.gameEndOverlay}>
+            <h4>퍼즐 완성!</h4>
+            <p>최종 점수: {score}점 ({moves}번 이동)</p>
+          </div>
+        )}
+      </div>
+      
+      <div className={styles.gameInstructions}>
+        <p>🧩 숫자를 1,2,3,4 순서대로 배열하세요!</p>
+        <button onClick={onClose} className={styles.closeGameButton}>
+          게임 종료
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // 케어 애니메이션 디스플레이 컴포넌트
-const CareAnimationDisplay = ({ careType, animalName, animalSpecies }) => {
+const CareAnimationDisplay = ({ careType, animalName }) => {
   const [animationFrame, setAnimationFrame] = useState(0);
   
   useEffect(() => {
@@ -16,8 +260,38 @@ const CareAnimationDisplay = ({ careType, animalName, animalSpecies }) => {
   }, []);
   
   const getCareAnimation = () => {
-    const baseAnimal = `🐕`; // 기본 동물 이모지
     const frames = animationFrame;
+    
+    // 한국어 조사 처리 함수
+    const getKoreanParticle = (name, particle) => {
+      if (!name) return '';
+      
+      const lastChar = name.charAt(name.length - 1);
+      const lastCharCode = lastChar.charCodeAt(0);
+      
+      // 한글인지 확인
+      if (lastCharCode >= 0xAC00 && lastCharCode <= 0xD7A3) {
+        const finalConsonant = (lastCharCode - 0xAC00) % 28;
+        
+        if (particle === '이/가') {
+          return finalConsonant > 0 ? '이' : '가';
+        } else if (particle === '을/를') {
+          return finalConsonant > 0 ? '을' : '를';
+        } else if (particle === '은/는') {
+          return finalConsonant > 0 ? '은' : '는';
+        } else if (particle === '와/과') {
+          return finalConsonant > 0 ? '과' : '와';
+        }
+      }
+      
+      // 한글이 아닌 경우 기본값
+      if (particle === '이/가') return '가';
+      if (particle === '을/를') return '를';
+      if (particle === '은/는') return '는';
+      if (particle === '와/과') return '와';
+      
+      return '';
+    };
     
     switch(careType) {
       case 'wash':
@@ -34,7 +308,7 @@ const CareAnimationDisplay = ({ careType, animalName, animalSpecies }) => {
             </div>
             <div className={styles.careText}>
               <div className={styles.careTitle}>🧼 씻기기 중...</div>
-              <div className={styles.careDesc}>{animalName}이(가) 목욕을 즐기고 있어요!</div>
+              <div className={styles.careDesc}>{animalName}{getKoreanParticle(animalName, '이/가')} 목욕을 즐기고 있어요!</div>
             </div>
             <div className={styles.progressDots}>
               {[...Array(4)].map((_, i) => (
@@ -58,7 +332,7 @@ const CareAnimationDisplay = ({ careType, animalName, animalSpecies }) => {
             </div>
             <div className={styles.careText}>
               <div className={styles.careTitle}>🍽️ 밥 주기 중...</div>
-              <div className={styles.careDesc}>{animalName}이(가) 맛있게 먹고 있어요!</div>
+              <div className={styles.careDesc}>{animalName}{getKoreanParticle(animalName, '이/가')} 맛있게 먹고 있어요!</div>
             </div>
             <div className={styles.progressDots}>
               {[...Array(4)].map((_, i) => (
@@ -86,7 +360,7 @@ const CareAnimationDisplay = ({ careType, animalName, animalSpecies }) => {
             </div>
             <div className={styles.careText}>
               <div className={styles.careTitle}>✂️ 미용 중...</div>
-              <div className={styles.careDesc}>{animalName}이(가) 예뻐지고 있어요!</div>
+              <div className={styles.careDesc}>{animalName}{getKoreanParticle(animalName, '이/가')} 예뻐지고 있어요!</div>
             </div>
             <div className={styles.progressDots}>
               {[...Array(4)].map((_, i) => (
@@ -113,7 +387,7 @@ const CareAnimationDisplay = ({ careType, animalName, animalSpecies }) => {
             </div>
             <div className={styles.careText}>
               <div className={styles.careTitle}>🚶‍♂️ 산책 중...</div>
-              <div className={styles.careDesc}>{animalName}이(가) 신나게 뛰어다니고 있어요!</div>
+              <div className={styles.careDesc}>{animalName}{getKoreanParticle(animalName, '이/가')} 신나게 뛰어다니고 있어요!</div>
             </div>
             <div className={styles.progressDots}>
               {[...Array(4)].map((_, i) => (
@@ -166,63 +440,71 @@ const AnimalCareGame = () => {
   const [careHistory, setCareHistory] = useState([]);
   const [showCareHistory, setShowCareHistory] = useState(false);
   const [todayRecord, setTodayRecord] = useState('');
+  
+  // 동물 필터 관련 상태
+  const [animalFilter, setAnimalFilter] = useState('all'); // 'all', 'dog', 'cat', 'other'
+  const [allAnimals, setAllAnimals] = useState([]); // 전체 동물 목록
+  
+  // 이름 지어주기 관련 상태
+  const [showNamingModal, setShowNamingModal] = useState(false);
+  const [customName, setCustomName] = useState('');
+  
+  // 미니 게임 관련 상태
+  const [showMiniGame, setShowMiniGame] = useState(false);
+  const [currentMiniGame, setCurrentMiniGame] = useState(null); // 'ball', 'fishing', 'puzzle'
+  const [miniGameScore, setMiniGameScore] = useState(0);
+  
+  // AI 고급 기능 관련 상태
+  const [aiFeedback, setAiFeedback] = useState('');
+  const [aiStory, setAiStory] = useState('');
+  const [aiRecommendations, setAiRecommendations] = useState(null);
+  const [showAiFeedback, setShowAiFeedback] = useState(false);
+  const [showAiStory, setShowAiStory] = useState(false);
+  const [loadingAi, setLoadingAi] = useState(false);
 
-  // 실제 유기동물 데이터 가져오기
+  // 실제 유기동물 데이터 가져오기 - 초기에는 전체 필터로 시작
   useEffect(() => {
-    const fetchAnimals = async () => {
+    const initializeAnimals = async () => {
       try {
-        console.log('🔥 AnimalCareGame: 유기동물 데이터 요청 시작');
-        const response = await api.get('/animals?filter=all&page=1');
-        console.log('✅ AnimalCareGame: 유기동물 데이터 응답 성공:', response.data);
+        console.log('🔥 AnimalCareGame: 유기동물 데이터 초기화 시작');
+        // 초기에는 전체 동물 데이터로 시작
+        await filterAnimals('all');
         
-        // 전체 동물 배열을 랜덤으로 섞고 6마리 선택
-        const shuffledAnimals = [...response.data.animals].sort(() => Math.random() - 0.5);
-        const gameAnimals = shuffledAnimals.slice(0, 6).map((animal, index) => ({
-          id: animal.animal_id,
-          name: `${animal.species} 친구 #${animal.animal_id}`,
-          species: animal.species,
-          image_url: animal.image_url,
-          description: `${animal.region}에서 구조된 ${animal.gender === 'male' ? '수컷' : animal.gender === 'female' ? '암컷' : ''} ${animal.species}`,
-          age: animal.age,
-          region: animal.region,
-          gender: animal.gender
-        }));
-        
-        setAnimals(gameAnimals);
-        console.log('📊 AnimalCareGame: 게임용 동물 데이터 준비 완료:', gameAnimals.length, '마리');
+        console.log('📊 AnimalCareGame: 초기화 완료');
+        setLoadingAnimals(false);
       } catch (error) {
-        console.error('❌ AnimalCareGame: 유기동물 데이터 로드 실패:', error);
+        console.error('❌ AnimalCareGame: 초기화 실패:', error);
         // 실패 시 샘플 데이터 사용
         const fallbackAnimals = [
           {
             id: 1,
-            name: "초코",
+            name: "개 친구 #1",
             species: "개",
             image_url: "/images/hoochoo1.jpeg",
             description: "활발한 강아지"
           },
           {
             id: 2, 
-            name: "나비",
+            name: "고양이 친구 #2",
             species: "고양이",
             image_url: "/images/pretty.png",
             description: "온순한 고양이"
           },
           {
             id: 3,
-            name: "뽀미",
+            name: "개 친구 #3",
             species: "개", 
             image_url: "/images/Bob.png",
             description: "귀여운 강아지"
           }
         ];
         setAnimals(fallbackAnimals);
-      } finally {
+        setAllAnimals(fallbackAnimals);
         setLoadingAnimals(false);
       }
     };
 
-    fetchAnimals();
+    initializeAnimals();
   }, []);
 
   // 케어 활동 효과 (더 구체적이고 정확한 변화)
@@ -262,6 +544,156 @@ const AnimalCareGame = () => {
       detailedChange: "다리 근육이 발달하고, 정신적으로 안정되며 사회성이 좋아져요",
       visualChange: "stronger leg muscles, alert and happy expression, confident posture",
       icon: "🐕‍🦺"
+    }
+  };
+
+  // AI 케어 피드백 생성 함수
+  const generateAiFeedback = async () => {
+    try {
+      console.log('🤖 AI 피드백 요청 시작...');
+      setLoadingAi(true);
+      
+      // 로컬 피드백 생성 (즉시 표시)
+      const totalScore = (careStats.cleanliness + careStats.hunger + careStats.beauty + careStats.energy) / 4;
+      let localFeedback = '';
+      
+      if (totalScore >= 80) {
+        localFeedback = `🌟 정말 훌륭해요! ${selectedAnimal.name || selectedAnimal.displayName}가 매우 행복하고 건강한 상태입니다. 지금처럼 꾸준히 돌봐주시면 완벽한 친구가 될 거예요!`;
+      } else if (totalScore >= 60) {
+        localFeedback = `😊 잘하고 있어요! ${selectedAnimal.name || selectedAnimal.displayName}의 상태가 좋아지고 있어요. 조금 더 신경 써주시면 더욱 건강해질 거예요!`;
+      } else if (totalScore >= 40) {
+        localFeedback = `💪 더 노력이 필요해요! ${selectedAnimal.name || selectedAnimal.displayName}가 더 많은 관심을 필요로 해요. 특히 ${careStats.hunger < 50 ? '배고픔' : careStats.cleanliness < 50 ? '청결' : '활력'} 관리에 신경 써주세요!`;
+      } else {
+        localFeedback = `🚨 긴급한 케어가 필요해요! ${selectedAnimal.name || selectedAnimal.displayName}의 건강이 위험해요. 지금 바로 씻기기, 밥주기, 산책하기를 시작해주세요!`;
+      }
+      
+      setAiFeedback(localFeedback);
+      setShowAiFeedback(true);
+      
+      // 백그라운드 API 호출 시도
+      try {
+        const response = await api.post('/ai/care-feedback', {
+          animalData: selectedAnimal,
+          careStats: careStats,
+          completedTasks: completedTasks,
+          timeLeft: timeLeft,
+          animalMood: animalMood
+        });
+        
+        if (response.data.success && response.data.feedback) {
+          console.log('✅ AI 피드백 API 성공!');
+          setAiFeedback(response.data.feedback);
+        }
+      } catch (apiError) {
+        console.warn('AI 피드백 API 실패, 로컬 피드백 사용:', apiError.message);
+      }
+      
+    } catch (error) {
+      console.error('❌ AI 피드백 생성 실패:', error);
+      setAiFeedback('피드백 생성 중 오류가 발생했습니다.');
+      setShowAiFeedback(true);
+    } finally {
+      setLoadingAi(false);
+    }
+  };
+  
+  // AI 동물 스토리 생성 함수
+  const generateAiStory = async () => {
+    try {
+      console.log('📖 AI 스토리 요청 시작...');
+      setLoadingAi(true);
+      
+      // 로컬 스토리 생성 (즉시 표시)
+      const animalName = selectedAnimal.name || selectedAnimal.displayName || '이 친구';
+      const species = selectedAnimal.species || '동물';
+      
+      const stories = [
+        `🌈 ${animalName}의 이야기\n\n어두운 골목에서 떨고 있던 ${species}. 차가운 비에 젖어 있던 ${animalName}는 이제 따뜻한 보살핌을 받고 있습니다. 당신의 사랑으로 ${animalName}는 점점 밝아지고 있어요. 매일매일이 기적같은 변화의 연속입니다. 이제 ${animalName}는 새로운 삶의 희망을 품고 있답니다!`,
+        
+        `💝 ${animalName}와의 특별한 만남\n\n운명처럼 만난 ${animalName}. 처음엔 사람을 무서워했지만, 당신의 따뜻한 손길에 조금씩 마음을 열기 시작했어요. 오늘 ${animalName}가 처음으로 꼬리를 흔들었답니다! 작은 변화지만 큰 의미가 있는 순간이었어요. ${animalName}에게 당신은 이제 가장 소중한 친구입니다.`,
+        
+        `✨ ${animalName}의 새로운 시작\n\n보호소에서 긴 시간을 보낸 ${animalName}. 많은 사람들이 지나쳤지만, 당신은 ${animalName}의 진정한 가치를 알아봐 주었어요. 이제 ${animalName}는 행복한 나날을 보내고 있습니다. 맛있는 밥, 따뜻한 잠자리, 그리고 무엇보다 사랑받는다는 느낌. ${animalName}에게 당신은 영웅이에요!`
+      ];
+      
+      const randomStory = stories[Math.floor(Math.random() * stories.length)];
+      setAiStory(randomStory);
+      setShowAiStory(true);
+      
+      // 백그라운드 API 호출 시도
+      try {
+        const response = await api.post('/ai/animal-story', {
+          animalData: selectedAnimal,
+          careHistory: careHistory,
+          userNote: todayRecord
+        });
+        
+        if (response.data.success && response.data.story) {
+          console.log('✅ AI 스토리 API 성공!');
+          setAiStory(response.data.story);
+        }
+      } catch (apiError) {
+        console.warn('AI 스토리 API 실패, 로컬 스토리 사용:', apiError.message);
+      }
+      
+    } catch (error) {
+      console.error('❌ AI 스토리 생성 실패:', error);
+      setAiStory('스토리 생성 중 오류가 발생했습니다.');
+      setShowAiStory(true);
+    } finally {
+      setLoadingAi(false);
+    }
+  };
+  
+  // AI 케어 추천 시스템
+  const getAiRecommendations = async () => {
+    try {
+      console.log('💡 AI 케어 추천 요청 시작...');
+      setLoadingAi(true);
+      
+      // 간단한 로컬 추천 시스템 (임시)
+      const lowStats = [];
+      if (careStats.hunger < 40) lowStats.push('배고픔');
+      if (careStats.cleanliness < 40) lowStats.push('청결함');
+      if (careStats.energy < 40) lowStats.push('활력');
+      if (careStats.beauty < 40) lowStats.push('미용');
+      
+      let recommendation = '';
+      if (lowStats.length === 0) {
+        recommendation = `${selectedAnimal.name}가 매우 건강한 상태예요! 현재 상태를 유지해주세요.`;
+      } else {
+        recommendation = `${selectedAnimal.name}의 ${lowStats.join(', ')} 상태가 부족해요. 우선적으로 케어해주세요!`;
+      }
+      
+      setMessage(`🤖 AI 조언: ${recommendation}`);
+      setTimeout(() => setMessage(''), 8000);
+      
+      // 실제 API 호출 (백그라운드)
+      try {
+        const response = await api.post('/ai/care-recommendations', {
+          animalData: selectedAnimal,
+          careStats: careStats,
+          timeLeft: timeLeft,
+          completedTasks: completedTasks,
+          weatherCondition: 'normal'
+        });
+        
+        if (response.data.success) {
+          console.log('✅ AI 추천 생성 성공!');
+          setAiRecommendations(response.data);
+          // 실제 AI 응답으로 메시지 업데이트
+          setMessage(`🤖 AI 전문가: ${response.data.recommendations}`);
+          setTimeout(() => setMessage(''), 10000);
+        }
+      } catch (apiError) {
+        console.warn('AI API 호출 실패, 로컬 추천 사용:', apiError.message);
+      }
+      
+    } catch (error) {
+      console.error('❌ AI 추천 생성 실패:', error);
+      setMessage('🤖 AI 추천을 생성할 수 없습니다. 나중에 다시 시도해주세요.');
+      setTimeout(() => setMessage(''), 5000);
+    } finally {
+      setLoadingAi(false);
     }
   };
 
@@ -325,7 +757,17 @@ const AnimalCareGame = () => {
     }
   };
 
-  // 케어 활동 실행 (애니메이션 + AI 이미지 생성)
+  // 스마트 케어 추천 (AI 기반)
+  useEffect(() => {
+    if (gameStarted && !gameEnded && timeLeft > 0) {
+      // 게임 중간에 AI 추천 자동 실행 (시간이 절반 남았을 때)
+      if (timeLeft === 12) {
+        getAiRecommendations();
+      }
+    }
+  }, [timeLeft, gameStarted, gameEnded]);
+
+  // 케어 활동 실행 (애니메이션 + AI 이미지 생성 + 스마트 피드백)
   const performCare = async (careType) => {
     if (gameEnded || timeLeft <= 0 || showCareAnimation) return;
     
@@ -379,6 +821,13 @@ const AnimalCareGame = () => {
       setShowCareAnimation(false);
       setCurrentCareType('');
       
+      // AI 피드백 자동 생성 (케어 완료 후)
+      if (Math.random() < 0.3) { // 30% 확률로 AI 피드백 생성
+        setTimeout(() => {
+          generateAiFeedback();
+        }, 2000);
+      }
+      
       // 메시지 5초 후 사라짐 (AI 이미지 확인 시간)
       setTimeout(() => setMessage(''), 5000);
     }, 3000);
@@ -394,13 +843,13 @@ const AnimalCareGame = () => {
       let grade = "";
       
       if (totalScore >= 80) {
-        resultMessage = "🏆 완벽한 하루였어요! " + selectedAnimal.name + "이(가) 정말 행복해해요!";
+        resultMessage = `🏆 완벽한 하루였어요! ${getAnimalNameWithParticle(selectedAnimal, '이/가')} 정말 행복해해요!`;
         grade = "S";
       } else if (totalScore >= 60) {
-        resultMessage = "😊 좋은 하루였어요! " + selectedAnimal.name + "이(가) 만족해해요!";
+        resultMessage = `😊 좋은 하루였어요! ${getAnimalNameWithParticle(selectedAnimal, '이/가')} 만족해해요!`;
         grade = "A";
       } else {
-        resultMessage = "😔 " + selectedAnimal.name + "이(가) 더 많은 관심이 필요해요...";
+        resultMessage = `😔 ${getAnimalNameWithParticle(selectedAnimal, '이/가')} 더 많은 관심이 필요해요...`;
         grade = "B";
       }
       
@@ -457,7 +906,7 @@ const AnimalCareGame = () => {
     });
     setCompletedTasks([]);
     // 무드는 자동으로 계산되도록 초기값 제거
-    setMessage(`${animal.name}이(가) 당신을 기다리고 있어요! 🐾`);
+    setMessage(`${getAnimalNameWithParticle(animal, '이/가')} 당신을 기다리고 있어요! 🐾`);
   };
 
   // 게임 리셋
@@ -471,6 +920,13 @@ const AnimalCareGame = () => {
     setIsGeneratingImage(false);
     setTodayRecord('');
     setAnimalMood('normal');
+    // AI 상태 리셋
+    setAiFeedback('');
+    setAiStory('');
+    setAiRecommendations(null);
+    setShowAiFeedback(false);
+    setShowAiStory(false);
+    setLoadingAi(false);
   };
 
   // 동물 기분 계산 함수
@@ -482,6 +938,166 @@ const AnimalCareGame = () => {
     if (totalScore >= 40) return 'happy';
     if (totalScore >= 20) return 'normal';
     return 'dirty';
+  };
+
+  // 동물 필터링 함수 - 유기동물 페이지와 동일한 API 사용
+  const filterAnimals = async (filterType) => {
+    try {
+      console.log(`🔍 ${filterType} 필터로 동물 데이터 요청...`);
+      const response = await api.get(`/animals?filter=${filterType}&page=1`);
+      console.log(`✅ ${filterType} 필터 응답:`, response.data.animals.length, '마리');
+      
+      // API에서 받은 데이터를 게임용으로 변환
+      const apiAnimals = response.data.animals.map((animal) => ({
+        id: animal.animal_id,
+        name: `${animal.species} 친구 #${animal.animal_id}`,
+        species: animal.species,
+        image_url: animal.image_url,
+        description: `${animal.region}에서 구조된 ${animal.gender === 'male' ? '수컷' : animal.gender === 'female' ? '암컷' : ''} ${animal.species}`,
+        age: animal.age,
+        region: animal.region,
+        gender: animal.gender
+      }));
+      
+      // 랜덤으로 섞어서 6마리 선택
+      const shuffledAnimals = [...apiAnimals].sort(() => Math.random() - 0.5);
+      const selectedAnimals = shuffledAnimals.slice(0, 6);
+      
+      console.log(`🎲 랜덤 선택 완료: ${selectedAnimals.length}마리`);
+      
+      setAnimals(selectedAnimals);
+      setAnimalFilter(filterType);
+      
+    } catch (error) {
+      console.error(`❌ ${filterType} 필터 요청 실패:`, error);
+      // 에러 시 기존 전체 데이터에서 랜덤 선택
+      if (allAnimals.length > 0) {
+        const shuffled = [...allAnimals].sort(() => Math.random() - 0.5);
+        const fallback = shuffled.slice(0, 6);
+        setAnimals(fallback);
+        setAnimalFilter(filterType);
+      }
+    }
+  };
+
+  // 이름 지어주기 함수
+  const openNamingModal = () => {
+    setCustomName('');
+    setShowNamingModal(true);
+  };
+
+  const closeNamingModal = () => {
+    setShowNamingModal(false);
+    setCustomName('');
+  };
+
+  const applyCustomName = () => {
+    if (customName.trim() && selectedAnimal) {
+      const newName = customName.trim();
+      setSelectedAnimal(prevAnimal => ({
+        ...prevAnimal,
+        customName: newName,
+        displayName: newName
+      }));
+      setMessage(`🎉 "${newName}"라는 멋진 이름을 지어주었어요!`);
+      setTimeout(() => setMessage(''), 3000);
+      closeNamingModal();
+    }
+  };
+
+  // 한국어 조사 처리 함수
+  const getKoreanParticle = (name, particle) => {
+    if (!name) return '';
+    
+    const lastChar = name.charAt(name.length - 1);
+    const lastCharCode = lastChar.charCodeAt(0);
+    
+    // 한글인지 확인
+    if (lastCharCode >= 0xAC00 && lastCharCode <= 0xD7A3) {
+      const finalConsonant = (lastCharCode - 0xAC00) % 28;
+      
+      if (particle === '이/가') {
+        return finalConsonant > 0 ? '이' : '가';
+      } else if (particle === '을/를') {
+        return finalConsonant > 0 ? '을' : '를';
+      } else if (particle === '은/는') {
+        return finalConsonant > 0 ? '은' : '는';
+      } else if (particle === '와/과') {
+        return finalConsonant > 0 ? '과' : '와';
+      }
+    }
+    
+    // 한글이 아닌 경우 기본값
+    if (particle === '이/가') return '가';
+    if (particle === '을/를') return '를';
+    if (particle === '은/는') return '는';
+    if (particle === '와/과') return '와';
+    
+    return '';
+  };
+
+  // 동물 이름을 조사와 함께 표시하는 함수
+  const getAnimalNameWithParticle = (animal, particle = '이/가') => {
+    const displayName = animal.displayName || animal.customName || animal.name;
+    const koreanParticle = getKoreanParticle(displayName, particle);
+    return `${displayName}${koreanParticle}`;
+  };
+
+  // 랜덤 이름 생성 함수
+  const generateRandomName = () => {
+    const dogNames = ['초코', '몽이', '별이', '구름이', '하늘이', '바둑이', '복돌이', '맥스', '루이', '코코'];
+    const catNames = ['나비', '공주', '미미', '야옹이', '봄이', '달이', '별이', '루나', '체리', '쿠키'];
+    const otherNames = ['포동이', '털뭉치', '귀염이', '사랑이', '행복이', '희망이', '천사', '보석이', '햇님이', '달님이'];
+    
+    let namePool = otherNames;
+    if (selectedAnimal?.species?.includes('개')) {
+      namePool = dogNames;
+    } else if (selectedAnimal?.species?.includes('고양이')) {
+      namePool = catNames;
+    }
+    
+    const randomName = namePool[Math.floor(Math.random() * namePool.length)];
+    setCustomName(randomName);
+  };
+
+  // 미니 게임 시작 함수
+  const startMiniGame = () => {
+    if (!selectedAnimal) return;
+    
+    // 동물 종류에 따라 다른 미니 게임 선택
+    let gameType = 'puzzle'; // 기본값
+    if (selectedAnimal.species?.includes('개')) {
+      gameType = 'ball';
+    } else if (selectedAnimal.species?.includes('고양이')) {
+      gameType = 'fishing';
+    }
+    
+    setCurrentMiniGame(gameType);
+    setMiniGameScore(0);
+    setShowMiniGame(true);
+    
+    setMessage(`🎮 ${getAnimalNameWithParticle(selectedAnimal, '와/과')} 함께 미니 게임을 시작해요!`);
+    setTimeout(() => setMessage(''), 3000);
+  };
+
+  const closeMiniGame = () => {
+    setShowMiniGame(false);
+    setCurrentMiniGame(null);
+    setMiniGameScore(0);
+  };
+
+  const completeMiniGame = (score) => {
+    // 미니 게임 완료 시 케어 스탯 보너스
+    const bonus = Math.min(20, score * 2);
+    setCareStats(prevStats => ({
+      ...prevStats,
+      energy: Math.min(100, prevStats.energy + bonus),
+      beauty: Math.min(100, prevStats.beauty + Math.floor(bonus / 2))
+    }));
+    
+    setMessage(`🏆 미니 게임 완료! ${score}점을 획득했어요! 에너지 +${bonus}`);
+    setTimeout(() => setMessage(''), 4000);
+    closeMiniGame();
   };
 
   // 수동으로 기록 저장하는 함수
@@ -560,7 +1176,7 @@ const AnimalCareGame = () => {
             ← 뒤로가기
           </button>
           <div className={styles.gameTitle}>
-            🐾 하루 동물 케어 시뮬레이션 🐾
+            케어 시뮬레이션
           </div>
           <button 
             className={styles.historyButton}
@@ -626,6 +1242,35 @@ const AnimalCareGame = () => {
         
         <div className={styles.animalSelection}>
           <h3>돌볼 동물을 선택해주세요:</h3>
+          
+          {/* 동물 필터 버튼들 */}
+          <div className={styles.animalFilterContainer}>
+            <button 
+              className={`${styles.filterButton} ${animalFilter === 'all' ? styles.active : ''}`}
+              onClick={() => filterAnimals('all')}
+            >
+              🐾 전체
+            </button>
+            <button 
+              className={`${styles.filterButton} ${animalFilter === 'dog' ? styles.active : ''}`}
+              onClick={() => filterAnimals('dog')}
+            >
+              🐕 개
+            </button>
+            <button 
+              className={`${styles.filterButton} ${animalFilter === 'cat' ? styles.active : ''}`}
+              onClick={() => filterAnimals('cat')}
+            >
+              🐱 고양이
+            </button>
+            <button 
+              className={`${styles.filterButton} ${animalFilter === 'other' ? styles.active : ''}`}
+              onClick={() => filterAnimals('other')}
+            >
+              🦜 기타
+            </button>
+          </div>
+          
           {loadingAnimals ? (
             <div className={styles.loadingContainer}>
               <div className={styles.loadingSpinner}></div>
@@ -654,7 +1299,6 @@ const AnimalCareGame = () => {
                     <div className={styles.animalInfo}>
                       <h4>{animal.name}</h4>
                       <div className={styles.animalDetails}>
-                        <span className={styles.animalSpecies}>{animal.species}</span>
                         {animal.age && <span className={styles.animalAge}>🎂 {animal.age}</span>}
                         {animal.gender && (
                           <span className={styles.animalGender}>
@@ -680,8 +1324,11 @@ const AnimalCareGame = () => {
   return (
     <div className={styles.gameContainer}>
       <div className={styles.gameHeader}>
-        <h2>🐾 {selectedAnimal.name}이(가)의 하루</h2>
+        <h2>🐾 {getAnimalNameWithParticle(selectedAnimal, '이/가')}의 하루</h2>
         <div className={styles.timeInfo}>
+          <button className={styles.namingButton} onClick={openNamingModal}>
+            ✏️ 이름 짓기
+          </button>
           <button className={styles.resetButton} onClick={resetGame}>
             다른 동물 선택
           </button>
@@ -700,7 +1347,6 @@ const AnimalCareGame = () => {
             <CareAnimationDisplay 
               careType={currentCareType} 
               animalName={selectedAnimal.name}
-              animalSpecies={selectedAnimal.species}
             />
           ) : (
             <>
@@ -810,7 +1456,7 @@ const AnimalCareGame = () => {
           <textarea
             value={todayRecord}
             onChange={(e) => setTodayRecord(e.target.value)}
-            placeholder={`${selectedAnimal.name}이(가)와의 특별한 순간을 기록해보세요... 예: "처음에는 무서워했지만 점점 마음을 열었어요"`}
+            placeholder={`${getAnimalNameWithParticle(selectedAnimal, '이/가')}와의 특별한 순간을 기록해보세요... 예: "처음에는 무서워했지만 점점 마음을 열었어요"`}
             className={styles.recordTextarea}
             maxLength={100}
           />
@@ -872,6 +1518,71 @@ const AnimalCareGame = () => {
             </button>
           </div>
         </div>
+
+        {/* 미니 게임 섹션 */}
+        <div className={styles.careButtons}>
+          <h3>🎮 미니 게임</h3>
+          <div className={styles.buttonGrid}>
+            <button 
+              className={styles.miniGameButton}
+              onClick={startMiniGame}
+              disabled={gameEnded}
+            >
+              <span className={styles.buttonIcon}>
+                {selectedAnimal.species?.includes('개') ? '🎾' : 
+                 selectedAnimal.species?.includes('고양이') ? '🎣' : '🧩'}
+              </span>
+              <span className={styles.buttonText}>
+                {selectedAnimal.species?.includes('개') ? '공 던지기' : 
+                 selectedAnimal.species?.includes('고양이') ? '낚시 게임' : '퍼즐 게임'}
+              </span>
+              <span className={styles.buttonTime}>에너지 회복!</span>
+            </button>
+          </div>
+        </div>
+
+        {/* AI 고급 기능 섹션 */}
+        <div className={styles.careButtons}>
+          <h3>🤖 AI 도우미</h3>
+          <div className={styles.buttonGrid}>
+            <button 
+              className={styles.aiButton}
+              onClick={generateAiFeedback}
+              disabled={gameEnded || loadingAi}
+            >
+              <span className={styles.buttonIcon}>🧠</span>
+              <span className={styles.buttonText}>전문가 조언</span>
+              <span className={styles.buttonTime}>개인화된 피드백</span>
+            </button>
+            
+            <button 
+              className={styles.aiButton}
+              onClick={generateAiStory}
+              disabled={gameEnded || loadingAi}
+            >
+              <span className={styles.buttonIcon}>📖</span>
+              <span className={styles.buttonText}>스토리 생성</span>
+              <span className={styles.buttonTime}>감동적인 이야기</span>
+            </button>
+            
+            <button 
+              className={styles.aiButton}
+              onClick={getAiRecommendations}
+              disabled={gameEnded || loadingAi}
+            >
+              <span className={styles.buttonIcon}>💡</span>
+              <span className={styles.buttonText}>스마트 추천</span>
+              <span className={styles.buttonTime}>최적의 케어 순서</span>
+            </button>
+          </div>
+          
+          {loadingAi && (
+            <div className={styles.aiLoadingIndicator}>
+              <div className={styles.aiLoader}></div>
+              <span>🤖 AI가 분석 중입니다...</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {gameEnded && (
@@ -896,6 +1607,149 @@ const AnimalCareGame = () => {
                 onClick={() => navigate('/intro')}
               >
                 🏠 홈으로 가기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 이름 짓기 모달 */}
+      {showNamingModal && (
+        <div className={styles.gameEndModal}>
+          <div className={styles.gameEndContent}>
+            <h2>✏️ 이름을 지어주세요!</h2>
+            <p style={{ textAlign: 'center', marginBottom: '20px', color: '#64748b' }}>
+              이 귀여운 {selectedAnimal.species}에게 특별한 이름을 지어주세요 💝
+            </p>
+            
+            <div className={styles.namingInputContainer}>
+              <input
+                type="text"
+                value={customName}
+                onChange={(e) => setCustomName(e.target.value)}
+                placeholder="이름을 입력해주세요"
+                className={styles.namingInput}
+                maxLength={10}
+                onKeyPress={(e) => e.key === 'Enter' && applyCustomName()}
+              />
+              <button 
+                className={styles.randomNameButton}
+                onClick={generateRandomName}
+                type="button"
+              >
+                🎲 랜덤
+              </button>
+            </div>
+            
+            <div className={styles.gameEndButtons}>
+              <button 
+                className={styles.playAgainButton}
+                onClick={applyCustomName}
+                disabled={!customName.trim()}
+              >
+                ✨ 이름 확정
+              </button>
+              <button 
+                className={styles.goHomeButton}
+                onClick={closeNamingModal}
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 미니 게임 모달 */}
+      {showMiniGame && (
+        <div className={styles.gameEndModal}>
+          <div className={styles.miniGameModalContent}>
+            {currentMiniGame === 'ball' && (
+              <BallGameComponent 
+                onComplete={completeMiniGame}
+                onClose={closeMiniGame}
+                score={miniGameScore}
+                setScore={setMiniGameScore}
+              />
+            )}
+            {currentMiniGame === 'fishing' && (
+              <FishingGameComponent 
+                onComplete={completeMiniGame}
+                onClose={closeMiniGame}
+                score={miniGameScore}
+                setScore={setMiniGameScore}
+              />
+            )}
+            {currentMiniGame === 'puzzle' && (
+              <PuzzleGameComponent 
+                onComplete={completeMiniGame}
+                onClose={closeMiniGame}
+                score={miniGameScore}
+                setScore={setMiniGameScore}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* AI 피드백 모달 */}
+      {showAiFeedback && (
+        <div className={styles.gameEndModal}>
+          <div className={styles.gameEndContent}>
+            <h2>🤖 전문가 AI 조언</h2>
+            <div className={styles.aiContentBox}>
+              <div className={styles.aiAvatar}>📝</div>
+              <div className={styles.aiFeedbackText}>
+                {aiFeedback}
+              </div>
+            </div>
+            <div className={styles.gameEndButtons}>
+              <button 
+                className={styles.playAgainButton}
+                onClick={() => setShowAiFeedback(false)}
+              >
+                👍 고마워요!
+              </button>
+              <button 
+                className={styles.goHomeButton}
+                onClick={() => {
+                  generateAiFeedback(); // 새로운 피드백 요청
+                }}
+                disabled={loadingAi}
+              >
+                🔄 다시 물어보기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI 스토리 모달 */}
+      {showAiStory && (
+        <div className={styles.gameEndModal}>
+          <div className={styles.gameEndContent}>
+            <h2>📖 {getAnimalNameWithParticle(selectedAnimal, '의')} 이야기</h2>
+            <div className={styles.aiContentBox}>
+              <div className={styles.aiAvatar}>🎨</div>
+              <div className={styles.aiStoryText}>
+                {aiStory}
+              </div>
+            </div>
+            <div className={styles.gameEndButtons}>
+              <button 
+                className={styles.playAgainButton}
+                onClick={() => setShowAiStory(false)}
+              >
+                ❤️ 감동이에요!
+              </button>
+              <button 
+                className={styles.goHomeButton}
+                onClick={() => {
+                  generateAiStory(); // 새로운 스토리 요청
+                }}
+                disabled={loadingAi}
+              >
+                🔄 다른 이야기
               </button>
             </div>
           </div>

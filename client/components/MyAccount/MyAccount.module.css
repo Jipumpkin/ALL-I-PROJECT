@@ -875,7 +875,7 @@
 .fileUploadLabel {
   padding: var(--spacing-lg) var(--spacing-2xl);
   background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-hover) 100%);
-  color: white;
+  color: white !important;
   border-radius: var(--border-radius-xl);
   font-size: 16px !important;
   font-weight: 600 !important;
@@ -887,6 +887,11 @@
   box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .fileUploadLabel::before {
@@ -923,6 +928,11 @@
   box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .defaultImageButton::before {

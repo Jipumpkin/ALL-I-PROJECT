@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../src/context/AuthContext';
-import api from "../../axios";
+import axios from "../../axios";
 import styles from './MyAccount.module.css';
 
 const MyAccount = () => {
@@ -38,7 +38,7 @@ const MyAccount = () => {
     const userId = user?.id || user?.user_id;
     if (userId) {
       try {
-        const response = await api.get(`/users/${userId}/images`);
+        const response = await axios.get(`/users/${userId}/images`);
         if (response.data.success) {
           setUserImages(response.data.data);
         }
@@ -67,7 +67,7 @@ const MyAccount = () => {
         requestData = imageData;
       }
 
-      await api.put(`/users/${userId}/images/profile`, requestData);
+      await axios.put(`/users/${userId}/images/profile`, requestData);
       fetchUserImages(); // 이미지 목록 새로고침
       return true;
     } catch (err) {
@@ -152,7 +152,7 @@ const MyAccount = () => {
         gender: editedUser.gender
       };
       
-      const response = await api.put('/users/profile', profileData);
+      const response = await axios.put('/users/profile', profileData);
       
       if (response.data.success) {
         // 2. 이미지가 선택된 경우 이미지 업데이트
@@ -216,7 +216,7 @@ const MyAccount = () => {
         return;
       }
 
-      const response = await api.delete('/users/account', {
+      const response = await axios.delete('/users/account', {
         data: { password: deletePassword }
       });
 
@@ -357,6 +357,7 @@ const MyAccount = () => {
                           alt="현재 사진" 
                           className={styles.profileImage}
                         />
+                        <span className={styles.currentLabel}>현재 이미지</span>
                       </div>
                     ) : (
                       <div className={styles.noPhoto}>
@@ -366,7 +367,7 @@ const MyAccount = () => {
                     
                     <div className={styles.imageEditButtons}>
                       <label className={styles.fileUploadLabel}>
-                        📷 새 이미지 업로드
+                        새 이미지 업로드
                         <input 
                           type="file" 
                           accept="image/*" 
@@ -381,7 +382,7 @@ const MyAccount = () => {
                         className={styles.defaultImageButton}
                         disabled={loading}
                       >
-                        🖼️ 기본 이미지 선택
+                        기본 이미지 선택
                       </button>
                       
                       {editedUser.selectedImage && (
@@ -467,6 +468,7 @@ const MyAccount = () => {
                           alt="사용자 등록 사진" 
                           className={styles.profileImage}
                         />
+                        <span className={styles.imageDescription}>현재 등록된 사진</span>
                       </div>
                     ) : (
                       <div className={styles.noPhoto}>

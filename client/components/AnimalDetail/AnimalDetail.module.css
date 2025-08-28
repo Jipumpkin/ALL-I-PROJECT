@@ -54,8 +54,6 @@
 .infoRow {
   display: flex;
   padding: 10px 0;
-  align-items: flex-start;
-  min-height: 2em;
 }
 
 .infoLabel {
@@ -71,32 +69,24 @@
   flex-grow: 1;
   padding-left: 15px;
   color: #333;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  line-height: 1.4;
-  min-height: 1.4em;
-  white-space: normal;
+  display: flex; /* Add this */
+  justify-content: space-between; /* Add this */
+  align-items: center; /* Add this */
 }
 
 .shortcutButton {
-  width: 24px;
-  height: 24px;
-  font-size: 16px;
-  border: none;
+  width: 24px; /* Adjust size as needed */
+  height: 24px; /* Adjust size as needed */
+  font-size: 16px; /* Adjust icon size as needed */
+  border: none; /* Remove border */
   border-radius: 3px;
   text-decoration: none;
-  color: white;
-  background-color: #28a745;
+  color: white; /* Icon color */
+  background-color: #28a745; /* Green color */
   margin-left: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  align-self: flex-start;
+  display: flex; /* Add flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
 }
 
 .shortcutButton:hover {

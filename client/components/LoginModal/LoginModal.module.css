@@ -77,11 +77,11 @@
 
 .modal-close-btn:hover {
   color: var(--color-text-secondary);
-  background-color: rgba(40, 167, 69, 0.1);
+  background-color: var(--color-primary-light);
 }
 
 .modal-close-btn:focus {
-  outline: 2px solid var(--color-success);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -154,13 +154,13 @@
 }
 
 .modal-links span:hover {
-  color: var(--color-success);
+  color: var(--color-primary);
   text-decoration: underline;
-  background-color: rgba(40, 167, 69, 0.1);
+  background-color: var(--color-primary-light);
 }
 
 .modal-links span:focus {
-  outline: 2px solid var(--color-success);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -190,7 +190,7 @@
 }
 
 .user-info strong {
-  color: var(--color-success);
+  color: var(--color-primary);
   font-weight: var(--font-weight-semibold);
 }
 

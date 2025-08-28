@@ -13,7 +13,7 @@ exports.getAnimals = async (req, res) => {
     const offset = (page - 1) * limit;
 
     try {
-        console.log('🔄 데이터베이스 쿼리 시작...');
+        console.log('🔄 실제 데이터베이스 쿼리 시작...');
         const pool = await db.getPool();
         let whereClauses = [];
         let params = [];
@@ -32,12 +32,6 @@ exports.getAnimals = async (req, res) => {
             }
         }
 
-        // 지역 필터 추가 (animals 테이블의 region 필드 사용)
-        if (region && region !== 'all') {
-            whereClauses.push("region LIKE ?");
-            params.push(`%${region}%`);
-        }
-
         if (shelter_id && shelter_id !== 'all') {
             whereClauses.push("shelter_id = ?");
             params.push(shelter_id);
@@ -46,19 +40,24 @@ exports.getAnimals = async (req, res) => {
         const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
         // Count total records
+        console.log('📊 전체 동물 수 조회 중...');
         const countQuery = `SELECT COUNT(*) as count FROM animals ${whereSql}`;
         const [countRows] = await pool.execute(countQuery, params);
         const totalAnimals = countRows[0].count;
         const totalPages = Math.ceil(totalAnimals / limit);
+        
+        console.log(`📈 전체 동물: ${totalAnimals}마리, 총 페이지: ${totalPages}`);
 
         // Fetch paginated records
+        console.log('🔍 페이지별 동물 데이터 조회 중...');
         const query = `SELECT * FROM animals ${whereSql} ORDER BY animal_id DESC LIMIT ${limit} OFFSET ${offset}`;
         const [animals] = await pool.execute(query, params);
 
+        console.log(`✅ 실제 DB에서 반환: ${animals.length}개 동물, 총 ${totalPages}페이지`);
         res.json({ animals, totalPages });
 
     } catch (error) {
-        console.error(error);
+        console.error('❌ animalController.getAnimals 에러:', error);
         res.status(500).json({ message: '서버 오류가 발생했습니다.' });
     }
 };
