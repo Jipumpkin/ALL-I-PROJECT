@@ -74,30 +74,44 @@ class GPTImageCareImageSynthesizer:
         
         activity_info = self.CARE_ACTIVITIES[care_activity]
         
-        prompt = f"""Create a high-quality photorealistic image showing a care activity scene.
+        prompt = f"""Create a heartwarming adoption visualization image showing what it would look like when this shelter animal becomes part of this family's home.
 
-REQUIREMENTS:
-1. ANIMAL: Use the EXACT same animal from the first input image
-   - Preserve identical fur color, patterns, and markings
-   - Maintain same body size, proportions, and breed characteristics
-   - Keep same facial features, ear shape, and eye color
-   - Must be recognizable as the identical individual animal
+ADOPTION SIMULATION CONCEPT:
+This is a "future family moment" preview - showing how this specific shelter animal would look living happily in the user's actual home space during a care activity.
 
-2. ENVIRONMENT: Integrate naturally into the space from the second input image
-   - Match lighting conditions and color temperature perfectly
-   - Create realistic shadows and reflections
-   - Maintain proper scale and perspective
-   - Natural positioning within the environment
+INPUT IMAGES:
+- First image: Shelter animal (extract this exact individual pet)
+- Second image: User's real home space (use as the living environment)
 
-3. CARE ACTIVITY: {care_activity}
+COMPOSITION FOR ADOPTION PREVIEW:
+1. THE ADOPTED ANIMAL:
+   - Extract the exact animal from the shelter photo
+   - Preserve ALL identifying features: fur patterns, coloring, facial markings, ear shape, eye color, size
+   - Transform the animal's demeanor to show contentment and belonging
+   - The animal should look settled, happy, and "at home" (not stressed or anxious)
+   - Show the animal as healthy and well-cared-for in their new environment
+
+2. THE NEW HOME ENVIRONMENT:
+   - Use the user's space as the primary living environment
+   - Maintain all room characteristics: furniture, decor, lighting, architectural features
+   - Keep the authentic "lived-in" feeling of the user's actual space
+   - Preserve the room's natural lighting and color palette
+
+3. THE CARE MOMENT - {care_activity}:
    - Activity: {activity_info['action']}
-   - Emotional Expression: {activity_info['mood']}
-   - Scene Elements: {activity_info['scene']}
-   - Animal should look happy, comfortable, and well-cared-for
+   - Emotional tone: {activity_info['mood']}
+   - Scene elements: {activity_info['scene']}
+   - Show this as a natural daily routine in the new home
+   - Emphasize the bond between the animal and their new family life
 
-4. PHOTOGRAPHY STYLE:
-   - High-resolution photorealistic quality
-   - Natural, documentary-style composition
+4. ADOPTION VISUALIZATION REALISM:
+   - Create the feeling "this could be your daily life together"
+   - Show natural integration of the animal into the home routine
+   - Add realistic lighting that makes the animal truly belong in this space
+   - Perfect scale and perspective as if the animal already lives there
+   - Warm, domestic atmosphere that helps visualize successful adoption
+
+EMOTIONAL GOAL: Help potential adopters visualize this animal thriving as their new family member in their actual living space.
    - Warm, caring atmosphere
    - Professional photography lighting
    - Focus on the care activity moment
@@ -149,15 +163,17 @@ Create a heartwarming scene that shows this beloved animal receiving {care_activ
             care_prompt = self.create_unified_care_prompt(care_activity)
             
             if not self.quiet:
-                print("📝 통합 프롬프트 생성 완료")
-                print(f"🖼️ 동물 이미지: {animal_image_path}")
-                print(f"🏠 공간 이미지: {space_image_path}")
+                print("📝 다중 이미지 합성 프롬프트 생성 완료")
+                print(f"🐕 동물 이미지 (첫 번째): {animal_image_path}")
+                print(f"🏠 공간 이미지 (두 번째): {space_image_path}")
+                print("🔗 GPT-Image-1 다중 이미지 입력으로 합성 시작...")
             
-            # GPT-Image-1 API 호출 (이미지 편집 방식) - 파일 객체 전달
-            with open(animal_image_path, 'rb') as animal_file:
+            # GPT-Image-1 API 호출 (다중 이미지 입력) - 동물 + 공간 이미지 배열
+            with open(animal_image_path, 'rb') as animal_file, \
+                 open(space_image_path, 'rb') as space_file:
                 response = self.client.images.edit(
                     model="gpt-image-1",
-                    image=animal_file,
+                    image=[animal_file, space_file],  # 다중 이미지 배열로 전달
                     prompt=care_prompt,
                     size="1024x1024",
                     quality="high",
@@ -165,7 +181,7 @@ Create a heartwarming scene that shows this beloved animal receiving {care_activ
                 )
             
             if not self.quiet:
-                print("✅ GPT-Image-1 이미지 생성 완료")
+                print("✅ GPT-Image-1 다중 이미지 합성 완료 (동물 + 공간)")
             
             # GPT-Image-1 응답 구조 디버그
             print(f"🔍 GPT-Image-1 응답 구조 확인:")
