@@ -28,7 +28,16 @@
   align-items: center;
   gap: var(--spacing-xs);
   padding: var(--spacing-sm);
+  flex-direction: column; /* Changed to column to stack brand-name and brand-desc */
+  align-items: flex-start; /* Align text to the start */
   transition: var(--transition-fast);
+}
+
+.logo-text {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-secondary);
+  color: var(--color-success);
 }
 
 .brand-logo {
@@ -47,6 +56,10 @@
   color: var(--color-primary);
   margin: 0;
   transition: var(--transition-fast);
+}
+
+.logo-text:hover {
+  color: var(--color-success-hover);
 }
 
 .logo-container:hover {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Intro.module.css";
 import ScrollAnimation from "../ScrollAnimation/ScrollAnimation";
@@ -21,6 +21,85 @@ const FeatureCard = ({ icon, title, desc, tag }) => (
   </div>
 );
 
+
+// Before/After Slider Component
+const BeforeAfterSlider = () => {
+  const [sliderPosition, setSliderPosition] = useState(50);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+    const percentage = Math.max(0, Math.min((x / rect.width) * 100, 100));
+    setSliderPosition(percentage);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging) return;
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(e.touches[0].clientX - rect.left, rect.width));
+    const percentage = Math.max(0, Math.min((x / rect.width) * 100, 100));
+    setSliderPosition(percentage);
+  };
+
+  return (
+    <div className={styles.beforeAfterContainer}>
+      <div 
+        className={styles.beforeAfterWrapper}
+        onMouseMove={handleMouseMove}
+        onMouseUp={() => setIsDragging(false)}
+        onMouseLeave={() => setIsDragging(false)}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={() => setIsDragging(false)}
+      >
+        {/* Before Image */}
+        <div className={styles.imageContainer}>
+          <img 
+            src="/images/poster1.jpg" 
+            alt="Before - 유기동물 보호소" 
+            className={styles.beforeImage}
+          />
+          <div className={styles.imageLabel + ' ' + styles.beforeLabel}>Before</div>
+        </div>
+        
+        {/* After Image with Clip */}
+        <div 
+          className={styles.imageContainer + ' ' + styles.afterContainer}
+          style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
+        >
+          <img 
+            src="/images/child-puppy.png" 
+            alt="After - 입양 후 행복한 일상" 
+            className={styles.afterImage}
+          />
+          <div className={styles.imageLabel + ' ' + styles.afterLabel}>After</div>
+        </div>
+        
+        {/* Slider Bar */}
+        <div 
+          className={styles.sliderBar}
+          style={{ left: `${sliderPosition}%` }}
+          onMouseDown={() => setIsDragging(true)}
+          onTouchStart={() => setIsDragging(true)}
+        >
+          <div className={styles.sliderHandle}>
+            <span className={styles.handleLine}></span>
+            <span className={styles.handleLine}></span>
+            <span className={styles.handleLine}></span>
+          </div>
+        </div>
+      </div>
+      
+      <div className={styles.sliderCaption}>
+        <span className={styles.captionEmoji}>🐾</span>
+        <p>슬라이더를 좌우로 움직여 변화를 확인하세요</p>
+      </div>
+    </div>
+  );
+};
 
 export default function PawPawIntro() {
   const navigate = useNavigate();
@@ -137,20 +216,10 @@ export default function PawPawIntro() {
           
           </div>
           <div className={styles.heroVisual}>
-            <div className={styles.heroCard}>
-              <img src="images\child-puppy.png" alt="" />
-              <div className={styles.heroCardFooter}>
-                <span
-                  className={`${styles.heroLabel} ${styles.heroLabelLight}`}
-                >
-                  Adopt, don't shop
-                </span>
-              </div>
-            </div>
+            <BeforeAfterSlider />
           </div>
         </div>
       </section>
-
       {/* Features */}
       <ScrollAnimation animation="fadeInUp">
         <section
