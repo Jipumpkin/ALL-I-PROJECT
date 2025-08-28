@@ -229,10 +229,9 @@ const Maker = () => {
       
       if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
         const userChoice = confirm(
-          '⏰ DALL-E 이미지 생성에 시간이 오래 걸리고 있습니다.\n\n' +
+          '⏰ AI 이미지 생성에 시간이 걸리고 있습니다.\n\n' +
           '🔄 "확인" - 다시 시도하기\n' +
-          '🏠 "취소" - 동물 목록으로 돌아가기\n\n' +
-          '💡 팁: 고품질 AI 이미지 생성은 보통 30초-2분 정도 소요됩니다.'
+          '🏠 "취소" - 동물 목록으로 돌아가기'
         );
         
         if (!userChoice) {
@@ -294,16 +293,16 @@ const Maker = () => {
     let message = '';
     switch (action) {
       case 'food':
-        message = '밥먹기 중\n예상소요시간: 30초 ~ 2분';
+        message = `🍽️ ${petName}의 케어 이미지를 생성하고 있습니다...\n⏱️ 잠시만 기다려주세요!`;
         break;
       case 'shower':
-        message = '목욕중\n예상소요시간: 30초 ~ 2분';
+        message = `🛁 ${petName}의 케어 이미지를 생성하고 있습니다...\n⏱️ 잠시만 기다려주세요!`;
         break;
       case 'grooming':
-        message = '미용중\n예상소요시간: 30초 ~ 2분';
+        message = `✂️ ${petName}의 케어 이미지를 생성하고 있습니다...\n⏱️ 잠시만 기다려주세요!`;
         break;
       default:
-        message = '이미지 합성중\n예상소요시간: 30초 ~ 2분';
+        message = '🎨 AI가 특별한 이미지를 생성하고 있습니다...\n⏱️ 잠시만 기다려주세요!';
     }
 
     
