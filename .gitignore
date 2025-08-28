@@ -38,3 +38,8 @@ dalle/results/*
 __pycache__/
 *.pyc
 *.pyo
+
+# Python 가상환경 폴더 (매우 큰 크기의 패키지들이 포함되어 있음)
+.venv/
+venv/
+env/

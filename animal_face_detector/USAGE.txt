@@ -1,0 +1,62 @@
+Animal Face Detection System - Usage Guide
+===========================================
+
+SYSTEM STATUS: ✓ WORKING PERFECTLY
+
+Quick Test:
+-----------
+python ascii_test.py
+(Tests all components - should show "3/3 systems ready")
+
+Basic Usage:
+------------
+python detector_ascii.py --image path/to/image.jpg
+
+Examples:
+---------
+# Test with sample image
+python detector_ascii.py --image test_images/sample_dog.jpg
+
+# Process image from ai/data folder  
+python detector_ascii.py --image ../ai/data/arg1.jpg
+
+# Use different YOLO model sizes
+python detector_ascii.py --image image.jpg --model s
+python detector_ascii.py --image image.jpg --model m
+
+# Adjust confidence threshold
+python detector_ascii.py --image image.jpg --confidence 0.7
+
+Results Location:
+-----------------
+All results are saved in the SAME FOLDER as the source image:
+- Main result: filename_faces_detected.jpg
+- Individual faces: extracted_faces/filename_face_N_animal.jpg
+
+Supported Animals:
+------------------
+- Dogs
+- Cats  
+- Horses
+- Sheep
+- Cows
+- Elephants
+- Bears
+- Zebras
+- Giraffes
+
+Technical Details:
+------------------
+- Uses YOLOv8 for animal detection
+- Estimates face regions using anatomical ratios
+- Saves results in source dataset folder (as requested)
+- No Unicode/emoji issues (ASCII-only version)
+
+Files:
+------
+- detector_ascii.py: Main ASCII detector (RECOMMENDED)
+- ascii_test.py: System test script
+- fixed_face_detector.py: Original (has Unicode issues on Windows)
+- folder_detector.py: Batch processing
+
+Last Updated: Successfully working and tested

@@ -1,0 +1,34 @@
+{
+  "detection": {
+    "yolo_model_size": "n",
+    "yolo_confidence": 0.5,
+    "haar_scale_factor": 1.1,
+    "haar_min_neighbors": 5,
+    "haar_min_size": [
+      50,
+      50
+    ],
+    "huggingface_model": "animal-classification",
+    "huggingface_confidence": 0.5
+  },
+  "visualization": {
+    "font_scale": 0.6,
+    "thickness": 2,
+    "show_confidence": true,
+    "show_detector_name": true
+  },
+  "output": {
+    "save_images": true,
+    "save_json": true,
+    "output_directory": "output",
+    "image_quality": 95
+  },
+  "performance": {
+    "batch_size": 8,
+    "max_image_size": [
+      1920,
+      1080
+    ],
+    "video_skip_frames": 5
+  }
+}

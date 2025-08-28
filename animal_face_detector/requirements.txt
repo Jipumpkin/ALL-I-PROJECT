@@ -1,0 +1,49 @@
+# 🐕 Animal Face Detection System - Requirements
+# 동물 얼굴 탐지 시스템 필수 패키지
+
+# Core ML/CV Libraries
+opencv-python>=4.5.0            # OpenCV for computer vision
+numpy>=1.19.0                   # Numerical computing
+pillow>=8.0.0                   # Image processing
+
+# Deep Learning Frameworks (선택사항 - YOLO 사용시 필요)
+torch>=1.12.0                   # PyTorch for YOLO and other models
+torchvision>=0.13.0             # Computer vision models and transforms
+
+# YOLO Detection (선택사항 - 가장 좋은 성능)
+ultralytics>=8.0.0              # YOLOv8/YOLO11 - Main detection engine
+
+# Hugging Face Transformers (선택사항 - 고급 기능)
+transformers>=4.20.0            # Pre-trained models
+accelerate>=0.20.0              # Model acceleration
+
+# Scientific Computing
+scikit-learn>=1.0.0             # Machine learning utilities
+matplotlib>=3.3.0               # Plotting and visualization
+scipy>=1.7.0                    # Scientific computing
+
+# Utility Libraries
+requests>=2.25.0                # HTTP requests for model downloads
+urllib3>=1.25.0                 # URL handling
+tqdm>=4.60.0                    # Progress bars
+
+# Video Processing (Optional)
+imageio>=2.15.0                 # Video I/O
+
+# Development & Testing (Optional)
+pytest>=6.0.0                   # Testing framework
+
+# System Requirements Notes:
+# - Python 3.8 or higher required
+# - For GPU acceleration: CUDA-compatible PyTorch installation
+# - For webcam support: System camera access permissions
+# - Memory: At least 4GB RAM recommended for YOLO models
+
+# Installation Commands:
+# pip install -r requirements.txt
+# 
+# For GPU support (CUDA):
+# pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+#
+# For CPU-only (lighter):
+# pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
