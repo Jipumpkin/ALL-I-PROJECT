@@ -159,13 +159,25 @@ const Maker = () => {
       };
       const careActivity = activityMap[action] || action;
 
-      // 케어 합성 API 요청 (타임아웃 3분)
-      const response = await api.post('/ai/care/synthesize', {
-        animal_id: selectedAnimal.animal_id,
-        user_id: user?.id || user?.user_id,
-        care_activity: careActivity,
-        space_image_base64: currentUserImage
-      }, {
+      // FormData로 파일 업로드 준비
+      const formData = new FormData();
+      
+      // 동물 ID 전송 (백엔드에서 이미지 다운로드 처리)
+      formData.append('animal_id', selectedAnimal.animal_id);
+      formData.append('animal_image_url', selectedAnimal.image_url);
+      
+      // 공간 이미지를 Blob으로 변환하여 추가
+      const spaceImageBlob = await fetch(currentUserImage).then(res => res.blob());
+      formData.append('space_image', spaceImageBlob, 'space.jpg');
+      
+      // 케어 활동 추가
+      formData.append('care_activity', careActivity);
+      
+      // 케어 합성 API 요청 (타임아웃 3분, multipart/form-data)
+      const response = await api.post('/ai/care/synthesize', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
         timeout: 180000 // 3분 (180초)
       });
 
