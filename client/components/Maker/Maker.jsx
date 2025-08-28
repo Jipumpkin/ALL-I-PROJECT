@@ -202,6 +202,22 @@ const Maker = () => {
 
       if (response.data.success) {
         console.log('✅ 케어 이미지 합성 완료!');
+        // 케어 활동별 따뜻한 문구 생성
+        let warmPrompt = '';
+        switch (action) {
+          case 'food':
+            warmPrompt = `🍽️ 맛있는 밥 시간! ${selectedAnimal.species || '이 아이'}와 함께하는 따뜻한 식사 시간입니다.`;
+            break;
+          case 'shower':
+            warmPrompt = `🛁 깔끔한 목욕 시간! ${selectedAnimal.species || '이 아이'}가 깨끗하고 상쾌해졌어요.`;
+            break;
+          case 'grooming':
+            warmPrompt = `✂️ 특별한 미용 시간! ${selectedAnimal.species || '이 아이'}가 더욱 예뻐졌네요.`;
+            break;
+          default:
+            warmPrompt = `${careActivity} 케어 활동`;
+        }
+
         return {
           resultImage: response.data.image_url,
           breedInfo: {
@@ -209,7 +225,7 @@ const Maker = () => {
             gender: response.data.animal_info?.gender,
             age: response.data.animal_info?.age
           },
-          prompt: `${careActivity} 케어 활동`,
+          prompt: warmPrompt,
           processingTime: '1-2분'
         };
       } else {
@@ -289,17 +305,17 @@ const Maker = () => {
       return;
     }
 
-    const petName = selectedAnimal.species || '동물';
+    const petName = selectedAnimal.species || '이 아이';
     let message = '';
     switch (action) {
       case 'food':
-        message = `🍽️ ${petName}의 케어 이미지를 생성하고 있습니다...\n⏱️ 잠시만 기다려주세요!`;
+        message = `🍽️ ${petName}와 함께하는 맛있는 식사 시간...\n💕 따뜻한 일상을 그려내고 있어요!`;
         break;
       case 'shower':
-        message = `🛁 ${petName}의 케어 이미지를 생성하고 있습니다...\n⏱️ 잠시만 기다려주세요!`;
+        message = `🛁 ${petName}의 깔끔한 목욕 시간...\n✨ 깨끗하고 사랑스러운 모습을 만들어가고 있어요!`;
         break;
       case 'grooming':
-        message = `✂️ ${petName}의 케어 이미지를 생성하고 있습니다...\n⏱️ 잠시만 기다려주세요!`;
+        message = `✂️ ${petName}의 특별한 미용 시간...\n🎀 더욱 예쁘고 멋진 모습으로 변신시켜드릴게요!`;
         break;
       default:
         message = '🎨 AI가 특별한 이미지를 생성하고 있습니다...\n⏱️ 잠시만 기다려주세요!';
@@ -404,6 +420,16 @@ const Maker = () => {
 
       {/* 케어 이미지 합성 컨텐츠 */}
       <div className={styles.careSynthesisContent}>
+          {/* 따뜻한 문구 */}
+          {selectedAnimal && (
+            <div className={styles.warmMessage}>
+              <h2 className={styles.warmTitle}>이 아이가 나에게 온다면 어떤 모습이 될까? 🐾</h2>
+              <p className={styles.warmSubtitle}>
+                아이와 함께할 따뜻한 일상을 만나보세요
+              </p>
+            </div>
+          )}
+          
           {/* 선택한 유기동물 이미지 영역 */}
           <div className={styles.petImagePlaceholder}>
         {selectedAnimal ? (
@@ -454,31 +480,25 @@ const Maker = () => {
 
       {/* 사용자 공간 이미지 영역 */}
       <div className={styles.spaceImageSection}>
-        <h3 className={styles.sectionTitle}>당신의 공간</h3>
+        <h3 className={styles.sectionTitle}>당신의 공간 🏠</h3>
         <div
           ref={imageContainerRef}
-          className={styles.userImageContainer}
+          className={`${styles.userImageContainer} ${styles.dropdownStyle}`}
           onClick={() => setShowModal(true)}
         >
-          {(() => {
-            console.log('🖼️ 사용자 이미지 렌더링 상태:', {
-              userImageUrl: userImageUrl ? userImageUrl.substring(0, 50) + '...' : 'null',
-              userRegistrationImage: userRegistrationImage ? userRegistrationImage.substring(0, 50) + '...' : 'null'
-            });
-            
-            if (userImageUrl) {
-              return <img src={userImageUrl} alt="사용자 공간" className={styles.userImage} />;
-            } else if (userRegistrationImage) {
-              return <img src={userRegistrationImage} alt="사용자 등록 공간" className={styles.userImage} />;
-            } else {
-              return (
-                <div className={styles.uploadPrompt}>
-                  <p>공간 이미지를 업로드하세요</p>
-                  <span className={styles.userImageText}>클릭하여 이미지 선택</span>
+          <div className={styles.dropdownContent}>
+            <div className={styles.emptyDropdownContent}>
+              <div className={styles.dropzoneArea}>
+                <div className={styles.uploadIcon}>🏠</div>
+                <p className={styles.uploadTitle}>집 내부 공간 이미지</p>
+                <span className={styles.uploadSubtext}>클릭하여 이미지를 선택해주세요</span>
+                <p className={styles.emotionalText}>아이와 함께 해보고 싶은 공간을 골라주세요</p>
+                <div className={styles.dragDropHint}>
+                  <span>또는 여기로 드래그하세요</span>
                 </div>
-              );
-            }
-          })()}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

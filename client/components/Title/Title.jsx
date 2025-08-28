@@ -41,10 +41,9 @@ const BeforeAfterSlider = () => {
       if (!isShowingAfter) {
         // before 상태 → after로 슬라이더 이동 (4초 후)
         timeoutId = setTimeout(() => {
-          animateToPosition(100);
-          setTimeout(() => {
+          animateToPosition(100, () => {
             setIsShowingAfter(true);
-          }, 300);
+          });
         }, 4000);
       } else {
         // after 상태 → 다음 이미지의 before 상태로 (4초 후)
@@ -53,14 +52,10 @@ const BeforeAfterSlider = () => {
           if (!isAnimating) {
             const nextImageIndex = (imageIndex + 1) % beforeImages.length;
             
-            // 이미지 변경 먼저
+            // 동시에 상태 변경하여 싱크 맞추기
             setImageIndex(nextImageIndex);
+            setSliderPosition(0);
             setIsShowingAfter(false);
-            
-            // 이미진 변경 후 슬라이더 위치 조정
-            setTimeout(() => {
-              setSliderPosition(0);
-            }, 50);
           }
         }, 4000);
       }
@@ -120,13 +115,20 @@ const BeforeAfterSlider = () => {
     };
   }, [isDragging, isInactiveMode, isInactivePaused, isHovered, lastUserInteraction, inactiveDirection]);
 
-  const updateUserInteraction = () => {
+  const resetSliderToStart = () => {
+    setSliderPosition(0);
+    setIsShowingAfter(false);
+  };
+
+  const updateUserInteraction = (shouldResetSequence = true) => {
     setLastUserInteraction(Date.now());
     setIsInactiveMode(false);
     setIsInactivePaused(false);
-    // 사용자 상호작용 시 자동 시퀀스 리셋
-    setIsShowingAfter(false);
-    setSliderPosition(0);
+    
+    // 자동 시퀀스 리셋 여부 결정
+    if (shouldResetSequence) {
+      resetSliderToStart();
+    }
   };
 
   const handleClick = (e) => {
@@ -137,21 +139,20 @@ const BeforeAfterSlider = () => {
     // 애니메이션 중이면 클릭 무시
     if (isAnimating) return;
     
-    updateUserInteraction();
+    // 클릭 시에는 자동 시퀀스 리셋하지 않음
+    updateUserInteraction(false);
     
     // 현재 상태에 따라 토글
     if (isShowingAfter || sliderPosition > 50) {
       // After 상태 → Before로
-      animateToPosition(0);
-      setTimeout(() => {
+      animateToPosition(0, () => {
         setIsShowingAfter(false);
-      }, 300);
+      });
     } else {
       // Before 상태 → After로
-      animateToPosition(100);
-      setTimeout(() => {
+      animateToPosition(100, () => {
         setIsShowingAfter(true);
-      }, 300);
+      });
     }
   };
   
@@ -160,6 +161,8 @@ const BeforeAfterSlider = () => {
     
     updateUserInteraction();
     const nextImageIndex = (imageIndex + 1) % beforeImages.length;
+    
+    // 동시에 상태 변경하여 싱크 맞추기
     setImageIndex(nextImageIndex);
     setSliderPosition(0);
     setIsShowingAfter(false);
@@ -203,7 +206,10 @@ const BeforeAfterSlider = () => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
     const percentage = Math.max(0, Math.min((x / rect.width) * 100, 100));
+    
     setSliderPosition(percentage);
+    // 드래그 시 실시간으로 상태 동기화
+    setIsShowingAfter(percentage > 50);
   };
 
   const handleTouchMove = (e) => {
@@ -214,7 +220,10 @@ const BeforeAfterSlider = () => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = Math.max(0, Math.min(e.touches[0].clientX - rect.left, rect.width));
     const percentage = Math.max(0, Math.min((x / rect.width) * 100, 100));
+    
     setSliderPosition(percentage);
+    // 터치 드래그 시 실시간으로 상태 동기화
+    setIsShowingAfter(percentage > 50);
   };
 
   const handleDragStart = () => {
