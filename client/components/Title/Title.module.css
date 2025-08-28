@@ -49,9 +49,9 @@
 
 .beforeImage,
 .afterImage {
-  width: 120%;
-  height: 120%;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   object-position: center;
   will-change: clip-path, transform;
   transform: scale(1);
