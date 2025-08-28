@@ -8,7 +8,7 @@ exports.getAnimals = async (req, res) => {
     console.log('   요청 쿼리:', req.query);
     console.log('   요청 시간:', new Date().toISOString());
     
-    const { filter, page = 1, shelter_id } = req.query;
+    const { filter, page = 1, shelter_id, region } = req.query;
     const limit = 12;
     const offset = (page - 1) * limit;
 

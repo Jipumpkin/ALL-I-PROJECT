@@ -27,7 +27,7 @@ const ShelterMap = () => {
         }
 
         const script = document.createElement('script');
-        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_API_KEY}&libraries=services,clusterer,drawing&autoload=false`;
+        script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_API_KEY}&autoload=false`;
         script.onload = () => {
           window.kakao.maps.load(() => {
             resolve();
