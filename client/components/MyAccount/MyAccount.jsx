@@ -363,7 +363,7 @@ const MyAccount = () => {
                     
                     <div className={styles.imageEditButtons}>
                       <label className={styles.fileUploadLabel}>
-                        📷 새 이미지 업로드
+                        새 이미지 업로드
                         <input 
                           type="file" 
                           accept="image/*" 
@@ -378,7 +378,7 @@ const MyAccount = () => {
                         className={styles.defaultImageButton}
                         disabled={loading}
                       >
-                        🖼️ 기본 이미지 선택
+                        기본 이미지 선택
                       </button>
                       
                       {editedUser.selectedImage && (

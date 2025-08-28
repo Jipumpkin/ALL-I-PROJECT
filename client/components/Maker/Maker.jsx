@@ -177,7 +177,6 @@ const Maker = () => {
         space_image_base64: currentUserImage
       }, {
         timeout: 180000 // 3분 (180초)
-      }
       });
 
       if (response.data.success) {

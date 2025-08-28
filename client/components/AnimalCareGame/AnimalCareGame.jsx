@@ -453,6 +453,14 @@ const AnimalCareGame = () => {
   const [showMiniGame, setShowMiniGame] = useState(false);
   const [currentMiniGame, setCurrentMiniGame] = useState(null); // 'ball', 'fishing', 'puzzle'
   const [miniGameScore, setMiniGameScore] = useState(0);
+  
+  // AI 고급 기능 관련 상태
+  const [aiFeedback, setAiFeedback] = useState('');
+  const [aiStory, setAiStory] = useState('');
+  const [aiRecommendations, setAiRecommendations] = useState(null);
+  const [showAiFeedback, setShowAiFeedback] = useState(false);
+  const [showAiStory, setShowAiStory] = useState(false);
+  const [loadingAi, setLoadingAi] = useState(false);
 
   // 실제 유기동물 데이터 가져오기 - 초기에는 전체 필터로 시작
   useEffect(() => {
@@ -539,6 +547,156 @@ const AnimalCareGame = () => {
     }
   };
 
+  // AI 케어 피드백 생성 함수
+  const generateAiFeedback = async () => {
+    try {
+      console.log('🤖 AI 피드백 요청 시작...');
+      setLoadingAi(true);
+      
+      // 로컬 피드백 생성 (즉시 표시)
+      const totalScore = (careStats.cleanliness + careStats.hunger + careStats.beauty + careStats.energy) / 4;
+      let localFeedback = '';
+      
+      if (totalScore >= 80) {
+        localFeedback = `🌟 정말 훌륭해요! ${selectedAnimal.name || selectedAnimal.displayName}가 매우 행복하고 건강한 상태입니다. 지금처럼 꾸준히 돌봐주시면 완벽한 친구가 될 거예요!`;
+      } else if (totalScore >= 60) {
+        localFeedback = `😊 잘하고 있어요! ${selectedAnimal.name || selectedAnimal.displayName}의 상태가 좋아지고 있어요. 조금 더 신경 써주시면 더욱 건강해질 거예요!`;
+      } else if (totalScore >= 40) {
+        localFeedback = `💪 더 노력이 필요해요! ${selectedAnimal.name || selectedAnimal.displayName}가 더 많은 관심을 필요로 해요. 특히 ${careStats.hunger < 50 ? '배고픔' : careStats.cleanliness < 50 ? '청결' : '활력'} 관리에 신경 써주세요!`;
+      } else {
+        localFeedback = `🚨 긴급한 케어가 필요해요! ${selectedAnimal.name || selectedAnimal.displayName}의 건강이 위험해요. 지금 바로 씻기기, 밥주기, 산책하기를 시작해주세요!`;
+      }
+      
+      setAiFeedback(localFeedback);
+      setShowAiFeedback(true);
+      
+      // 백그라운드 API 호출 시도
+      try {
+        const response = await api.post('/ai/care-feedback', {
+          animalData: selectedAnimal,
+          careStats: careStats,
+          completedTasks: completedTasks,
+          timeLeft: timeLeft,
+          animalMood: animalMood
+        });
+        
+        if (response.data.success && response.data.feedback) {
+          console.log('✅ AI 피드백 API 성공!');
+          setAiFeedback(response.data.feedback);
+        }
+      } catch (apiError) {
+        console.warn('AI 피드백 API 실패, 로컬 피드백 사용:', apiError.message);
+      }
+      
+    } catch (error) {
+      console.error('❌ AI 피드백 생성 실패:', error);
+      setAiFeedback('피드백 생성 중 오류가 발생했습니다.');
+      setShowAiFeedback(true);
+    } finally {
+      setLoadingAi(false);
+    }
+  };
+  
+  // AI 동물 스토리 생성 함수
+  const generateAiStory = async () => {
+    try {
+      console.log('📖 AI 스토리 요청 시작...');
+      setLoadingAi(true);
+      
+      // 로컬 스토리 생성 (즉시 표시)
+      const animalName = selectedAnimal.name || selectedAnimal.displayName || '이 친구';
+      const species = selectedAnimal.species || '동물';
+      
+      const stories = [
+        `🌈 ${animalName}의 이야기\n\n어두운 골목에서 떨고 있던 ${species}. 차가운 비에 젖어 있던 ${animalName}는 이제 따뜻한 보살핌을 받고 있습니다. 당신의 사랑으로 ${animalName}는 점점 밝아지고 있어요. 매일매일이 기적같은 변화의 연속입니다. 이제 ${animalName}는 새로운 삶의 희망을 품고 있답니다!`,
+        
+        `💝 ${animalName}와의 특별한 만남\n\n운명처럼 만난 ${animalName}. 처음엔 사람을 무서워했지만, 당신의 따뜻한 손길에 조금씩 마음을 열기 시작했어요. 오늘 ${animalName}가 처음으로 꼬리를 흔들었답니다! 작은 변화지만 큰 의미가 있는 순간이었어요. ${animalName}에게 당신은 이제 가장 소중한 친구입니다.`,
+        
+        `✨ ${animalName}의 새로운 시작\n\n보호소에서 긴 시간을 보낸 ${animalName}. 많은 사람들이 지나쳤지만, 당신은 ${animalName}의 진정한 가치를 알아봐 주었어요. 이제 ${animalName}는 행복한 나날을 보내고 있습니다. 맛있는 밥, 따뜻한 잠자리, 그리고 무엇보다 사랑받는다는 느낌. ${animalName}에게 당신은 영웅이에요!`
+      ];
+      
+      const randomStory = stories[Math.floor(Math.random() * stories.length)];
+      setAiStory(randomStory);
+      setShowAiStory(true);
+      
+      // 백그라운드 API 호출 시도
+      try {
+        const response = await api.post('/ai/animal-story', {
+          animalData: selectedAnimal,
+          careHistory: careHistory,
+          userNote: todayRecord
+        });
+        
+        if (response.data.success && response.data.story) {
+          console.log('✅ AI 스토리 API 성공!');
+          setAiStory(response.data.story);
+        }
+      } catch (apiError) {
+        console.warn('AI 스토리 API 실패, 로컬 스토리 사용:', apiError.message);
+      }
+      
+    } catch (error) {
+      console.error('❌ AI 스토리 생성 실패:', error);
+      setAiStory('스토리 생성 중 오류가 발생했습니다.');
+      setShowAiStory(true);
+    } finally {
+      setLoadingAi(false);
+    }
+  };
+  
+  // AI 케어 추천 시스템
+  const getAiRecommendations = async () => {
+    try {
+      console.log('💡 AI 케어 추천 요청 시작...');
+      setLoadingAi(true);
+      
+      // 간단한 로컬 추천 시스템 (임시)
+      const lowStats = [];
+      if (careStats.hunger < 40) lowStats.push('배고픔');
+      if (careStats.cleanliness < 40) lowStats.push('청결함');
+      if (careStats.energy < 40) lowStats.push('활력');
+      if (careStats.beauty < 40) lowStats.push('미용');
+      
+      let recommendation = '';
+      if (lowStats.length === 0) {
+        recommendation = `${selectedAnimal.name}가 매우 건강한 상태예요! 현재 상태를 유지해주세요.`;
+      } else {
+        recommendation = `${selectedAnimal.name}의 ${lowStats.join(', ')} 상태가 부족해요. 우선적으로 케어해주세요!`;
+      }
+      
+      setMessage(`🤖 AI 조언: ${recommendation}`);
+      setTimeout(() => setMessage(''), 8000);
+      
+      // 실제 API 호출 (백그라운드)
+      try {
+        const response = await api.post('/ai/care-recommendations', {
+          animalData: selectedAnimal,
+          careStats: careStats,
+          timeLeft: timeLeft,
+          completedTasks: completedTasks,
+          weatherCondition: 'normal'
+        });
+        
+        if (response.data.success) {
+          console.log('✅ AI 추천 생성 성공!');
+          setAiRecommendations(response.data);
+          // 실제 AI 응답으로 메시지 업데이트
+          setMessage(`🤖 AI 전문가: ${response.data.recommendations}`);
+          setTimeout(() => setMessage(''), 10000);
+        }
+      } catch (apiError) {
+        console.warn('AI API 호출 실패, 로컬 추천 사용:', apiError.message);
+      }
+      
+    } catch (error) {
+      console.error('❌ AI 추천 생성 실패:', error);
+      setMessage('🤖 AI 추천을 생성할 수 없습니다. 나중에 다시 시도해주세요.');
+      setTimeout(() => setMessage(''), 5000);
+    } finally {
+      setLoadingAi(false);
+    }
+  };
+
   // AI 이미지 생성 함수
   const generateCareImage = async (careType, currentStats, mood) => {
     try {
@@ -599,7 +757,17 @@ const AnimalCareGame = () => {
     }
   };
 
-  // 케어 활동 실행 (애니메이션 + AI 이미지 생성)
+  // 스마트 케어 추천 (AI 기반)
+  useEffect(() => {
+    if (gameStarted && !gameEnded && timeLeft > 0) {
+      // 게임 중간에 AI 추천 자동 실행 (시간이 절반 남았을 때)
+      if (timeLeft === 12) {
+        getAiRecommendations();
+      }
+    }
+  }, [timeLeft, gameStarted, gameEnded]);
+
+  // 케어 활동 실행 (애니메이션 + AI 이미지 생성 + 스마트 피드백)
   const performCare = async (careType) => {
     if (gameEnded || timeLeft <= 0 || showCareAnimation) return;
     
@@ -652,6 +820,13 @@ const AnimalCareGame = () => {
       // 애니메이션 종료
       setShowCareAnimation(false);
       setCurrentCareType('');
+      
+      // AI 피드백 자동 생성 (케어 완료 후)
+      if (Math.random() < 0.3) { // 30% 확률로 AI 피드백 생성
+        setTimeout(() => {
+          generateAiFeedback();
+        }, 2000);
+      }
       
       // 메시지 5초 후 사라짐 (AI 이미지 확인 시간)
       setTimeout(() => setMessage(''), 5000);
@@ -745,6 +920,13 @@ const AnimalCareGame = () => {
     setIsGeneratingImage(false);
     setTodayRecord('');
     setAnimalMood('normal');
+    // AI 상태 리셋
+    setAiFeedback('');
+    setAiStory('');
+    setAiRecommendations(null);
+    setShowAiFeedback(false);
+    setShowAiStory(false);
+    setLoadingAi(false);
   };
 
   // 동물 기분 계산 함수
@@ -1358,6 +1540,49 @@ const AnimalCareGame = () => {
             </button>
           </div>
         </div>
+
+        {/* AI 고급 기능 섹션 */}
+        <div className={styles.careButtons}>
+          <h3>🤖 AI 도우미</h3>
+          <div className={styles.buttonGrid}>
+            <button 
+              className={styles.aiButton}
+              onClick={generateAiFeedback}
+              disabled={gameEnded || loadingAi}
+            >
+              <span className={styles.buttonIcon}>🧠</span>
+              <span className={styles.buttonText}>전문가 조언</span>
+              <span className={styles.buttonTime}>개인화된 피드백</span>
+            </button>
+            
+            <button 
+              className={styles.aiButton}
+              onClick={generateAiStory}
+              disabled={gameEnded || loadingAi}
+            >
+              <span className={styles.buttonIcon}>📖</span>
+              <span className={styles.buttonText}>스토리 생성</span>
+              <span className={styles.buttonTime}>감동적인 이야기</span>
+            </button>
+            
+            <button 
+              className={styles.aiButton}
+              onClick={getAiRecommendations}
+              disabled={gameEnded || loadingAi}
+            >
+              <span className={styles.buttonIcon}>💡</span>
+              <span className={styles.buttonText}>스마트 추천</span>
+              <span className={styles.buttonTime}>최적의 케어 순서</span>
+            </button>
+          </div>
+          
+          {loadingAi && (
+            <div className={styles.aiLoadingIndicator}>
+              <div className={styles.aiLoader}></div>
+              <span>🤖 AI가 분석 중입니다...</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {gameEnded && (
@@ -1463,6 +1688,70 @@ const AnimalCareGame = () => {
                 setScore={setMiniGameScore}
               />
             )}
+          </div>
+        </div>
+      )}
+
+      {/* AI 피드백 모달 */}
+      {showAiFeedback && (
+        <div className={styles.gameEndModal}>
+          <div className={styles.gameEndContent}>
+            <h2>🤖 전문가 AI 조언</h2>
+            <div className={styles.aiContentBox}>
+              <div className={styles.aiAvatar}>📝</div>
+              <div className={styles.aiFeedbackText}>
+                {aiFeedback}
+              </div>
+            </div>
+            <div className={styles.gameEndButtons}>
+              <button 
+                className={styles.playAgainButton}
+                onClick={() => setShowAiFeedback(false)}
+              >
+                👍 고마워요!
+              </button>
+              <button 
+                className={styles.goHomeButton}
+                onClick={() => {
+                  generateAiFeedback(); // 새로운 피드백 요청
+                }}
+                disabled={loadingAi}
+              >
+                🔄 다시 물어보기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI 스토리 모달 */}
+      {showAiStory && (
+        <div className={styles.gameEndModal}>
+          <div className={styles.gameEndContent}>
+            <h2>📖 {getAnimalNameWithParticle(selectedAnimal, '의')} 이야기</h2>
+            <div className={styles.aiContentBox}>
+              <div className={styles.aiAvatar}>🎨</div>
+              <div className={styles.aiStoryText}>
+                {aiStory}
+              </div>
+            </div>
+            <div className={styles.gameEndButtons}>
+              <button 
+                className={styles.playAgainButton}
+                onClick={() => setShowAiStory(false)}
+              >
+                ❤️ 감동이에요!
+              </button>
+              <button 
+                className={styles.goHomeButton}
+                onClick={() => {
+                  generateAiStory(); // 새로운 스토리 요청
+                }}
+                disabled={loadingAi}
+              >
+                🔄 다른 이야기
+              </button>
+            </div>
           </div>
         </div>
       )}
