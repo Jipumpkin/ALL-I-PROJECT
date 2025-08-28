@@ -27,7 +27,7 @@ const ShelterMap = () => {
         }
 
         const script = document.createElement('script');
-        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_API_KEY}&libraries=services,clusterer,drawing&autoload=false`;
+        script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_API_KEY}&autoload=false`;
         script.onload = () => {
           window.kakao.maps.load(() => {
             resolve();
@@ -77,7 +77,7 @@ const ShelterMap = () => {
           setIsLoading(false);
         }
       }).catch((error) => {
-        console.error("스크립트 로드 실패:", error);
+        console.error("카카오 : 스크립트 로드 실패:", error);
         if (error.message === 'KAKAO_API_KEY_NOT_FOUND') {
           setError("지도 서비스 설정이 완료되지 않았습니다. 관리자에게 문의해주세요.");
         } else {
@@ -491,7 +491,7 @@ const ShelterMap = () => {
     
     // 보호소 상태에 따른 마커 색상 결정
     const getMarkerColor = (shelter) => {
-      if (!shelter.capacity) return '#F89C1E'; // 기본 색상
+      if (!shelter.capacity) return '#FBC02D'; // 기본 색상
       
       const occupancyRate = (shelter.current_animals || 0) / shelter.capacity;
       if (occupancyRate < 0.5) return '#28a745'; // 여유 있음 - 녹색
@@ -531,14 +531,14 @@ const ShelterMap = () => {
     const infoContent = `
       <div style="padding:12px;font-size:13px;width:280px;border-radius:8px;position:relative;">
         <div style="position:absolute;top:8px;right:8px;cursor:pointer;font-size:16px;color:#999;font-weight:bold;" onclick="if(window.currentInfoWindow) { window.currentInfoWindow.close(); window.currentInfoWindow = null; }">✕</div>
-        <strong style="color:#F89C1E;font-size:14px;">🏠 ${place.place_name}</strong><br/>
+        <strong style="color:#FBC02D;font-size:14px;">🏠 ${place.place_name}</strong><br/>
         <div style="margin:6px 0;padding:4px;background-color:#f8f9fa;border-radius:4px;">
           <span style="color:#666;font-size:12px;">${place.category_name}</span><br/>
           <span style="color:#888;font-size:12px;">📍 ${place.address_name}</span>
         </div>
         ${place.phone ? `<div style="margin:4px 0;"><span style="color:#0066cc;font-size:12px;">📞 ${place.phone}</span></div>` : ''}
         ${place.capacity ? `
-          <div style="margin:6px 0;padding:4px;background-color:#fff3cd;border-radius:4px;border-left:3px solid #F89C1E;">
+          <div style="margin:6px 0;padding:4px;background-color:#fff3cd;border-radius:4px;border-left:3px solid #FBC02D;">
             <span style="color:#856404;font-size:12px;">
               🐕 보호중: ${place.current_animals || 0}마리 / 수용가능: ${place.capacity}마리
             </span>
@@ -677,7 +677,7 @@ const ShelterMap = () => {
                 <span>보호소 - 포화 (80% 이상)</span>
               </div>
               <div className={styles['legend-item']}>
-                <span className={styles['legend-marker']} style={{backgroundColor: '#F89C1E'}}></span>
+                <span className={styles['legend-marker']} style={{backgroundColor: '#FBC02D'}}></span>
                 <span>동물병원 / 기타시설</span>
               </div>
             </div>

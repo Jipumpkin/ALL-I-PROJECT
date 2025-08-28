@@ -15,8 +15,10 @@ const Maker = () => {
   const [buttonStyle, setButtonStyle] = useState({});
   const [userRegistrationImage, setUserRegistrationImage] = useState(null);
   const [selectedAnimal, setSelectedAnimal] = useState(null);
+  const [isAnimalImageBroken, setIsAnimalImageBroken] = useState(false);
   const imageContainerRef = useRef(null);
   const timerRef = useRef(null);
+  const abortControllerRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -71,9 +73,11 @@ const Maker = () => {
     const observer = new ResizeObserver(entries => {
       for (let entry of entries) {
         const { height } = entry.contentRect;
+        // 버튼 크기를 더 적절하게 설정 (최소 120px 보장)
+        const buttonHeight = Math.max(120, height / 4);
         setButtonStyle({
-          height: `${height / 5}px`,
-          padding: '0.25rem'
+          height: `${buttonHeight}px`,
+          padding: '1rem'
         });
       }
     });
@@ -83,6 +87,9 @@ const Maker = () => {
       observer.observe(currentImageContainer);
     }
 
+    // 컴포넌트 마운트 시 화면 상단으로 스크롤
+    window.scrollTo(0, 0);
+    
     // 컴포넌트 마운트 시 사용자 등록 이미지 가져오기
     fetchUserRegistrationImage();
 
@@ -93,7 +100,10 @@ const Maker = () => {
     
     if (animalFromState) {
       // location.state로 전달된 동물 정보 사용 (더 빠름)
+      console.log('🐕 Maker에서 받은 동물 데이터:', animalFromState);
+      console.log('🏠 보호소 정보:', animalFromState?.shelter);
       setSelectedAnimal(animalFromState);
+      setIsAnimalImageBroken(false); // 새로운 동물 선택 시 broken 상태 초기화
     } else if (animalId) {
       // 특정 동물 정보 가져오기
       const fetchSelectedAnimal = async () => {
@@ -101,6 +111,7 @@ const Maker = () => {
           const response = await api.get(`/animals/${animalId}`);
           if (response.data) {
             setSelectedAnimal(response.data);
+            setIsAnimalImageBroken(false); // 새로운 동물 선택 시 broken 상태 초기화
           }
         } catch (error) {
           console.error('선택된 동물 정보 가져오기 실패:', error);
@@ -115,6 +126,9 @@ const Maker = () => {
       }
       if (timerRef.current) {
         clearTimeout(timerRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
     };
   }, [user, location, fetchUserRegistrationImage]);
@@ -154,10 +168,14 @@ const Maker = () => {
       // 케어 활동 매핑
       const activityMap = {
         'food': '밥주기',
-        'shower': '씻기기', 
+        'shower': '씻기기',
         'grooming': '미용하기'
       };
       const careActivity = activityMap[action] || action;
+
+      // AbortController 생성 및 설정
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
 
       // FormData로 파일 업로드 준비
       const formData = new FormData();
@@ -173,12 +191,13 @@ const Maker = () => {
       // 케어 활동 추가
       formData.append('care_activity', careActivity);
       
-      // 케어 합성 API 요청 (타임아웃 3분, multipart/form-data)
+      // 케어 합성 API 요청 (타임아웃 3분, multipart/form-data, abort 신호 포함)
       const response = await api.post('/ai/care/synthesize', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        timeout: 180000 // 3분 (180초)
+        timeout: 180000, // 3분 (180초)
+        signal: controller.signal // AbortController 신호 추가
       });
 
       if (response.data.success) {
@@ -201,6 +220,12 @@ const Maker = () => {
 
     } catch (error) {
       console.error('케어 이미지 합성 중 오류:', error);
+      
+      // 사용자가 취소한 경우
+      if (error.name === 'AbortError' || error.code === 'ERR_CANCELED') {
+        console.log('🔴 사용자가 이미지 합성을 취소했습니다.');
+        return 'cancelled';
+      }
       
       if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
         const userChoice = confirm(
@@ -279,6 +304,7 @@ const Maker = () => {
       default:
         message = '🎨 AI가 특별한 이미지를 생성하고 있습니다...\n⏱️ 잠시만 기다려주세요!';
     }
+
     
     setLoadingMessage(message);
     setCurrentAction(action);
@@ -292,6 +318,11 @@ const Maker = () => {
       setShowLoadingModal(false);
       setProgressStage(0);
       
+      if (aiResult === 'cancelled') {
+        // 사용자가 취소한 경우 - 아무것도 하지 않음
+        return;
+      }
+      
       if (aiResult) {
         // AI 합성 성공 - 결과와 함께 결과 페이지로 이동
         const params = new URLSearchParams({
@@ -302,6 +333,7 @@ const Maker = () => {
           aiPrompt: aiResult.prompt || '',
           processingTime: aiResult.processingTime || 0,
           // 동물 정보 추가
+          animalId: selectedAnimal.animal_id || '', // 동물 ID 추가
           species: selectedAnimal.species || '',
           gender: selectedAnimal.gender || '',
           age: selectedAnimal.age || '',
@@ -309,9 +341,10 @@ const Maker = () => {
           specialMark: selectedAnimal.specialMark || '',
           region: selectedAnimal.region || '',
           rescued_at: selectedAnimal.rescued_at || '',
-          shelter_name: selectedAnimal.shelter_name || '',
-          shelter_address: selectedAnimal.shelter_address || '',
-          shelter_contact_number: selectedAnimal.shelter_contact_number || ''
+          shelter_name: selectedAnimal.shelter?.shelter_name || '',
+          shelter_address: selectedAnimal.shelter?.address || '',
+          shelter_contact_number: selectedAnimal.shelter?.contact_number || '',
+          original_image_url: selectedAnimal.image_url || '' // 원본 동물 이미지 URL 추가
         });
         navigate(`/maker/result?${params.toString()}`);
       } else {
@@ -322,6 +355,7 @@ const Maker = () => {
           resultImage: selectedAnimal.image_url || "https://placehold.co/600x600/f97316/FFFFFF?text=AI+Synthesis+Failed",
           error: 'AI 합성에 실패하여 원본 이미지를 표시합니다.',
           // 동물 정보 추가
+          animalId: selectedAnimal.animal_id || '', // 동물 ID 추가
           species: selectedAnimal.species || '',
           gender: selectedAnimal.gender || '',
           age: selectedAnimal.age || '',
@@ -329,9 +363,10 @@ const Maker = () => {
           specialMark: selectedAnimal.specialMark || '',
           region: selectedAnimal.region || '',
           rescued_at: selectedAnimal.rescued_at || '',
-          shelter_name: selectedAnimal.shelter_name || '',
-          shelter_address: selectedAnimal.shelter_address || '',
-          shelter_contact_number: selectedAnimal.shelter_contact_number || ''
+          shelter_name: selectedAnimal.shelter?.shelter_name || '',
+          shelter_address: selectedAnimal.shelter?.address || '',
+          shelter_contact_number: selectedAnimal.shelter?.contact_number || '',
+          original_image_url: selectedAnimal.image_url || '' // 원본 동물 이미지 URL 추가
         });
         navigate(`/maker/result?${params.toString()}`);
       }
@@ -344,10 +379,24 @@ const Maker = () => {
   };
 
   const handleCancelLoading = () => {
+    // AI 합성 요청 취소
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      console.log('🔴 AI 합성 요청이 취소되었습니다.');
+    }
+    
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
+    
+    // 상태 초기화
     setShowLoadingModal(false);
+    setProgressStage(0);
+    setLoadingMessage('');
+    setCurrentAction('');
+    
+    // 취소 확인 메시지
+    console.log('✅ 이미지 합성이 취소되었습니다.');
   };
 
   return (
@@ -362,7 +411,16 @@ const Maker = () => {
             src={selectedAnimal.image_url} 
             alt={selectedAnimal.species}
             className={styles.petImage}
-            onError={(e) => { e.target.src = '/images/unknown_animal.png'; }}
+            onError={(e) => { 
+              e.target.src = '/images/unknown_animal.png'; 
+              setIsAnimalImageBroken(true);
+            }}
+            onLoad={() => {
+              // 이미지가 정상적으로 로드되면 broken 상태 해제
+              if (isAnimalImageBroken) {
+                setIsAnimalImageBroken(false);
+              }
+            }}
           />
         ) : (
           <div 
@@ -381,15 +439,15 @@ const Maker = () => {
       {/* 케어 활동 선택 버튼들 */}
       <div className={styles.iconButtonsContainer}>
         <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('food')}>
-          <img src="/images/Bob.png" alt="밥주기" style={{ width: '95%', height: '95%', objectFit: 'contain' }} />
+          <img src="/images/Bob.png" alt="밥주기" />
           <span className={styles.buttonLabel}>밥주기</span>
         </button>
         <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('shower')}>
-          <img src="/images/Wash.png" alt="씻기기" style={{ width: '95%', height: '95%', objectFit: 'contain' }} />
+          <img src="/images/Shower.png" alt="씻기기" />
           <span className={styles.buttonLabel}>씻기기</span>
         </button>
         <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('grooming')}>
-          <img src="/images/Beauty.png" alt="미용하기" style={{ width: '95%', height: '95%', objectFit: 'contain' }} />
+          <img src="/images/pretty.png" alt="미용하기" />
           <span className={styles.buttonLabel}>미용하기</span>
         </button>
       </div>
@@ -503,7 +561,7 @@ const Maker = () => {
               <span className={styles.infoValue}>
                 {selectedAnimal.shelter?.shelter_name || '정보 없음'}
                 {selectedAnimal.shelter?.contact_number && (
-                  <a 
+                  <a
                     href={`tel:${selectedAnimal.shelter.contact_number}`}
                     style={{ marginLeft: '10px', color: '#007bff', textDecoration: 'none' }}
                   >

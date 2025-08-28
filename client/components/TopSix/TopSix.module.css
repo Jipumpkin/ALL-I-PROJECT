@@ -67,10 +67,11 @@
 
 .info-item {
   flex-shrink: 0;
-  width: 100px;
-  height: 100px;
-  border: none;
-  box-shadow: none;
+  width: 218.66px !important;
+  height: 164px !important;
+  border: 2px solid var(--color-border-light);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -78,6 +79,7 @@
   transition: var(--transition-fast);
   cursor: pointer;
   background-color: transparent;
+  position: relative;
 }
 
 .info-item:hover {
@@ -91,17 +93,55 @@
   outline-offset: 2px;
 }
 
+.info-item a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  position: relative;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.info-item a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(251, 192, 45, 0.1), rgba(76, 212, 161, 0.08));
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.info-item a:hover::before {
+  opacity: 1;
+}
+
+.info-item a:hover {
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(251, 192, 45, 0.2), 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
 .info-item-image { /* New class for the image */
-  width: 100px; /* Match info-item width/height */
-  height: 100px;
-  object-fit: cover;
-  object-position: center 25%; /* 동물 얼굴 포커스 */
-  border: 2px solid var(--color-border-light); /* Add border to image */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center 30% !important; /* 동물 얼굴 포커스 */
+  border: none;
   border-radius: 12px; /* Rounded corners instead of circular */
-  box-shadow: var(--shadow-sm); /* Add shadow to image */
+  box-shadow: none;
   transition: var(--transition-fast);
   opacity: 0.8;
   filter: brightness(1.1) contrast(1.05) saturate(1.1);
+  display: block !important;
 }
 
 .info-item:hover .info-item-image { /* Apply hover effects to the image */
@@ -116,42 +156,111 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: var(--color-bg-white);
-  border: 2px solid var(--color-border);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border: none;
   cursor: pointer;
   z-index: 3;
-  padding: var(--spacing-sm);
-  font-size: var(--font-size-xl);
-  color: var(--color-text-primary);
-  transition: var(--transition-fast);
-  border-radius: var(--border-radius-full);
-  width: 40px;
-  height: 40px;
+  font-size: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 16px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 20px rgba(251, 192, 45, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.scroll-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+  border-radius: 16px;
+  transition: opacity 0.3s ease;
+}
+
+.scroll-button::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-right: 3px solid white;
+  border-top: 3px solid white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.scroll-button.left::after {
+  transform: rotate(225deg);
+  margin-left: 3px;
+}
+
+.scroll-button.right::after {
+  transform: rotate(45deg);
+  margin-right: 3px;
 }
 
 .scroll-button:hover {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-  color: white;
-  box-shadow: var(--shadow-md);
-  transform: translateY(-50%) scale(1.1);
+  transform: translateY(-50%) scale(1.15) translateY(-2px);
+  box-shadow: 0 8px 30px rgba(251, 192, 45, 0.5), 0 4px 15px rgba(76, 212, 161, 0.2);
+  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-secondary-hover));
+}
+
+.scroll-button:hover::before {
+  opacity: 0.4;
+}
+
+.scroll-button:hover::after {
+  transform: rotate(225deg) scale(1.1);
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
+}
+
+.scroll-button.right:hover::after {
+  transform: rotate(45deg) scale(1.1);
 }
 
 .scroll-button:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(251, 192, 45, 0.4), 0 8px 30px rgba(251, 192, 45, 0.5);
+}
+
+.scroll-button:active {
+  transform: translateY(-50%) scale(0.95);
+  transition: transform 0.1s ease;
 }
 
 .scroll-button.left {
   left: var(--spacing-sm);
+  animation: pulseLeft 3s ease-in-out infinite;
 }
 
 .scroll-button.right {
   right: var(--spacing-sm);
+  animation: pulseRight 3s ease-in-out infinite;
+}
+
+@keyframes pulseLeft {
+  0%, 70%, 100% { 
+    transform: translateY(-50%) scale(1); 
+    box-shadow: 0 4px 20px rgba(251, 192, 45, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  35% { 
+    transform: translateY(-50%) scale(1.05); 
+    box-shadow: 0 6px 25px rgba(251, 192, 45, 0.4), 0 3px 10px rgba(0, 0, 0, 0.15);
+  }
+}
+
+@keyframes pulseRight {
+  0%, 70%, 100% { 
+    transform: translateY(-50%) scale(1); 
+    box-shadow: 0 4px 20px rgba(251, 192, 45, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  35% { 
+    transform: translateY(-50%) scale(1.05); 
+    box-shadow: 0 6px 25px rgba(76, 212, 161, 0.4), 0 3px 10px rgba(0, 0, 0, 0.15);
+  }
 }
 
 /* Mobile responsive improvements */
@@ -166,13 +275,18 @@
   }
   
   .info-item {
-    width: 80px;
-    height: 80px;
+    width: 175px !important;
+    height: 131px !important;
   }
   
   .info-item-image {
-    width: 80px;
-    height: 80px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
   }
   
   .scroll-button {
@@ -189,13 +303,18 @@
   }
   
   .info-item {
-    width: 70px;
-    height: 70px;
+    width: 131px !important;
+    height: 98px !important;
   }
   
   .info-item-image {
-    width: 70px;
-    height: 70px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
   }
   
   .scroll-button {

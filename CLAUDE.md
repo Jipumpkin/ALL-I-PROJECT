@@ -4,38 +4,41 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-ALL-I-PROJECT is a full-stack web application for an animal adoption platform with AI-generated imagery capabilities. The system allows users to find adoptable animals, interact with AI for generating related content, and manage user accounts.
+ALL-I-PROJECT is a full-stack animal adoption platform with AI-generated imagery capabilities. The system connects users with adoptable animals, provides AI tools for content generation, and manages user accounts with secure authentication.
 
 ## Architecture
 
 **Frontend (client/):**
-- React 19 + Vite setup with React Router DOM for SPA routing
-- Component-based architecture with Header/Footer layout
-- Key pages: Main, Login, Register, Account Management, Password Recovery
-- Axios configured for API communication with backend (localhost:3003)
-- Vite proxy configuration for external API (apis.data.go.kr)
-- Protected routes using AuthContext for authentication
+- React 19 + Vite with React Router DOM for SPA routing
+- Component-based architecture with shared Header/Footer layout
+- Axios-based API client with automatic JWT token handling and 401 response interceptors
+- Vite proxy configuration routes `/api` calls to backend (port 3003)
+- Protected routes using AuthContext for authentication state management
 
 **Backend (server/):**
-- Node.js + Express server running on port 3003
-- MySQL database with comprehensive schema for users, animals, shelters, images, and AI interactions
-- JWT-based authentication with bcrypt password hashing
-- CORS and body-parser middleware for API handling
-- RESTful API structure with controllers, models, and routes
+- Express.js server on port 3003 with MySQL database
+- JWT-based authentication using bcryptjs for password hashing
+- RESTful API with controller-model-route separation pattern
+- Comprehensive database schema for users, animals, shelters, images, and AI interactions
+- Custom middleware for authentication, CORS, and request validation
 
-**Database Schema:**
-- Users (authentication, profile data)
-- Animals (shelter animals with adoption status)
-- Shelters (animal care facilities)
-- Images (user uploads and AI-generated content)
-- Prompts & LLM logs (AI interaction tracking)
+**Key Architectural Patterns:**
+- Frontend: React Context for global auth state, Axios interceptors for token management
+- Backend: Express middleware pattern, bcrypt + JWT for secure authentication
+- Database: Foreign key relationships, enum types for status fields, timestamp tracking
+- API: Consistent JSON responses, error handling middleware
 
 ## Development Commands
+
+### Full-stack Development
+```bash
+npm run dev          # Starts both frontend (5174) and backend (3003) concurrently
+```
 
 ### Frontend (client/)
 ```bash
 cd client
-npm run dev          # Development server (Vite)
+npm run dev          # Vite dev server on port 5174
 npm run build        # Production build
 npm run lint         # ESLint checking
 npm run preview      # Preview production build
@@ -46,30 +49,62 @@ npm run preview      # Preview production build
 cd server
 npm run dev          # Development with nodemon
 npm run start        # Production start
+npm run sync:once    # Run animal data synchronization
+```
+
+### Database Management
+```bash
+cd server
+node scripts/setup_database.js     # Initialize database with schema
+node scripts/insert_test_data.js   # Insert test data (users, shelters, animals)
+node scripts/test_db_connection.js # Verify database connectivity
+node scripts/test_real_api.js      # End-to-end API testing
 ```
 
 ## Database Setup
 
-Database schema is located in `server/db/schema.sql`. The schema includes tables for users, animals, shelters, user/generated images, prompts, and LLM API logging.
+Complete schema in `server/db/schema.sql` includes:
+- **users**: Authentication, profiles (bcrypt hashed passwords)
+- **animals**: Shelter animals with adoption status and metadata
+- **shelters**: Animal care facilities with contact information
+- **user_images**: User-uploaded content
+- **generated_images**: AI-generated images with prompts
+- **prompts**: AI interaction history
+- **llm_logs**: API usage tracking
+
+Test accounts available:
+- testuser / test@example.com / Test123!@#
+- admin / admin@allipet.com / Admin123!@#
+- demo / demo@allipet.com / Demo123!@#
+
+## Authentication Flow
+
+The application uses a complete JWT-based authentication system:
+1. **Registration/Login**: bcrypt hashing, JWT token generation
+2. **Token Storage**: localStorage with automatic header injection
+3. **Protected Routes**: AuthContext + ProtectedRoute component pattern
+4. **Auto-logout**: 401 response interceptor clears tokens and redirects
+5. **Backend Validation**: JWT middleware verifies tokens on protected endpoints
 
 ## Commit Conventions
 
-This project uses gitemoji with Korean commit messages:
-- 🎉 프로젝트 초기화
-- 📦️ 폴더/구조 추가  
-- ✨ 새로운 기능 추가
-- 🐛 버그 수정
-- ♻️ 리팩터링
-- 📝 문서 작업
+Enforced gitemoji conventions with Korean/English support:
+- 🎉 프로젝트 초기화 (Project initialization)
+- ✨ 새로운 기능 추가 (New feature)
+- 🐛 버그 수정 (Bug fix)
+- ♻️ 리팩터링 (Refactoring)
+- 📝 문서 작업 (Documentation)
+- 🔐 보안 관련 (Security)
 
-See `docs/commit-convention.md` for complete guidelines.
+Git hooks automatically validate commit message format. See `docs/commit-convention.md` for complete guidelines.
 
 ## Key Configuration Files
 
-- `client/vite.config.js` - Vite configuration with proxy setup
-- `client/axios.js` - Axios instance configured for localhost:3000
-- `server/db/schema.sql` - Complete database schema
-- `docs/claude-code-guide.md` - 팀원 공통 가이드 (Git hooks, 컨벤션)
+- `client/vite.config.js` - Vite dev server (5174) with API proxy to backend
+- `client/axios.js` - Axios instance with JWT interceptors and error handling  
+- `server/config/database.js` - MySQL connection configuration
+- `server/middleware/auth.js` - JWT authentication middleware
+- `server/utils/hash.js` & `server/utils/jwt.js` - Authentication utilities
 
 ## 🎉 2025-08-27 DALL-E 케어 이미지 합성 시스템 통합 작업 보고서
 
@@ -77,12 +112,12 @@ See `docs/commit-convention.md` for complete guidelines.
 
 #### 🛠️ **백엔드 통합 (100% 완료)**
 - ✅ **careController.js**: Python subprocess 호출 완전 구현
-- ✅ **AI 라우트 확장**: `/api/ai/care/synthesize`, `/activities`, `/history` 
+- ✅ **AI 라우트 확장**: `/api/ai/care/synthesize`, `/activities`, `/history`
 - ✅ **서버 라우트 등록**: `index.js`에 AI 라우트 추가
 - ✅ **Python CLI 연동**: 케어 활동 목록 API 정상 작동
 - ✅ **UTF-8 인코딩 문제 해결**: 한글 케어 활동명 정상 처리
 
-#### 🎨 **프론트엔드 통합 (95% 완료)**  
+#### 🎨 **프론트엔드 통합 (95% 완료)**
 - ✅ **CareImageMaker.jsx**: 완전한 케어 합성 UI 구현
 - ✅ **Maker 컴포넌트 확장**: 탭 기반 UI (AI 생성 + 케어 합성)
 - ✅ **반응형 디자인**: 모든 화면 크기 지원
@@ -183,14 +218,14 @@ dalle/care_synthesizer_cli.py             # UTF-8 인코딩 설정
 ### 🚀 **완성 시 기대 효과**
 
 #### **사용자 관점**
-✅ 입양할 동물이 새 집에서 케어받는 모습 미리 보기  
-✅ 3가지 케어 활동 시뮬레이션 (밥주기/씻기기/미용하기)  
-✅ 개인 공간에 맞춤형 이미지 생성  
+✅ 입양할 동물이 새 집에서 케어받는 모습 미리 보기
+✅ 3가지 케어 활동 시뮬레이션 (밥주기/씻기기/미용하기)
+✅ 개인 공간에 맞춤형 이미지 생성
 
 #### **기술적 성과**
-✅ Python AI 모듈 + Node.js 백엔드 완전 통합  
-✅ 확장 가능한 아키텍처 구축  
-✅ 실제 DALL-E API 활용한 고품질 이미지 생성  
+✅ Python AI 모듈 + Node.js 백엔드 완전 통합
+✅ 확장 가능한 아키텍처 구축
+✅ 실제 DALL-E API 활용한 고품질 이미지 생성
 
 **결론: 95% 구현 완료. 마지막 5% (모델 메서드 수정)만 해결하면 완전한 케어 이미지 합성 시스템 구축 완료.**
 
@@ -217,7 +252,7 @@ dalle/care_synthesizer_cli.py             # UTF-8 인코딩 설정
   - 🎨 AI 이미지 생성 탭
   - 🐕💝 케어 이미지 합성 탭
 
-#### **사용자 요구사항** 
+#### **사용자 요구사항**
 - **목표**: 두 기능을 하나의 **케어 이미지 합성** 탭으로 통합
 - **동작 방식**: 동물 상세페이지 → 합성하기 버튼 → 선택된 동물 자동 표시
 - **현재 상태**: AI 이미지 합성 탭에는 구현되어 있음
@@ -252,7 +287,7 @@ dalle/care_synthesizer_cli.py             # UTF-8 인코딩 설정
 
 #### **Maker.jsx 주요 변경사항**
 - [ ] `activeTab` 상태 제거
-- [ ] 탭 버튼 UI 제거  
+- [ ] 탭 버튼 UI 제거
 - [ ] AI 이미지 생성 관련 코드 제거
 - [ ] 케어 합성 로직만 유지
 - [ ] `useLocation`으로 전달된 동물 데이터 자동 설정
@@ -262,7 +297,7 @@ dalle/care_synthesizer_cli.py             # UTF-8 인코딩 설정
 const Maker = () => {
   const location = useLocation();
   const selectedAnimal = location.state?.selectedAnimal;
-  
+
   // 탭 없이 바로 케어 합성 인터페이스만 표시
   return (
     <div className={styles.mainContainer}>
@@ -298,224 +333,225 @@ const Maker = () => {
 
 ---
 
+## 🚀 2025-08-28 세션 진행상황 및 종료 준비
+
+### ✅ **완료된 주요 작업**
+
+#### **1. feature/backend-gpt-image 브랜치 성공적 Merge**
+- ✅ **원격 브랜치 Pull**: feature/backend-gpt-image 최신 상태로 업데이트
+- ✅ **자동 Merge**: backend-Ayeong 브랜치에 충돌 없이 merge 완료
+- ✅ **Commit ID**: `00e1998` - Merge branch 'feature/backend-gpt-image' into backend-Ayeong
+- ✅ **추가된 파일**: 13개 (1,316줄 추가, 24줄 삭제)
+
+#### **2. 통합된 새로운 파일들**
+```
+✅ 추가된 핵심 파일:
+- dalle/gpt_image_care_cli.py - GPT-Image-1 Python CLI 스크립트
+- dalle/gpt_image_synthesizer.py - 이미지 합성 모듈 (392줄)
+- server/controllers/gptImageCareController.js - 새로운 케어 컨트롤러 (440줄)
+- dalle/data/ - 테스트용 이미지 파일들
+- docs/commits/ - 작업 보고서 마크다운 문서들
+```
+
+#### **3. 백엔드 기술 발표자료 작성 완료**
+- ✅ **파일**: `백엔드_기술_발표자료.md` (275줄 완성)
+- ✅ **내용**: 3단계 DB fallback, AI 통합, 보안 시스템 등 기술적 어필 포인트 정리
+- ✅ **Commit**: `2761a64` - 📝 백엔드 기술 발표자료 추가
+
+#### **4. Maker 페이지 UI 버튼 수정 완료**
+- ✅ **문제 해결**: 이미지 파일 경로 수정 (`Wash.png` → `ShowerBut.png`, `Beauty.png` → `pretty.png`)
+- ✅ **버튼 크기 개선**: `min-height: 80px` → `120px`, 이미지 크기 `40px` → `50px`
+- ✅ **텍스트 표시 개선**: `font-size: 0.8rem` → `0.9rem`, `white-space: nowrap` 추가
+
+### 🚨 **현재 발견된 문제 (세션 종료 시점)**
+
+#### **Python 실행 환경 문제**
+```
+❌ 오류 코드: 9009 - GPT-Image-1 스크립트 실행 실패
+❌ 원인: Python이 제대로 설치되지 않음 (Microsoft Store 가짜 실행 파일)
+❌ 증상: /api/ai/care/synthesize API 호출 시 500 Internal Server Error
+❌ 백엔드 로그: "GPT-Image-1 stderr: Python" 
+```
+
+#### **현재 시스템 상태**
+```bash
+✅ 프론트엔드: http://localhost:5175 (정상 실행)
+✅ 백엔드: http://localhost:3003 (정상 실행)
+❌ Python AI 모듈: 실행 불가 (Python PATH 문제)
+❌ 이미지 합성 기능: 500 에러로 작동 안함
+```
+
+### 🔧 **다음 세션 시작 시 해결할 작업**
+
+#### **1단계: Python 환경 설정 (5분)**
+```bash
+# VSCode 재시작 후 Python 설치 확인
+python --version
+py --version
+
+# GPT 컨트롤러에서 올바른 Python 경로 설정
+# server/controllers/gptImageCareController.js 수정 필요
+```
+
+#### **2단계: 이미지 합성 API 테스트 (10분)**
+```bash
+# 케어 이미지 합성 API 테스트
+# 동물 선택 → 공간 이미지 업로드 → 케어 활동 선택 → 합성 실행
+# 예상: Python 환경 해결되면 정상 작동할 것
+```
+
+#### **3단계: 최종 통합 테스트 (15분)**
+```bash
+# 전체 기능 테스트
+1. 동물 목록 페이지 접속
+2. 동물 상세 페이지 이동  
+3. Maker 페이지에서 케어 이미지 합성
+4. 결과 페이지 확인
+```
+
+### 🎯 **완성도 현황**
+
+#### **✅ 100% 완료된 부분**
+- 백엔드 아키텍처 (3단계 DB fallback, JWT 인증, API 구조)
+- 프론트엔드 UI/UX (Maker 페이지, 버튼, 모달, 로딩)
+- 데이터베이스 연동 (동물, 사용자, 이미지 데이터)
+- Git 브랜치 통합 (feature → backend-Ayeong merge 완료)
+
+#### **🔧 95% 완료된 부분 (Python 환경만 해결하면 완성)**
+- AI 이미지 합성 시스템 (GPT-Image-1 통합)
+- FormData 기반 multipart/form-data API
+- 실시간 이미지 다운로드 및 처리
+- 케어 활동 매핑 (밥주기, 씻기기, 미용하기)
+
+### 📝 **다음 세션 시작 명령어**
+
+```bash
+# 1. 서버 실행 확인
+cd server && npm run dev
+
+# 2. 프론트엔드 실행 확인  
+cd client && npm run dev
+
+# 3. Python 환경 확인
+python --version
+py --version
+
+# 4. 이미지 합성 테스트
+# http://localhost:5175/maker 접속하여 케어 합성 기능 테스트
+```
+
+### 💡 **핵심 성과 요약**
+1. **완전한 브랜치 통합**: feature/backend-gpt-image → backend-Ayeong 성공
+2. **발표 자료 완성**: 백엔드 기술 어필 포인트 문서화
+3. **UI 개선 완료**: Maker 페이지 버튼 크기/이미지 경로 수정
+4. **95% 시스템 완성**: Python 환경만 해결하면 AI 이미지 합성 완전 작동
+
+**다음 세션 목표: Python 환경 설정 완료 → AI 케어 이미지 합성 시스템 100% 완성** 🎯
+
+---
+
 ## 🎉 2025-08-18 작업 완료 보고서
 
-### ✅ 오늘의 주요 성과 (100% 완성!)
-
-#### 🏗️ 인프라 완성
-1. **MySQL 데이터베이스 완전 구축**
-   - 로컬 MySQL 설치 및 설정 완료 (비밀번호: 12345)
-   - 7개 테이블 생성 완료 (users, animals, shelters, user_images, prompts, generated_images, llm_logs)
-   - 실제 bcrypt 해시값으로 테스트 사용자 3명 삽입 완료
-
-2. **실제 DB API 완전 구현**
-   - Mock API에서 실제 MySQL DB API로 100% 전환 완료
-   - 로그인 API 완벽 작동 확인 ✅
-   - 회원가입 API 완벽 작동 확인 ✅ 
-   - JWT 토큰 정상 생성 및 반환 확인 ✅
-
-3. **서버 안정성 완성**
-   - 포트 3003에서 안정적 실행
-   - 에러 핸들링 완전 구현
-   - 디버깅 시스템 완비
-
-#### 🧪 테스트 데이터 현황
+## API Endpoints
 ```
-📊 데이터베이스 상태:
-   👥 사용자: 4명 (testuser, admin, demo, testuser6)
-   🏠 보호소: 3개 (서울, 부산, 대구)
-   🐕 동물: 5마리
-
-🔑 테스트 계정:
-   - testuser / test@example.com / Test123!@#
-   - admin / admin@allipet.com / Admin123!@#
-   - demo / demo@allipet.com / Demo123!@#
+POST /api/register          # User registration with bcrypt hashing
+POST /api/login             # JWT token-based authentication
 ```
 
-#### 🔧 구현된 스크립트들
-- `server/scripts/setup_database.js` - 자동 DB 생성
-- `server/scripts/insert_test_data.js` - 테스트 데이터 삽입
-- `server/scripts/test_db_connection.js` - DB 연결 테스트
-- `server/scripts/test_real_api.js` - API 종합 테스트
-
-### 🎯 다음 작업 계획 (우선순위)
-
-#### 1단계: 프론트엔드 연동 완료 (30분)
-- **목표**: 기존 React 컴포넌트들을 실제 DB API와 연결
-- **작업**:
-  - Login 컴포넌트 API 엔드포인트 수정 (현재 mock → 실제 DB)
-  - Register 컴포넌트 API 연동 검증
-  - AuthContext에서 실제 JWT 토큰 처리 확인
-  - 보호된 라우트들 실제 인증 연동 테스트
-
-#### 2단계: 데모 시연 준비 (15분)
-- **목표**: 완전 작동하는 인증 시스템 데모
-- **데모 시나리오**:
-  1. 회원가입 → JWT 토큰 발급 확인
-  2. 로그인 → 사용자 데이터 표시
-  3. 보호된 페이지 접근 → 인증 확인
-  4. 로그아웃 → 토큰 삭제 확인
-
-#### 3단계: 커밋 및 문서화 (15분)
-- **목표**: 완성된 시스템 정식 커밋
-- **작업**:
-  - 변경사항 전체 커밋
-  - 커밋 문서 생성
-  - README 업데이트
-
-### 🚀 현재 시스템 상태
-
-#### ✅ 완전 작동 중
-```bash
-# 서버 실행
-cd server && npm run dev  # 포트 3003
-
-# API 테스트
-curl -X POST http://localhost:3003/api/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"Test123!@#"}'
-
-curl -X POST http://localhost:3003/api/register \
-  -H "Content-Type: application/json" \
-  -d '{"username":"newuser","email":"new@test.com","password":"Test123!@#"}'
+### Core Resources
+```
+GET  /api/users             # User management (protected)
+GET  /api/animals           # Available animals for adoption
+GET  /api/shelters          # Shelter information and locations
 ```
 
-#### 🛠️ 개발환경 설정
-- **백엔드**: localhost:3003 (완전 작동)
-- **프론트엔드**: localhost:5173 (React + Vite)
-- **데이터베이스**: MySQL localhost:3306 (완전 연결)
-- **풀스택 실행**: `npm run dev` (루트에서)
-
-### 🔍 기술 스택 완성도
-- ✅ **백엔드**: Node.js + Express + MySQL (100%)
-- ✅ **인증**: JWT + bcrypt (100%)
-- ✅ **데이터베이스**: MySQL 7개 테이블 (100%)
-- 🔄 **프론트엔드**: React 컴포넌트 연동 (90%)
-- ✅ **개발환경**: 풀스택 개발환경 (100%)
-
-### 💡 핵심 성과 요약
-1. **실제 데이터베이스 기반 인증 시스템 완전 구현**
-2. **JWT 토큰 기반 보안 시스템 완성**
-3. **Mock에서 Real DB로 완전 전환 성공**
-4. **테스트 시스템 및 자동화 스크립트 완비**
-
-### 📝 다음 세션 시작점
+### External Integration
 ```
-⭐ 시작 명령어:
-1. cd server && npm run dev (서버 시작)
-2. 새 터미널: npm run dev (프론트엔드 시작)
-3. 브라우저: http://localhost:5173
-4. API 테스트: node server/scripts/test_real_api.js
-
-🎯 다음 작업: Login/Register 컴포넌트 실제 DB API 연동 마무리
+GET  /api/external/animals  # Government animal data (apis.data.go.kr)
 ```
 
-### 🔧 완료된 핵심 파일들
+## Component Architecture
 
-#### 데이터베이스
-- `server/db/setup.sql` - 완전한 DB 스키마
-- `server/db/test_data.sql` - 실제 bcrypt 해시 테스트 데이터
-- `server/config/database.js` - MySQL 연결 설정
+### Frontend Component Structure
+The application follows a feature-based component organization:
 
-#### 백엔드 API
-- `server/models/User.js` - 확장된 User 모델 (인증 메서드 포함)
-- `server/controllers/userController.js` - 완전한 register/login API
-- `server/middleware/auth.js` - JWT 인증 미들웨어
-- `server/utils/jwt.js` - JWT 토큰 유틸리티
-- `server/utils/hash.js` - bcrypt 해싱 유틸리티
+**Core Layout Components:**
+- `Header/` - Navigation with authentication state
+- `Footer/` - Site-wide footer
+- `Main/` - Landing page with animal showcase
 
-#### 테스트 & 스크립트  
-- `server/scripts/setup_database.js` - DB 자동 생성
-- `server/scripts/insert_test_data.js` - 테스트 데이터 삽입
-- `server/scripts/test_real_api.js` - API 종합 테스트
+**Authentication Flow:**
+- `Login/` & `LoginModal/` - Authentication forms
+- `Register/` - User registration with validation
+- `ForgotId/` & `ForgotPassword/` - Account recovery
+- `ProtectedRoute/` - Route guard component
 
-## 📁 프로젝트 구조
+**User Management:**
+- `MyAccount/` - User profile management
+- `Account/` - Account deletion functionality
+- `AdoptionHistory/` - User adoption tracking
 
-### Backend Structure (server/)
-```
-server/
-├── config/
-│   └── database.js        # MySQL 연결 설정
-├── controllers/           # 비즈니스 로직
-│   ├── animalController.js
-│   ├── shelterController.js
-│   └── userController.js
-├── db/                    # 데이터베이스 관련
-│   ├── schema.sql        # 전체 DB 스키마
-│   ├── setup.sql         # DB 초기 설정
-│   └── test_data.sql     # 테스트 데이터
-├── middleware/
-│   └── auth.js           # JWT 인증 미들웨어
-├── models/               # 데이터 모델
-│   ├── Animal.js
-│   ├── Shelter.js
-│   └── User.js
-├── routes/               # API 라우트
-│   ├── animalRoutes.js
-│   ├── mockRoutes.js
-│   ├── shelterRoutes.js
-│   └── userRoutes.js
-├── scripts/              # 유틸리티 스크립트
-│   ├── generate_test_users.js
-│   ├── insert_test_data.js
-│   ├── setup_database.js
-│   ├── test_db_connection.js
-│   └── test_real_api.js
-├── utils/                # 공통 유틸리티
-│   ├── hash.js          # bcrypt 해싱
-│   ├── jwt.js           # JWT 토큰 처리
-│   └── mockDatabase.js
-├── index.js              # 서버 엔트리 포인트
-└── package.json
+**Animal & Shelter Features:**
+- `Animals/` - Animal listing with filtering
+- `ShelterMap/` - Interactive shelter location map
+- `AdoptionApply/` - Adoption application process
 
-### Frontend Structure (client/)
-```
-client/
-├── components/           # 페이지 컴포넌트
-│   ├── Account/         # 계정 삭제
-│   ├── AdoptionApply/   # 입양 신청
-│   ├── AdoptionHistory/ # 입양 이력
-│   ├── Animals/         # 동물 목록
-│   ├── Content/         # 콘텐츠
-│   ├── Footer/          # 푸터
-│   ├── ForgotId/        # 아이디 찾기
-│   ├── ForgotPassword/  # 비밀번호 찾기
-│   ├── Header/          # 헤더
-│   ├── ImageUploader/   # 이미지 업로드
-│   ├── Intro/           # 인트로
-│   ├── Login/           # 로그인
-│   ├── LoginModal/      # 로그인 모달
-│   ├── Main/            # 메인 페이지
-│   ├── Maker/           # AI 이미지 생성
-│   ├── MakerResult/     # AI 생성 결과
-│   ├── MyAccount/       # 내 계정
-│   ├── NotFound/        # 404 페이지
-│   ├── Register/        # 회원가입
-│   ├── ShelterMap/      # 보호소 지도
-│   ├── Title/           # 타이틀
-│   └── TopSix/          # 인기 동물
-├── src/
-│   ├── components/
-│   │   └── ProtectedRoute/  # 인증 라우트 보호
-│   ├── context/
-│   │   └── AuthContext.jsx  # 인증 컨텍스트
-│   ├── styles/              # 전역 스타일
-│   │   ├── utilities.css
-│   │   └── variables.css
-│   ├── App.jsx              # 앱 라우트 설정
-│   └── main.jsx             # 앱 엔트리 포인트
-├── public/                  # 정적 자원
-│   ├── images/             # 이미지 파일
-│   └── font/               # 폰트 파일
-├── axios.js                # Axios 설정
-├── vite.config.js          # Vite 설정
-└── package.json
+**AI Features:**
+- `Maker/` - AI image generation interface
+- `MakerResult/` - Generated content display
+- `ImageUploader/` - File upload handling
 
-### API Endpoints
-```
-POST /api/register          # 회원가입
-POST /api/login            # 로그인
-GET  /api/users            # 사용자 목록
-GET  /api/animals          # 동물 목록
-GET  /api/shelters         # 보호소 목록
-```
+### Backend Architecture Patterns
+
+**Model Layer (`server/models/`):**
+- Database abstraction with MySQL2 connection pooling
+- Static methods for CRUD operations
+- Input validation and sanitization
+
+**Controller Layer (`server/controllers/`):**
+- Business logic separation from routes
+- Consistent error handling and response formatting
+- JWT token validation for protected endpoints
+
+**Middleware (`server/middleware/`):**
+- Authentication middleware with JWT verification
+- Request validation using express-validator
+- Rate limiting and security headers
+
+## Development Environment
+
+**Prerequisites:**
+- Node.js 18+ and npm
+- MySQL 8.0+ with local instance on port 3306
+- Development database credentials configured in `server/config/database.js`
+
+**Quick Start:**
+1. Clone repository and install dependencies:
+   ```bash
+   npm install
+   cd client && npm install
+   cd ../server && npm install
+   ```
+
+2. Set up database:
+   ```bash
+   cd server
+   node scripts/setup_database.js
+   node scripts/insert_test_data.js
+   ```
+
+3. Start development servers:
+   ```bash
+   # From project root
+   npm run dev  # Starts both frontend (5174) and backend (3003)
+   ```
+
+**Environment Variables:**
+- Backend uses default MySQL connection (localhost:3306)
+- Frontend Vite proxy automatically routes API calls to backend
+- JWT secrets and database credentials should be configured for production
+
+**Testing & Validation:**
+- Use `node server/scripts/test_real_api.js` to verify API functionality
+- Frontend development server includes hot reload for rapid iteration
+- ESLint configured for code quality validation (`npm run lint` in client/)

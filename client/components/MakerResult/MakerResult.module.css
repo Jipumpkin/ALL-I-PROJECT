@@ -16,16 +16,16 @@
 .body {
   font-family: "Inter", sans-serif;
   background-color: #f7fafc;
-  padding: 0;
+  padding: 1rem;
 }
 
 .resultContainer {
-  max-width: 28rem;
+  max-width: 42rem;
   margin: auto;
   margin-bottom: 3rem;
-  background-color: transparent;
+  background-color: #ffffff;
   padding: 1.5rem;
-  border-radius: 0;
+  border-radius: 1.5rem;
 }
 
 .resultHeader {
@@ -186,22 +186,22 @@
 }
 
 .actionButton.primary {
-  background-color: #f97316;
+  background-color: #6b7280;
   color: white;
 }
 
 .actionButton.primary:hover {
-  background-color: #ea580c;
+  background-color: #4b5563;
   transform: translateY(-1px);
 }
 
 .actionButton.secondary {
-  background-color: #3b82f6;
+  background-color: #6b7280;
   color: white;
 }
 
 .actionButton.secondary:hover {
-  background-color: #2563eb;
+  background-color: #4b5563;
   transform: translateY(-1px);
 }
 
@@ -219,7 +219,7 @@
 /* AI 합성 정보 스타일 */
 .aiLabel {
   font-size: 0.75rem;
-  background: linear-gradient(135deg, #f97316, #ea580c);
+  background: #6b7280;
   color: white;
   padding: 0.25rem 0.5rem;
   border-radius: 0.5rem;
@@ -287,7 +287,7 @@
 
 .promptSummary {
   font-size: 0.8rem;
-  color: #3b82f6;
+  color: #6b7280;
   cursor: pointer;
   padding: 0.25rem 0;
   border-bottom: 1px solid #e2e8f0;
@@ -295,7 +295,7 @@
 }
 
 .promptSummary:hover {
-  color: #2563eb;
+  color: #4b5563;
 }
 
 .aiPromptText {
@@ -319,6 +319,78 @@
 
 .actionButton:disabled:hover {
   transform: none !important;
+}
+
+/* 이미지 모달 스타일 */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.modalContent {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  cursor: default;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modalCloseButton {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  transition: background-color 0.2s ease;
+}
+
+.modalCloseButton:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modalImage {
+  width: 100%;
+  height: auto;
+  max-width: 80vw;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  display: block;
 }
 
 /* 반응형 디자인 */
@@ -360,5 +432,22 @@
   .actionButton {
     padding: 0.875rem;
     font-size: 0.875rem;
+  }
+
+  .modalContent {
+    max-width: 95vw;
+    max-height: 95vh;
+    padding: 0.5rem;
+  }
+
+  .modalImage {
+    max-width: 90vw;
+    max-height: 85vh;
+  }
+
+  .modalCloseButton {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.25rem;
   }
 }

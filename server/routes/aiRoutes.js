@@ -7,6 +7,9 @@ const upload = require('../middleware/upload');
 // 기존 AI 이미지 생성
 router.post('/generate', aiController.generateAiImage);
 
+// 케어 게임 이미지 생성
+router.post('/generate-care-image', aiController.generateCareImage);
+
 // 사용자 이미지 히스토리 조회
 router.get('/history/:user_id', aiController.getImageHistory);
 

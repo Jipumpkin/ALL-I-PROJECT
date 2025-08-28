@@ -10,10 +10,14 @@ const BravestAnimals = () => {
   useEffect(() => {
     const fetchOldestAnimals = async () => {
       try {
+        console.log('🔥 BravestAnimals.jsx: 가장 오래된 동물 데이터 요청 시작 - /api/animals/oldest');
         const response = await axios.get('/api/animals/oldest');
+        console.log('✅ BravestAnimals.jsx: 가장 오래된 동물 데이터 응답 성공:', response.data);
+        console.log('📊 BravestAnimals.jsx: 받은 동물 수:', response.data.animals?.length || 0);
         setAnimals(response.data.animals);
       } catch (err) {
-        console.error("Error fetching oldest animals:", err);
+        console.error("❌ BravestAnimals.jsx: 가장 오래된 동물 데이터 요청 실패:", err.message);
+        console.error("❌ BravestAnimals.jsx: 에러 상세:", err);
       }
     };
 
@@ -30,8 +34,8 @@ const BravestAnimals = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>가장 오래 가족을 기다린 친구들</h2>
-      <p className={styles.subtitle}>가장 오랜 시간 가족을 기다리고 있어요</p>
+      <h2 className={styles.title}>가장 긴 기다림 속의 친구들</h2>
+      <p className={styles.subtitle}>오랜 시간 가족을 기다리고 있어요</p>
       <div className={styles.carouselContainer}>
         <button className={`${styles.arrow} ${styles.left}`} onClick={() => scroll(-300)}>‹</button>
         <div className={styles.scrollContainer} ref={scrollContainerRef}>

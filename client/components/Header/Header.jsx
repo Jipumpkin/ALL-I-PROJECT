@@ -13,8 +13,11 @@ const Header = () => {
     <>
       <header className={styles["header"]}>
         <a href="/" className={styles["logo-container"]}>
-          <span className={styles["logo-text"]}>🐾 PAW PAW</span>
-          
+          <div className={styles["brand-logo"]}>
+            <img src="/images/foot.png" alt="발바닥" width="24" className={styles["foot-icon"]} />
+            <span className={styles["brand-name"]}>PAW PAW</span>
+            <img src="/images/foot.png" alt="발바닥" width="24" className={styles["foot-icon"]} />
+          </div>
         </a>
         {/* 햄버거 메뉴 클릭 시 모달 토글 */}
         <div

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../axios';
 import styles from './AnimalDetail.module.css';
 import { useAuth } from '../../src/context/AuthContext';
 
@@ -11,12 +11,15 @@ const AnimalDetail = () => {
   const [animal, setAnimal] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [isImageBroken, setIsImageBroken] = useState(false);
 
   useEffect(() => {
     const fetchAnimal = async () => {
       try {
-        const response = await axios.get(`/api/animals/${id}`);
+        const response = await api.get(`/animals/${id}`);
         setAnimal(response.data);
+        setIsImageBroken(false); // 새로운 동물 데이터 로드 시 이미지 상태 초기화
       } catch (err) {
         setError(err);
       } finally {
@@ -28,6 +31,15 @@ const AnimalDetail = () => {
   }, [id]);
 
   const handleMakerClick = () => {
+    console.log('이미지 합성 버튼 클릭됨. isImageBroken:', isImageBroken);
+    console.log('전달할 동물 데이터:', animal);
+    console.log('보호소 정보:', animal?.shelter);
+    
+    if (isImageBroken) {
+      alert('합성할 동물의 이미지가 존재하지 않습니다.');
+      return;
+    }
+    
     if (auth.isAuthenticated()) {
       navigate('/maker', { state: { animal: animal } });
     } else {
@@ -35,7 +47,6 @@ const AnimalDetail = () => {
     }
   };
 
-  
 
   if (loading) {
     return <div className={styles.container}><p>로딩 중...</p></div>;
@@ -76,7 +87,25 @@ const AnimalDetail = () => {
   return (
     <div className={styles.container}>
       <div className={styles.profileSection}>
-        <img src={animal.image_url} alt={animal.species} className={styles.profileImage} onError={(e) => { e.target.src = '/images/unknown_animal.png'; }} />
+        <img 
+          src={animal.image_url} 
+          alt={animal.species} 
+          className={styles.profileImage} 
+          onError={(e) => { 
+            e.target.src = '/images/unknown_animal.png'; 
+            setIsImageBroken(true);
+            console.log('동물 이미지 로드 실패. isImageBroken을 true로 설정');
+          }}
+          onLoad={(e) => {
+            // unknown_animal.png가 아닌 경우에만 성공으로 간주
+            if (!e.target.src.includes('unknown_animal.png')) {
+              setIsImageBroken(false);
+              console.log('동물 이미지 로드 성공. isImageBroken을 false로 설정');
+            } else {
+              console.log('unknown_animal.png 로드됨. isImageBroken 상태 유지');
+            }
+          }}
+        />
       </div>
 
       <div className={styles.infoWrapper}>
@@ -146,8 +175,8 @@ const AnimalDetail = () => {
         <button className={styles.actionButton} onClick={handleMakerClick}>
           이미지 합성
         </button>
-        
       </div>
+
     </div>
   );
 };

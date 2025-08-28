@@ -40,13 +40,13 @@
 }
 
 .userInfo:hover {
-  background-color: var(--color-primary-light);
+  background-color: rgba(40, 167, 69, 0.1);
 }
 
 .userInfo h3 {
   margin-top: 0;
   margin-bottom: var(--spacing-lg);
-  color: var(--color-primary);
+  color: var(--color-success);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
 }
@@ -57,11 +57,13 @@
   border-bottom: 1px solid var(--color-border-light);
   display: flex;
   align-items: center;
+  justify-content: space-between;
   transition: var(--transition-fast);
+  position: relative;
 }
 
 .infoItem:hover {
-  background-color: var(--color-primary-light);
+  background-color: rgba(40, 167, 69, 0.1);
   padding: var(--spacing-sm) var(--spacing-md);
   margin: 0 calc(var(--spacing-md) * -1) var(--spacing-md) calc(var(--spacing-md) * -1);
   border-radius: var(--border-radius-md);
@@ -81,33 +83,64 @@
   font-size: var(--font-size-sm);
 }
 
+.editIcon {
+  font-size: 20px;
+  padding: var(--spacing-sm);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--border-radius-md);
+  transition: var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  margin-left: var(--spacing-sm);
+}
+
+.editIcon:hover {
+  background-color: var(--color-primary-light);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-sm);
+}
+
+.editIcon:active {
+  transform: scale(0.95);
+}
+
+.editIcon:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 .menuSection {
   margin-bottom: var(--spacing-3xl);
 }
 
 .menuSection h3 {
   margin-bottom: var(--spacing-lg);
-  color: var(--color-primary);
+  color: var(--color-success);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
 }
 
 .menuButtons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  justify-content: center;
   gap: var(--spacing-lg);
 }
 
 @media (max-width: 600px) {
   .menuButtons {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     gap: var(--spacing-md);
   }
 }
 
 .menuButton {
   padding: var(--spacing-lg) var(--spacing-xl);
-  background-color: var(--color-primary);
+  background-color: var(--color-success);
   color: white;
   border: none;
   border-radius: var(--border-radius-lg);
@@ -123,13 +156,13 @@
 }
 
 .menuButton:hover:not(:disabled) {
-  background-color: var(--color-primary-hover);
+  background-color: var(--color-success-hover);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
 .menuButton:focus {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-success);
   outline-offset: 2px;
 }
 
@@ -163,17 +196,17 @@
 }
 
 .button {
-  background-color: var(--color-primary);
+  background-color: var(--color-success);
   color: white;
 }
 
 .button:hover:not(:disabled) {
-  background-color: var(--color-primary-hover);
+  background-color: var(--color-success-hover);
   transform: translateY(-1px);
 }
 
 .button:focus {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-success);
   outline-offset: 2px;
 }
 
@@ -244,9 +277,9 @@
 .selectedImagePreview {
   margin: var(--spacing-xl) 0;
   padding: var(--spacing-xl);
-  border: 2px solid var(--color-primary);
+  border: 2px solid var(--color-success);
   border-radius: var(--border-radius-xl);
-  background: linear-gradient(135deg, var(--color-primary-light) 0%, rgba(248, 156, 30, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);
   text-align: center;
   max-width: 100%;
   overflow: hidden;
@@ -261,14 +294,14 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, transparent 40%, rgba(248, 156, 30, 0.1) 50%, transparent 60%);
+  background: linear-gradient(45deg, transparent 40%, rgba(40, 167, 69, 0.1) 50%, transparent 60%);
   pointer-events: none;
 }
 
 .selectedImagePreview p {
   margin-bottom: var(--spacing-lg);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-primary-dark);
+  color: var(--color-success-hover);
   font-size: var(--font-size-base);
   position: relative;
   z-index: 1;
@@ -328,14 +361,14 @@
 }
 
 .imageModalApplyButton:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-primary-dark) 100%);
+  background: linear-gradient(135deg, var(--color-success-hover) 0%, #1e7e34 100%);
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
 
 .imageModalApplyButton:focus {
   outline: none;
-  box-shadow: var(--shadow-lg), 0 0 0 3px rgba(248, 156, 30, 0.3);
+  box-shadow: var(--shadow-lg), 0 0 0 3px rgba(40, 167, 69, 0.3);
 }
 
 .imageModalCancelButton {
@@ -397,7 +430,7 @@
 
 .editInput:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--color-success);
   box-shadow: 0 0 0 3px var(--color-border-focus);
 }
 
@@ -517,25 +550,52 @@
 }
 
 .readonlySection {
-  background: rgba(var(--color-primary-rgb), 0.05);
+  background: rgba(40, 167, 69, 0.05);
   padding: var(--spacing-lg);
   border-radius: var(--border-radius-md);
   margin-bottom: var(--spacing-lg);
-  border: 1px solid rgba(var(--color-primary-rgb), 0.2);
+  border: 1px solid rgba(40, 167, 69, 0.2);
 }
 
 .editableSection {
   background: white;
   padding: var(--spacing-lg);
   border-radius: var(--border-radius-md);
-  border: 2px solid var(--color-primary);
+  border: 2px solid var(--color-success);
+}
+
+.editableSectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
 }
 
 .editableSection h4 {
-  color: var(--color-primary);
-  margin-bottom: var(--spacing-lg);
+  color: var(--color-success);
+  margin: 0;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
+}
+
+.editIcon {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.editIcon:hover {
+  background-color: rgba(40, 167, 69, 0.1);
+  transform: scale(1.1);
 }
 
 .infoItem label {
@@ -562,7 +622,7 @@
 }
 
 .editInput:focus {
-  border-color: var(--color-primary);
+  border-color: var(--color-success);
   outline: none;
   box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
 }
@@ -578,7 +638,7 @@
 }
 
 .editSelect:focus {
-  border-color: var(--color-primary);
+  border-color: var(--color-success);
   outline: none;
   box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
 }
@@ -723,8 +783,8 @@
 
 .currentPhoto {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: var(--spacing-md);
 }
 
 .profileImage {
@@ -732,7 +792,7 @@
   height: 100px;
   border-radius: var(--border-radius-lg);
   object-fit: cover;
-  border: 2px solid var(--color-primary);
+  border: 2px solid var(--color-success);
   cursor: pointer;
   transition: var(--transition-fast);
   aspect-ratio: 1 / 1;
@@ -745,7 +805,7 @@
 
 .changePhotoButton, .addPhotoButton {
   padding: var(--spacing-sm) var(--spacing-md);
-  background-color: var(--color-primary);
+  background-color: var(--color-success);
   color: white;
   border: none;
   border-radius: var(--border-radius-md);
@@ -756,7 +816,7 @@
 }
 
 .changePhotoButton:hover, .addPhotoButton:hover {
-  background-color: var(--color-primary-hover);
+  background-color: var(--color-success-hover);
   transform: translateY(-1px);
 }
 
@@ -777,9 +837,9 @@
   text-align: center;
   margin-bottom: var(--spacing-xl);
   padding: var(--spacing-lg);
-  background: linear-gradient(135deg, rgba(248, 156, 30, 0.05) 0%, rgba(248, 156, 30, 0.02) 100%);
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.05) 0%, rgba(40, 167, 69, 0.02) 100%);
   border-radius: var(--border-radius-xl);
-  border: 1px solid rgba(248, 156, 30, 0.2);
+  border: 1px solid rgba(40, 167, 69, 0.2);
 }
 
 .currentImagePreview p {
@@ -814,11 +874,11 @@
 
 .fileUploadLabel {
   padding: var(--spacing-lg) var(--spacing-2xl);
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-hover) 100%);
   color: white;
   border-radius: var(--border-radius-xl);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
+  font-size: 16px !important;
+  font-weight: 600 !important;
   cursor: pointer;
   transition: all var(--transition-normal);
   text-align: center;
@@ -845,7 +905,7 @@
 }
 
 .fileUploadLabel:hover {
-  background: linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-primary-dark) 100%);
+  background: linear-gradient(135deg, var(--color-success-hover) 0%, #1e7e34 100%);
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
@@ -856,8 +916,8 @@
   color: white;
   border: none;
   border-radius: var(--border-radius-xl);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
+  font-size: 16px !important;
+  font-weight: 600 !important;
   cursor: pointer;
   transition: all var(--transition-normal);
   box-shadow: var(--shadow-md);
@@ -882,6 +942,42 @@
 
 .defaultImageButton:hover {
   background: linear-gradient(135deg, var(--color-secondary-hover) 0%, #495057 100%);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.clearImageButton {
+  padding: var(--spacing-lg) var(--spacing-2xl);
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-xl);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.clearImageButton::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.clearImageButton:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.clearImageButton:hover {
+  background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
