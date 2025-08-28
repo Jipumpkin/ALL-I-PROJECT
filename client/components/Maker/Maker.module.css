@@ -245,13 +245,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 80px;
+  min-height: 120px;
   cursor: pointer;
   background: #ffffff;
   color: #d97706;
   transition: background-color 0.15s ease, transform 0.05s ease;
-  padding: 0.5rem;
+  padding: 1rem;
   border: none;
+  gap: 8px;
 }
 
 .iconButton + .iconButton {
@@ -270,17 +271,20 @@
 /* SVG/IMG 아이콘 크기 통일 */
 .iconButton svg,
 .iconButton img {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   object-fit: contain;
+  flex-shrink: 0;
 }
 
 .buttonLabel {
   display: block;
-  font-size: 0.8rem;
-  margin-top: 5px;
+  font-size: 0.9rem;
   color: #666;
   font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 /* Modal Styling */

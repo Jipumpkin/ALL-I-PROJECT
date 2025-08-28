@@ -73,9 +73,11 @@ const Maker = () => {
     const observer = new ResizeObserver(entries => {
       for (let entry of entries) {
         const { height } = entry.contentRect;
+        // 버튼 크기를 더 적절하게 설정 (최소 120px 보장)
+        const buttonHeight = Math.max(120, height / 4);
         setButtonStyle({
-          height: `${height / 5}px`,
-          padding: '0.25rem'
+          height: `${buttonHeight}px`,
+          padding: '1rem'
         });
       }
     });
@@ -406,15 +408,15 @@ const Maker = () => {
       {/* 케어 활동 선택 버튼들 */}
       <div className={styles.iconButtonsContainer}>
         <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('food')}>
-          <img src="/images/Bob.png" alt="밥주기" style={{ width: '95%', height: '95%', objectFit: 'contain' }} />
+          <img src="/images/Bob.png" alt="밥주기" />
           <span className={styles.buttonLabel}>밥주기</span>
         </button>
         <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('shower')}>
-          <img src="/images/Wash.png" alt="씻기기" style={{ width: '95%', height: '95%', objectFit: 'contain' }} />
+          <img src="/images/Shower.png" alt="씻기기" />
           <span className={styles.buttonLabel}>씻기기</span>
         </button>
         <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('grooming')}>
-          <img src="/images/Beauty.png" alt="미용하기" style={{ width: '95%', height: '95%', objectFit: 'contain' }} />
+          <img src="/images/Pretty.png" alt="미용하기" />
           <span className={styles.buttonLabel}>미용하기</span>
         </button>
       </div>
