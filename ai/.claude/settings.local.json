@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "WebFetch(domain:github.com)",
+      "Read(/C:\\Users\\SAMSUNG\\Desktop\\newProject\\ALL-I-PROJECT\\DogFaceNet-Project/**)",
+      "Read(/C:\\Users\\SAMSUNG\\Desktop\\newProject\\ALL-I-PROJECT\\DogFaceNet-Project/**)",
+      "Read(/C:\\Users\\SAMSUNG\\Desktop\\newProject\\ALL-I-PROJECT\\DogFaceNet-Project\\DogFaceNet/**)",
+      "WebFetch(domain:zenodo.org)",
+      "WebSearch",
+      "Read(/C:\\Users\\SAMSUNG\\Desktop\\newProject\\ALL-I-PROJECT/**)",
+      "Bash(git add:*)",
+      "Bash(git push:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

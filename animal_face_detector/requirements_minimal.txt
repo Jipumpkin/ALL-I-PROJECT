@@ -1,0 +1,19 @@
+# 🐕 Animal Face Detection System - Minimal Requirements
+# Haar Cascade만 사용하는 경우 (YOLO/HuggingFace 없음)
+
+# 필수 - OpenCV 기반 Haar Cascade 탐지만 사용
+opencv-python>=4.5.0            # OpenCV for computer vision
+numpy>=1.19.0                   # Numerical computing
+pillow>=8.0.0                   # Image processing
+
+# GUI 지원 (선택사항)
+matplotlib>=3.3.0               # Plotting and visualization
+
+# 파일 처리
+requests>=2.25.0                # HTTP requests for model downloads
+
+# 설치 방법:
+# pip install -r requirements_minimal.txt
+#
+# 이 경우 Haar Cascade 모델만 사용 가능하며,
+# 개와 고양이 얼굴만 탐지할 수 있습니다.

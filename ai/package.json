@@ -1,0 +1,18 @@
+{
+  "name": "ai-care-synthesis",
+  "version": "1.0.0",
+  "description": "유기동물 케어 시각화 AI 서비스",
+  "main": "ai-server.js",
+  "scripts": {
+    "start": "node ai-server.js",
+    "dev": "nodemon ai-server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

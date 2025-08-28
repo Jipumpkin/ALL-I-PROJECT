@@ -34,7 +34,7 @@ const BravestAnimals = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>가장 긴 기다림 속의 친구들</h2>
+      <h2 className={styles.title}>가장 오래 기다린 용감한 아이들</h2>
       <p className={styles.subtitle}>오랜 시간 가족을 기다리고 있어요</p>
       <div className={styles.carouselContainer}>
         <button className={`${styles.arrow} ${styles.left}`} onClick={() => scroll(-300)}>‹</button>

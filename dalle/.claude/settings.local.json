@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(start \"DALL-E 케어 이미지 결과물\" \"C:\\Users\\SAMSUNG\\Desktop\\newProject\\ALL-I-PROJECT\\dalle\\results\\care_밥주기_20250827_171159.png\")",
+      "WebFetch(domain:platform.openai.com)",
+      "WebSearch"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

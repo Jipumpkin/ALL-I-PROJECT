@@ -6,7 +6,7 @@ import '../../src/assets/font.css'
 
 // Before/After Slider Component
 const BeforeAfterSlider = () => {
-  const [sliderPosition, setSliderPosition] = useState(50);
+  const [sliderPosition, setSliderPosition] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [lastUserInteraction, setLastUserInteraction] = useState(Date.now());
   const [isInactiveMode, setIsInactiveMode] = useState(false);
@@ -15,6 +15,7 @@ const BeforeAfterSlider = () => {
   const [inactiveDirection, setInactiveDirection] = useState(1); // 1: 오른쪽, -1: 왼쪽
   const [imageIndex, setImageIndex] = useState(0); // 현재 이미지 세트 인덱스
   const [isShowingAfter, setIsShowingAfter] = useState(false); // 같은 세트 내에서 after 표시 여부
+  const [isAnimating, setIsAnimating] = useState(false); // 애니메이션 진행 중 여부
 
   // 이미지 배열 정의
   const beforeImages = [
@@ -31,26 +32,31 @@ const BeforeAfterSlider = () => {
 
   // 이미지 자동 변경 로직
   useEffect(() => {
+    // 사용자가 호버하거나 드래그 중이거나 애니메이션 중이면 자동 변경 중지
+    if (isHovered || isDragging || isAnimating) return;
+    
     let timeoutId;
     
     const scheduleNext = () => {
       if (!isShowingAfter) {
         // before 상태 → after로 슬라이더 이동 (4초 후)
         timeoutId = setTimeout(() => {
-          animateToPosition(100); // after로 슬라이더 이동
-          // 슬라이더 애니메이션 완료 후 상태 변경 (250ms 후)
-          setTimeout(() => {
+          animateToPosition(100, () => {
             setIsShowingAfter(true);
-          }, 250);
+          });
         }, 4000);
       } else {
-        // after 상태 → 다음 이미지 세트로 (4초 후)
+        // after 상태 → 다음 이미지의 before 상태로 (4초 후)
         timeoutId = setTimeout(() => {
-          // 다음 이미지 인덱스로 바로 변경 (슬라이드 없이)
-          const nextImageIndex = (imageIndex + 1) % beforeImages.length;
-          setImageIndex(nextImageIndex);
-          setSliderPosition(0); // 다음 이미지는 before부터 시작
-          setIsShowingAfter(false);
+          // 애니메이션 중이 아닐 때만 실행
+          if (!isAnimating) {
+            const nextImageIndex = (imageIndex + 1) % beforeImages.length;
+            
+            // 동시에 상태 변경하여 싱크 맞추기
+            setImageIndex(nextImageIndex);
+            setSliderPosition(0);
+            setIsShowingAfter(false);
+          }
         }, 4000);
       }
     };
@@ -60,60 +66,48 @@ const BeforeAfterSlider = () => {
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [isShowingAfter, imageIndex, beforeImages.length]);
+  }, [isShowingAfter, imageIndex, beforeImages.length, isHovered, isDragging, isAnimating]);
 
   // 사용자 비활성 감지 및 자동 슬라이드
   useEffect(() => {
-    if (isDragging || isHovered) return; // 호버 중일 때도 슬라이드 중지
+    if (isDragging || isHovered) return;
 
-    // 사용자 비활성 체크 (10초 후 빠른 모드)
     const inactiveCheck = setInterval(() => {
       const timeSinceInteraction = Date.now() - lastUserInteraction;
-      const shouldBeInactive = timeSinceInteraction > 10000 && !isHovered;
+      const shouldBeInactive = timeSinceInteraction > 8000 && !isHovered;
       
-      if (shouldBeInactive && !isInactiveMode) {
-        setIsInactiveMode(true);
-        setIsInactivePaused(false); // 비활성 모드 시작시 일시정지 해제
-        setInactiveDirection(1); // 오른쪽으로 시작
-      } else if (!shouldBeInactive && isInactiveMode) {
-        setIsInactiveMode(false);
+      if (shouldBeInactive !== isInactiveMode) {
+        setIsInactiveMode(shouldBeInactive);
         setIsInactivePaused(false);
+        if (shouldBeInactive) {
+          setInactiveDirection(1);
+        }
       }
     }, 1000);
 
     let interval;
-
-    if (isInactiveMode && !isHovered) {
-      if (!isInactivePaused) {
-        // 비활성 모드: 좌우로 왔다갔다 슬라이드
-        interval = setInterval(() => {
-          setSliderPosition(prev => {
-            const step = 6 * inactiveDirection; // 6%씩 더 빠르게 이동
-            let next = prev + step;
-            
-            // 경계에 도달하면 방향 바꾸고 일시정지
-            if (next >= 100) {
-              setInactiveDirection(-1); // 왼쪽으로 방향 변경
-              setIsInactivePaused(true);
-              setTimeout(() => {
-                setIsInactivePaused(false);
-              }, 4000); // 4초 정지 (더 긴 텀)
-              return 100;
-            } else if (next <= 0) {
-              setInactiveDirection(1); // 오른쪽으로 방향 변경
-              setIsInactivePaused(true);
-              setTimeout(() => {
-                setIsInactivePaused(false);
-              }, 4000); // 4초 정지 (더 긴 텀)
-              return 0;
-            }
-            
-            return next;
-          });
-        }, 10); // 10ms 간격으로 더 빠르게
-      }
+    if (isInactiveMode && !isInactivePaused && !isHovered) {
+      interval = setInterval(() => {
+        setSliderPosition(prev => {
+          const step = 4 * inactiveDirection;
+          let next = prev + step;
+          
+          if (next >= 100) {
+            setInactiveDirection(-1);
+            setIsInactivePaused(true);
+            setTimeout(() => setIsInactivePaused(false), 3000);
+            return 100;
+          } else if (next <= 0) {
+            setInactiveDirection(1);
+            setIsInactivePaused(true);
+            setTimeout(() => setIsInactivePaused(false), 3000);
+            return 0;
+          }
+          
+          return next;
+        });
+      }, 15);
     }
-    // 호버 중이거나 활성 모드일 때는 슬라이드 없음
 
     return () => {
       clearInterval(inactiveCheck);
@@ -121,39 +115,83 @@ const BeforeAfterSlider = () => {
     };
   }, [isDragging, isInactiveMode, isInactivePaused, isHovered, lastUserInteraction, inactiveDirection]);
 
-  const updateUserInteraction = () => {
+  const resetSliderToStart = () => {
+    setSliderPosition(0);
+    setIsShowingAfter(false);
+  };
+
+  const updateUserInteraction = (shouldResetSequence = true) => {
     setLastUserInteraction(Date.now());
     setIsInactiveMode(false);
     setIsInactivePaused(false);
+    
+    // 자동 시퀀스 리셋 여부 결정
+    if (shouldResetSequence) {
+      resetSliderToStart();
+    }
   };
 
   const handleClick = (e) => {
     // 슬라이더 핸들 클릭은 무시
     if (e.target.closest(`.${styles.sliderBar}`)) return;
+    // 다음 이미지 버튼 클릭은 무시
+    if (e.target.closest(`.${styles.nextButton}`)) return;
+    // 애니메이션 중이면 클릭 무시
+    if (isAnimating) return;
+    
+    // 클릭 시에는 자동 시퀀스 리셋하지 않음
+    updateUserInteraction(false);
+    
+    // 현재 상태에 따라 토글
+    if (isShowingAfter || sliderPosition > 50) {
+      // After 상태 → Before로
+      animateToPosition(0, () => {
+        setIsShowingAfter(false);
+      });
+    } else {
+      // Before 상태 → After로
+      animateToPosition(100, () => {
+        setIsShowingAfter(true);
+      });
+    }
+  };
+  
+  const handleNextImage = () => {
+    if (isAnimating) return;
     
     updateUserInteraction();
-    const targetPosition = sliderPosition > 50 ? 0 : 100;
-    animateToPosition(targetPosition);
+    const nextImageIndex = (imageIndex + 1) % beforeImages.length;
+    
+    // 동시에 상태 변경하여 싱크 맞추기
+    setImageIndex(nextImageIndex);
+    setSliderPosition(0);
+    setIsShowingAfter(false);
   };
 
-  const animateToPosition = (target) => {
+  const animateToPosition = (target, onComplete = null) => {
+    // 이미 애니메이션 중이면 무시
+    if (isAnimating) return;
+    
+    setIsAnimating(true);
     const start = sliderPosition;
     const distance = target - start;
-    const duration = 250; // 0.25초로 매우 빠르게
+    const duration = 250;
     const startTime = Date.now();
 
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
-      // easeOutExpo 이징 함수 (매우 빠르고 부드럽게)
       const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      
       const newPosition = start + (distance * eased);
       setSliderPosition(newPosition);
 
       if (progress < 1) {
         requestAnimationFrame(animate);
+      } else {
+        // 애니메이션 완료 시 상태 해제 및 콜백 실행
+        setIsAnimating(false);
+        if (onComplete) onComplete();
       }
     };
 
@@ -168,7 +206,10 @@ const BeforeAfterSlider = () => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
     const percentage = Math.max(0, Math.min((x / rect.width) * 100, 100));
+    
     setSliderPosition(percentage);
+    // 드래그 시 실시간으로 상태 동기화
+    setIsShowingAfter(percentage > 50);
   };
 
   const handleTouchMove = (e) => {
@@ -179,7 +220,10 @@ const BeforeAfterSlider = () => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = Math.max(0, Math.min(e.touches[0].clientX - rect.left, rect.width));
     const percentage = Math.max(0, Math.min((x / rect.width) * 100, 100));
+    
     setSliderPosition(percentage);
+    // 터치 드래그 시 실시간으로 상태 동기화
+    setIsShowingAfter(percentage > 50);
   };
 
   const handleDragStart = () => {
@@ -256,8 +300,16 @@ const BeforeAfterSlider = () => {
           </div>
         </div>
       </div>
-
       
+      {/* Next Image Button */}
+      <button 
+        className={styles.nextButton}
+        onClick={handleNextImage}
+        disabled={isAnimating}
+      >
+        다음 이미지
+      </button>
+
       <div className={styles.sliderCaption}>
         <span className={styles.captionEmoji}>🐾</span>
         <p>

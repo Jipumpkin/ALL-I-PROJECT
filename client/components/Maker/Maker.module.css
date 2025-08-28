@@ -160,45 +160,45 @@
 }
 
 /* 이미지 영역 */
-.petImagePlaceholder,
-.userImageContainer {
+.petImagePlaceholder {
   width: 100%;
-  height: 17rem;
-  background: #f8f9fa;
+  height: 20rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-radius: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   color: #6b7280;
-  font-weight: 700;
+  font-weight: 500;
   border: 2px solid #e5e7eb;
   margin-bottom: 1.5rem;
   position: relative;
   overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.petImagePlaceholder::before,
-.userImageContainer::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
-  transform: rotate(45deg);
-  animation: shimmer 3s infinite;
+.petImagePlaceholder:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
-@keyframes shimmer {
-  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+.userImageContainer {
+  width: 100%;
+  height: 17rem;
+  background: #ffffff;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #6b7280;
+  font-weight: 500;
+  border: 2px solid #e5e7eb;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
 }
 
 .userImageContainer {
@@ -206,20 +206,39 @@
   cursor: pointer;
 }
 
+/* 드롭다운 스타일 */
+.dropdownStyle {
+  border: 2px dashed #d1d5db;
+  background: #f9fafb;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.dropdownStyle:hover {
+  border-color: #6366f1;
+  background: #f0f9ff;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.15);
+}
+
+/* 드롭다운 인디케이터 제거됨 */
+
 .userImageText {
   font-weight: 700;
 }
 
-.userImage, .petImage {
+.petImage {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   border-radius: 1rem;
   filter: brightness(1.1) contrast(1.05) saturate(1.1);
   transition: filter 0.3s ease, transform 0.3s ease;
+  background: #f8f9fa;
 }
 
-.userImage:hover, .petImage:hover {
+.petImage:hover {
   filter: brightness(1.15) contrast(1.1) saturate(1.15);
   transform: scale(1.01);
 }
@@ -371,12 +390,13 @@
 .loadingModalOverlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
   z-index: 110;
+  backdrop-filter: blur(2px);
 }
 
 .loadingModal {
@@ -386,19 +406,21 @@
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
   width: 100%;
-  max-width: 20rem;
+  max-width: 28rem;
+  min-width: 20rem;
   text-align: center;
   border: 2px solid #e5e7eb;
   position: relative;
+  margin: 1rem;
 }
 
 .loadingCloseButton {
   position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e5e7eb;
+  font-size: 1.25rem;
   font-weight: bold;
   color: #6b7280;
   cursor: pointer;
@@ -409,11 +431,28 @@
   justify-content: center;
   border-radius: 50%;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .loadingCloseButton:hover {
-  background-color: #f3f4f6;
+  background-color: rgba(255, 255, 255, 1);
   color: #374151;
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* 반응형 디자인 추가 */
+@media (max-width: 640px) {
+  .loadingModal {
+    max-width: 90vw;
+    min-width: 0;
+    margin: 0.5rem;
+    padding: 1.5rem;
+  }
+  
+  .loadingModalOverlay {
+    padding: 0.5rem;
+  }
 }
 
  
@@ -499,10 +538,12 @@
   width: 100%;
   max-width: 20rem;
   height: 20rem;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   border-radius: 1rem;
   border: 3px solid #e5e7eb;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  background: #f8f9fa;
 }
 
 .resultImagePlaceholder {
@@ -681,7 +722,9 @@
 .animalCardImage {
   width: 100%;
   height: 150px;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
+  background: #f8f9fa;
 }
 
 .animalCardInfo {
@@ -697,6 +740,32 @@
 .animalCardInfo p strong {
   color: #1f2937;
   font-weight: 600;
+}
+
+/* 따뜻한 문구 스타일 */
+.warmMessage {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(139, 195, 74, 0.03) 100%);
+  border-radius: 1rem;
+  border: 1px solid rgba(76, 175, 80, 0.1);
+}
+
+.warmTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2e7d32;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+}
+
+.warmSubtitle {
+  font-size: 1rem;
+  color: #558b2f;
+  margin: 0;
+  line-height: 1.4;
+  opacity: 0.9;
 }
 
 /* 새로운 공간 이미지 섹션 스타일 */
@@ -718,15 +787,142 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  gap: 10px;
+  gap: 12px;
   color: #6b7280;
   font-weight: 500;
 }
 
-.uploadPrompt p {
-  margin: 0;
-  font-size: 1rem;
+.uploadIcon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
 }
+
+.uploadTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #374151;
+  text-align: center;
+}
+
+.uploadSubtext {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  font-weight: 400;
+  text-align: center;
+  margin-top: 4px;
+}
+
+.emotionalText {
+  margin: 0.75rem 0 0.5rem 0;
+  font-size: 0.95rem;
+  color: #6366f1;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.4;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.08) 100%);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+/* 드롭다운 컨텐츠 */
+.dropdownContent {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+/* 이미지가 선택된 경우 */
+.selectedImageContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.selectedImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.imageOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(99, 102, 241, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.selectedImageContainer:hover .imageOverlay {
+  opacity: 1;
+}
+
+.overlayContent {
+  text-align: center;
+  color: white;
+}
+
+.overlayTitle {
+  margin: 0.5rem 0 0.25rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.overlaySubtext {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* 이미지가 없는 경우 */
+.emptyDropdownContent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropzoneArea {
+  text-align: center;
+  padding: 2rem;
+  border: 2px dashed #d1d5db;
+  border-radius: 1rem;
+  width: 80%;
+  background: rgba(249, 250, 251, 0.8);
+  transition: all 0.3s ease;
+}
+
+.dropdownStyle:hover .dropzoneArea {
+  border-color: #6366f1;
+  background: rgba(240, 249, 255, 0.9);
+}
+
+.dragDropHint {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  color: #6366f1;
+  font-weight: 500;
+}
+
+/* 선택된 파일 표시 제거됨 */
 
 /* 동물 정보 섹션 스타일 */
 .animalInfoSection {
