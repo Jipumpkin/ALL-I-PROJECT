@@ -18,9 +18,9 @@ const BeforeAfterSlider = () => {
 
   // 이미지 배열 정의
   const beforeImages = [
-    '/images/before0.jpeg',
-    '/images/before1.jpeg', 
-    '/images/before2.jpeg'
+    '/images/before0.png',
+    '/images/before1.png', 
+    '/images/before2.png'
   ];
   
   const afterImages = [
