@@ -131,6 +131,10 @@ const MyAccount = () => {
     navigate('/');
   };
 
+  const handleAdoptionHistory = () => {
+    navigate('/adoption-history');
+  };
+
   const handleEditClick = () => {
     setIsEditing(true);
   };

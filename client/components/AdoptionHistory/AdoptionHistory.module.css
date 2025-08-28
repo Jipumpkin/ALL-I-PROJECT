@@ -1,0 +1,251 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 70vh;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.error {
+  text-align: center;
+  padding: 3rem;
+  color: #e53e3e;
+  background-color: #fed7d7;
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  margin-top: 2rem;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.emptyState h3 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.emptyState p {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.browseButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.browseButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.applicationCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.applicationCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.animalInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.animalImage {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.animalImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.animalDetails {
+  flex: 1;
+}
+
+.animalName {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 0.25rem 0;
+}
+
+.animalBreed {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 0 0.25rem 0;
+}
+
+.shelterName {
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0;
+}
+
+.applicationDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.applicationDate {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.label {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.date {
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.applicationStatus {
+  margin-top: 0.5rem;
+}
+
+.status {
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  min-width: 80px;
+}
+
+.statusPending {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.statusApproved {
+  background-color: #d1edff;
+  color: #0066cc;
+  border: 1px solid #a8dadc;
+}
+
+.statusRejected {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f1c6cb;
+}
+
+.statusDefault {
+  background-color: #e9ecef;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .applicationCard {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .animalInfo {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  
+  .animalImage {
+    align-self: center;
+  }
+  
+  .applicationDetails {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .applicationDate {
+    align-items: flex-start;
+  }
+}
