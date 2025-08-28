@@ -25,11 +25,9 @@
 
 .logo-container {
   display: flex;
-<<<<<<< HEAD
   align-items: center;
   gap: var(--spacing-xs);
   padding: var(--spacing-sm);
-=======
   flex-direction: column; /* Changed to column to stack brand-name and brand-desc */
   align-items: flex-start; /* Align text to the start */
 }
