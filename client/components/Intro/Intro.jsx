@@ -26,34 +26,49 @@ const FeatureCard = ({ icon, title, desc, tag }) => (
 const BeforeAfterSlider = () => {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
+  const containerRef = React.useRef(null);
 
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+  const handleMove = React.useCallback((clientX) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
     const percentage = Math.max(0, Math.min((x / rect.width) * 100, 100));
     setSliderPosition(percentage);
-  };
+  }, []);
 
-  const handleTouchMove = (e) => {
-    if (!isDragging) return;
-    
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = Math.max(0, Math.min(e.touches[0].clientX - rect.left, rect.width));
-    const percentage = Math.max(0, Math.min((x / rect.width) * 100, 100));
-    setSliderPosition(percentage);
-  };
+  React.useEffect(() => {
+    const handleMouseMove = (e) => handleMove(e.clientX);
+    const handleTouchMove = (e) => handleMove(e.touches[0].clientX);
+    const handleMouseUp = () => setIsDragging(false);
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('touchmove', handleTouchMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('touchend', handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchend', handleMouseUp);
+    };
+  }, [isDragging, handleMove]);
 
   return (
     <div className={styles.beforeAfterContainer}>
       <div 
+        ref={containerRef}
         className={styles.beforeAfterWrapper}
-        onMouseMove={handleMouseMove}
-        onMouseUp={() => setIsDragging(false)}
-        onMouseLeave={() => setIsDragging(false)}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={() => setIsDragging(false)}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          setIsDragging(true);
+        }}
+        onTouchStart={(e) => {
+          e.preventDefault();
+          setIsDragging(true);
+        }}
       >
         {/* Before Image */}
         <div className={styles.imageContainer}>
