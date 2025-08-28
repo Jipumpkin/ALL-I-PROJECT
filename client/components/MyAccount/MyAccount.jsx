@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../src/context/AuthContext';
-import axios from "../../axios";
+import api from "../../axios";
 import styles from './MyAccount.module.css';
 
 const MyAccount = () => {
@@ -38,7 +38,7 @@ const MyAccount = () => {
     const userId = user?.id || user?.user_id;
     if (userId) {
       try {
-        const response = await axios.get(`/users/${userId}/images`);
+        const response = await api.get(`/users/${userId}/images`);
         if (response.data.success) {
           setUserImages(response.data.data);
         }
@@ -67,7 +67,7 @@ const MyAccount = () => {
         requestData = imageData;
       }
 
-      await axios.put(`/users/${userId}/images/profile`, requestData);
+      await api.put(`/users/${userId}/images/profile`, requestData);
       fetchUserImages(); // 이미지 목록 새로고침
       return true;
     } catch (err) {
@@ -148,7 +148,7 @@ const MyAccount = () => {
         gender: editedUser.gender
       };
       
-      const response = await axios.put('/users/profile', profileData);
+      const response = await api.put('/users/profile', profileData);
       
       if (response.data.success) {
         // 2. 이미지가 선택된 경우 이미지 업데이트
@@ -197,9 +197,6 @@ const MyAccount = () => {
     }));
   };
 
-  const handleAdoptionHistory = () => {
-    navigate('/adoption-history');
-  };
 
   const handleAccountDelete = () => {
     setShowDeleteModal(true);
@@ -215,7 +212,7 @@ const MyAccount = () => {
         return;
       }
 
-      const response = await axios.delete('/users/account', {
+      const response = await api.delete('/users/account', {
         data: { password: deletePassword }
       });
 
@@ -290,7 +287,14 @@ const MyAccount = () => {
 
           {/* 수정 가능한 정보 */}
           <div className={styles.editableSection}>
-            <h4>수정 가능한 정보</h4>
+            <div className={styles.editableSectionHeader}>
+              <h4>수정 가능한 정보</h4>
+              {!isEditing && (
+                <button onClick={handleEditClick} className={styles.editIcon}>
+                  ✏️
+                </button>
+              )}
+            </div>
             {isEditing ? (
               <>
                 <div className={styles.infoItem}>
@@ -349,7 +353,6 @@ const MyAccount = () => {
                           alt="현재 사진" 
                           className={styles.profileImage}
                         />
-                        <span className={styles.currentLabel}>현재 이미지</span>
                       </div>
                     ) : (
                       <div className={styles.noPhoto}>
@@ -409,17 +412,44 @@ const MyAccount = () => {
             ) : (
               <>
                 <div className={styles.infoItem}>
-                  <strong>닉네임:</strong> <span>{user.nickname || '설정되지 않음'}</span>
+                  <strong>닉네임:</strong> 
+                  <span>{user.nickname || '설정되지 않음'}</span>
+                  <button 
+                    className={styles.editIcon}
+                    onClick={() => setIsEditing(true)}
+                    title="닉네임 수정"
+                    aria-label="닉네임 수정"
+                  >
+                    ✏️
+                  </button>
                 </div>
                 <div className={styles.infoItem}>
-                  <strong>연락처:</strong> <span>{user.phone_number || '설정되지 않음'}</span>
+                  <strong>연락처:</strong> 
+                  <span>{user.phone_number || '설정되지 않음'}</span>
+                  <button 
+                    className={styles.editIcon}
+                    onClick={() => setIsEditing(true)}
+                    title="연락처 수정"
+                    aria-label="연락처 수정"
+                  >
+                    ✏️
+                  </button>
                 </div>
                 <div className={styles.infoItem}>
-                  <strong>성별:</strong> <span>
+                  <strong>성별:</strong> 
+                  <span>
                     {user.gender === 'male' ? '남성' : 
                      user.gender === 'female' ? '여성' : 
                      user.gender === 'other' ? '기타' : '설정되지 않음'}
                   </span>
+                  <button 
+                    className={styles.editIcon}
+                    onClick={() => setIsEditing(true)}
+                    title="성별 수정"
+                    aria-label="성별 수정"
+                  >
+                    ✏️
+                  </button>
                 </div>
                 <div className={styles.infoItem}>
                   <strong>등록 사진:</strong>
@@ -433,17 +463,24 @@ const MyAccount = () => {
                           alt="사용자 등록 사진" 
                           className={styles.profileImage}
                         />
-                        <span className={styles.imageDescription}>현재 등록된 사진</span>
                       </div>
                     ) : (
                       <div className={styles.noPhoto}>
                         <span>등록된 사진이 없습니다</span>
                         <small style={{ color: '#666', fontSize: '0.9em' }}>
-                          '내 정보 수정' 버튼을 눌러 사진을 추가하세요
+                          사진 수정 아이콘을 눌러 사진을 추가하세요
                         </small>
                       </div>
                     )}
                   </div>
+                  <button 
+                    className={styles.editIcon}
+                    onClick={() => setIsEditing(true)}
+                    title="프로필 사진 수정"
+                    aria-label="프로필 사진 수정"
+                  >
+                    📷
+                  </button>
                 </div>
               </>
             )}
@@ -452,9 +489,6 @@ const MyAccount = () => {
 
         <div className={styles.menuSection}>
           <div className={styles.menuButtons}>
-            <button className={styles.menuButton} onClick={handleEditClick}>
-              내 정보 수정
-            </button>
             <button className={styles.menuButton} onClick={handleAdoptionHistory}>
               입양 신청 내역
             </button>

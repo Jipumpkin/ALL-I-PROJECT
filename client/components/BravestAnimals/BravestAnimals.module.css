@@ -45,6 +45,41 @@
 .cardLink {
   text-decoration: none;
   color: inherit;
+  position: relative;
+  display: block;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cardLink::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, 
+    var(--color-primary), 
+    var(--color-secondary), 
+    var(--color-primary));
+  border-radius: 14px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+  background-size: 300% 300%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.cardLink:hover::before {
+  opacity: 0.15;
+}
+
+.cardLink:hover {
+  text-decoration: none;
+  transform: scale(1.02);
+  box-shadow: 0 12px 30px rgba(251, 192, 45, 0.25);
 }
 
 .card {

@@ -13,7 +13,6 @@
   flex-direction: column;
   background-color: white;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   width: 100%;
   max-width: 450px;
@@ -64,8 +63,8 @@ h2 {
 .login-button {
   width: 100%;
   padding: 12px;
-  background-color: var(--color-primary);
-  color: white;
+  background-color: var(--color-button-main);
+  color: var(--color-button-text);
   border: none;
   border-radius: var(--border-radius-md);
   font-size: 18px;
@@ -76,7 +75,7 @@ h2 {
 }
 
 .login-button:hover:not(:disabled) {
-  background-color: var(--color-primary-hover);
+  background-color: var(--color-button-main-hover);
 }
 
 .login-links {
@@ -88,13 +87,14 @@ h2 {
 }
 
 .login-links a {
-  color: var(--color-primary);
+  color: #666;
   text-decoration: none;
   font-size: 14px;
   transition: var(--transition-fast);
 }
 
 .login-links a:hover {
+  color: #888;
   text-decoration: underline;
 }
 

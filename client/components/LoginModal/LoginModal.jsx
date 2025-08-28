@@ -41,7 +41,6 @@ const LoginModal = ({ setIsOpen }) => {
               <p>안녕하세요, <strong>{user?.name || user?.username}</strong>님!</p>
             </div>
             <div className={styles["menu-buttons"]}>
-              <button className={styles["menu-btn"]} onClick={() => handleNavigate('/maker')}>합성하기</button>
               <button className={styles["menu-btn"]} onClick={() => handleNavigate('/animals')}>유기동물</button>
               
               <button className={styles["menu-btn"]} onClick={() => handleNavigate('/my-account')}>마이페이지</button>

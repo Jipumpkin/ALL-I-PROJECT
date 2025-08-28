@@ -19,7 +19,7 @@ const sequelize = new Sequelize({
   pool: {
     max: 10,
     min: 0,
-    acquire: 30000,
+    acquire: 5000,  // 5초로 단축하여 빠른 fallback
     idle: 10000
   },
   
@@ -91,7 +91,24 @@ async function initializeSequelize() {
       return localSequelize;
     } catch (localError) {
       console.error('💥 로컬 데이터베이스 연결도 실패 (Sequelize):', localError.message);
-      throw new Error('모든 데이터베이스 연결 실패 (Sequelize)');
+      
+      // SQLite로 최종 fallback
+      console.log('🔄 SQLite로 최종 폴백 중...');
+      
+      const sqliteSequelize = new Sequelize({
+        dialect: 'sqlite',
+        storage: path.join(__dirname, '..', 'database.sqlite'),
+        logging: process.env.NODE_ENV !== 'production' ? console.log : false,
+      });
+      
+      try {
+        await sqliteSequelize.authenticate();
+        console.log('✅ SQLite 데이터베이스 연결 성공 (Sequelize)');
+        return sqliteSequelize;
+      } catch (sqliteError) {
+        console.error('💥 SQLite 연결도 실패 (Sequelize):', sqliteError.message);
+        throw new Error('모든 데이터베이스 연결 실패 (Sequelize)');
+      }
     }
   }
 }
