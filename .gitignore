@@ -27,3 +27,14 @@ presentation/
 # 업로드된 이미지 파일들 (용량이 클 수 있고, 개발용 테스트 파일)
 **/uploads/
 uploads/
+
+# AI 생성 결과 이미지들 (용량이 크고 임시 파일)
+dalle/results/*
+!dalle/results/.gitkeep
+**/results/*
+!**/results/.gitkeep
+
+# Python 컴파일 캐시 파일들
+__pycache__/
+*.pyc
+*.pyo

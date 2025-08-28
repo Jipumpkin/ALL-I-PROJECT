@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../axios';
 import styles from './AnimalDetail.module.css';
 import { useAuth } from '../../src/context/AuthContext';
 
@@ -17,7 +17,7 @@ const AnimalDetail = () => {
   useEffect(() => {
     const fetchAnimal = async () => {
       try {
-        const response = await axios.get(`/api/animals/${id}`);
+        const response = await api.get(`/animals/${id}`);
         setAnimal(response.data);
         setIsImageBroken(false); // 새로운 동물 데이터 로드 시 이미지 상태 초기화
       } catch (err) {
@@ -32,6 +32,8 @@ const AnimalDetail = () => {
 
   const handleMakerClick = () => {
     console.log('이미지 합성 버튼 클릭됨. isImageBroken:', isImageBroken);
+    console.log('전달할 동물 데이터:', animal);
+    console.log('보호소 정보:', animal?.shelter);
     
     if (isImageBroken) {
       alert('합성할 동물의 이미지가 존재하지 않습니다.');

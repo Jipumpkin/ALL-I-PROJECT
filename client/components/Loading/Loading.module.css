@@ -3,9 +3,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px;
-  min-height: 300px; /* 늘어난 높이 */
-  overflow: hidden; /* 거품이 넘치지 않도록 */
+  padding: 20px;
+  min-height: 280px;
+  max-width: 100%;
+  overflow: hidden;
+  position: relative;
 }
 
 .bathtub {
@@ -153,11 +155,14 @@
 }
 
 .message {
-  margin-top: 24px;
+  margin-top: 20px;
   color: #555;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   text-align: center;
+  line-height: 1.4;
+  max-width: 90%;
+  word-break: keep-all;
 }
 
 /* Food Animation Styles */
@@ -213,12 +218,13 @@
 
 /* Grooming Animation Styles */
 .groomingContainer {
-  width: 180px;
-  height: 160px; /* Kept height for spacing */
+  width: 160px;
+  height: 140px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0 auto;
 }
 
 .dogHeadGrooming {
