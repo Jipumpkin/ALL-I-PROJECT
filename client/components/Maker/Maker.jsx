@@ -100,6 +100,8 @@ const Maker = () => {
     
     if (animalFromState) {
       // location.state로 전달된 동물 정보 사용 (더 빠름)
+      console.log('🐕 Maker에서 받은 동물 데이터:', animalFromState);
+      console.log('🏠 보호소 정보:', animalFromState?.shelter);
       setSelectedAnimal(animalFromState);
       setIsAnimalImageBroken(false); // 새로운 동물 선택 시 broken 상태 초기화
     } else if (animalId) {
@@ -171,6 +173,10 @@ const Maker = () => {
       };
       const careActivity = activityMap[action] || action;
 
+      // AbortController 생성 및 설정
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
       // FormData로 파일 업로드 준비
       const formData = new FormData();
       
@@ -185,12 +191,13 @@ const Maker = () => {
       // 케어 활동 추가
       formData.append('care_activity', careActivity);
       
-      // 케어 합성 API 요청 (타임아웃 3분, multipart/form-data)
+      // 케어 합성 API 요청 (타임아웃 3분, multipart/form-data, abort 신호 포함)
       const response = await api.post('/ai/care/synthesize', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        timeout: 180000 // 3분 (180초)
+        timeout: 180000, // 3분 (180초)
+        signal: controller.signal // AbortController 신호 추가
       });
 
       if (response.data.success) {
@@ -213,6 +220,12 @@ const Maker = () => {
 
     } catch (error) {
       console.error('케어 이미지 합성 중 오류:', error);
+      
+      // 사용자가 취소한 경우
+      if (error.name === 'AbortError' || error.code === 'ERR_CANCELED') {
+        console.log('🔴 사용자가 이미지 합성을 취소했습니다.');
+        return 'cancelled';
+      }
       
       if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
         const userChoice = confirm(
@@ -281,16 +294,16 @@ const Maker = () => {
     let message = '';
     switch (action) {
       case 'food':
-        message = `🍽️ DALL-E가 ${petName}의 행복한 밥먹기 모습을 생성하고 있습니다...\n\n⏱️ 예상 시간: 30초 ~ 2분\n💡 고품질 AI 이미지 생성 중이니 잠시만 기다려주세요!`;
+        message = '밥먹기 중\n예상소요시간: 30초 ~ 2분';
         break;
       case 'shower':
-        message = `🛁 DALL-E가 ${petName}의 깔끔한 목욕 모습을 생성하고 있습니다...\n\n⏱️ 예상 시간: 30초 ~ 2분\n💡 고품질 AI 이미지 생성 중이니 잠시만 기다려주세요!`;
+        message = '목욕중\n예상소요시간: 30초 ~ 2분';
         break;
       case 'grooming':
-        message = `✂️ DALL-E가 ${petName}의 아름다운 미용 모습을 생성하고 있습니다...\n\n⏱️ 예상 시간: 30초 ~ 2분\n💡 고품질 AI 이미지 생성 중이니 잠시만 기다려주세요!`;
+        message = '미용중\n예상소요시간: 30초 ~ 2분';
         break;
       default:
-        message = '🎨 DALL-E가 특별한 이미지를 생성하고 있습니다...\n\n⏱️ 예상 시간: 30초 ~ 2분';
+        message = '이미지 합성중\n예상소요시간: 30초 ~ 2분';
     }
 
     
@@ -370,14 +383,21 @@ const Maker = () => {
     // AI 합성 요청 취소
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
-      console.log('AI 합성 요청이 취소되었습니다.');
+      console.log('🔴 AI 합성 요청이 취소되었습니다.');
     }
     
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
     
+    // 상태 초기화
     setShowLoadingModal(false);
+    setProgressStage(0);
+    setLoadingMessage('');
+    setCurrentAction('');
+    
+    // 취소 확인 메시지
+    console.log('✅ 이미지 합성이 취소되었습니다.');
   };
 
   return (
@@ -428,7 +448,7 @@ const Maker = () => {
           <span className={styles.buttonLabel}>씻기기</span>
         </button>
         <button className={styles.iconButton} style={buttonStyle} onClick={() => handleIconClick('grooming')}>
-          <img src="/images/Pretty.png" alt="미용하기" />
+          <img src="/images/pretty.png" alt="미용하기" />
           <span className={styles.buttonLabel}>미용하기</span>
         </button>
       </div>
